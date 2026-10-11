@@ -1,0 +1,8 @@
+{
+  "notion_data_source": "collection://18412612-9a7f-818c-a1a9-000b2b9335f3",
+  "notion_database_url": "https://app.notion.com/p/184126129a7f8057b3abd6a7a35accd9",
+  "notion_template_id": "18412612-9a7f-815d-91f4-da2eb768ab8d",
+  "title_format": "YYYY년 MM월 DD일 {요일}요일",
+  "default_tags": ["work"],
+  "git_emails": ["runneronstreet@gmail.com", "joykim9843@gmail.com"]
+}

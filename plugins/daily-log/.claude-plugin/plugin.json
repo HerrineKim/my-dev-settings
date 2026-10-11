@@ -1,0 +1,6 @@
+{
+  "name": "daily-log",
+  "version": "0.1.0",
+  "description": "오늘 Claude Code 작업과 GitHub 반영 내역을 노션 데일리 업무 회고에 기록",
+  "author": { "name": "HerrineKim" }
+}

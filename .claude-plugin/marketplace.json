@@ -1,0 +1,7 @@
+{
+  "name": "hyerin-skills",
+  "owner": { "name": "HerrineKim" },
+  "plugins": [
+    { "name": "daily-log", "source": "./plugins/daily-log", "description": "오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록" }
+  ]
+}
