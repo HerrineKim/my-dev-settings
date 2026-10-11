@@ -1,0 +1,6 @@
+{
+  "name": "frontend-design",
+  "version": "0.1.0",
+  "description": "Anthropic frontend-design 스킬 (anthropics/claude-code 벤더링)",
+  "author": { "name": "HerrineKim" }
+}
