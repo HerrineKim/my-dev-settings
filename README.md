@@ -14,6 +14,7 @@
 | `/slides` | Chart.js 기반 HTML 프레젠테이션 |
 | `/frontend-design` | Anthropic 공식. 템플릿 같지 않은 UI 미학·타이포 방향 잡기 |
 | `/web-design-guidelines` | Vercel Web Interface Guidelines로 UI 코드 접근성·UX 리뷰 |
+| `/clone-website` | URL을 섹션별로 분석(CSS·에셋·인터랙션)해 Next.js + shadcn/ui + Tailwind로 픽셀 단위 복제. 브라우저 MCP 필요 |
 
 `/daily-log`만 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
 
@@ -24,6 +25,7 @@
 | `ui-ux-pro-max` (7개 스킬) | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) |
 | `frontend-design` | [anthropics/claude-code](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design) |
 | `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
+| `clone-website` | [julianromli/ai-skills](https://github.com/julianromli/ai-skills/tree/main/skills/clone-website) |
 
 최신 버전으로 다시 받으려면 `./vendor.sh` 실행 후 `git diff`를 확인하고 커밋합니다.
 
@@ -49,6 +51,7 @@ claude plugin install daily-log@hyerin-skills
 claude plugin install ui-ux-pro-max@hyerin-skills
 claude plugin install frontend-design@hyerin-skills
 claude plugin install web-design-guidelines@hyerin-skills
+claude plugin install clone-website@hyerin-skills
 ```
 
 이 경우 명령어는 `/daily-log:daily-log`처럼 플러그인 이름이 앞에 붙습니다.

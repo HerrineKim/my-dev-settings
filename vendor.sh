@@ -17,4 +17,5 @@ fetch() { # <plugin> <package> <skill-list>
 fetch ui-ux-pro-max         nextlevelbuilder/ui-ux-pro-max-skill '*'
 fetch frontend-design       anthropics/claude-code/plugins/frontend-design/skills/frontend-design '*'
 fetch web-design-guidelines vercel-labs/agent-skills web-design-guidelines
+fetch clone-website         julianromli/ai-skills clone-website
 find "$repo/plugins" -name .DS_Store -delete

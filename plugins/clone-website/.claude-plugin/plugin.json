@@ -1,0 +1,6 @@
+{
+  "name": "clone-website",
+  "version": "0.1.0",
+  "description": "웹사이트를 섹션별로 분석해 Next.js로 픽셀 단위 복제 (julianromli/ai-skills 벤더링)",
+  "author": { "name": "HerrineKim" }
+}
