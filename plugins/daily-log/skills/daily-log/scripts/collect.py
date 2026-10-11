@@ -139,7 +139,9 @@ def collect_claude(window):
 def collect_local_git(window, cwds, emails):
     repos = {}
     for cwd in cwds:
-        if not cwd or not Path(cwd).is_dir():
+        while cwd and not Path(cwd).is_dir():  # file may have been moved; walk up
+            cwd = str(Path(cwd).parent) if Path(cwd).parent != Path(cwd) else None
+        if not cwd:
             continue
         top = run(["git", "rev-parse", "--show-toplevel"], cwd=cwd)
         if top:
@@ -236,7 +238,9 @@ def main():
 
     claude = collect_claude(window)
     emails = set(cfg.get("git_emails", []))
-    git_local = collect_local_git(window, {s["cwd"] for s in claude}, emails)
+    # Sessions often edit repos outside their cwd, so also look at the edited files' folders.
+    dirs = {s["cwd"] for s in claude} | {str(Path(f).parent) for s in claude for f in s["files_changed"]}
+    git_local = collect_local_git(window, dirs, emails)
     github = collect_github(window)
     json.dump({
         "date": day.isoformat(),
