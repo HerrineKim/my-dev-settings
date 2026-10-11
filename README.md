@@ -1,4 +1,4 @@
-# claude-skills
+# my-claude-skills
 
 개인 Claude Code 스킬 모음.
 
@@ -9,8 +9,8 @@
 ## 새 맥북에 설치
 
 ```bash
-git clone https://github.com/HerrineKim/claude-skills.git ~/Projects/claude-skills
-~/Projects/claude-skills/install.sh
+git clone https://github.com/HerrineKim/my-claude-skills.git ~/Projects/my-claude-skills
+~/Projects/my-claude-skills/install.sh
 ```
 
 필요한 것
@@ -18,12 +18,12 @@ git clone https://github.com/HerrineKim/claude-skills.git ~/Projects/claude-skil
 - **Notion**: claude.ai 계정의 Notion 커넥터(계정에 붙어 있어 기기마다 따로 설정할 필요 없음)
 - Python 3 (macOS 기본 포함, 외부 패키지 없음)
 
-업데이트: `git -C ~/Projects/claude-skills pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
+업데이트: `git -C ~/Projects/my-claude-skills pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
 
 ### 플러그인으로 설치하는 방법(대안)
 
 ```bash
-claude plugin marketplace add HerrineKim/claude-skills
+claude plugin marketplace add HerrineKim/my-claude-skills
 claude plugin install daily-log@hyerin-skills
 ```
 

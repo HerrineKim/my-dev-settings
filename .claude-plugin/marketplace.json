@@ -1,7 +1,14 @@
 {
   "name": "hyerin-skills",
-  "owner": { "name": "HerrineKim" },
+  "owner": {
+    "name": "HerrineKim"
+  },
   "plugins": [
-    { "name": "daily-log", "source": "./plugins/daily-log", "description": "오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록" }
-  ]
+    {
+      "name": "daily-log",
+      "source": "./plugins/daily-log",
+      "description": "오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록"
+    }
+  ],
+  "description": "HerrineKim 개인 Claude Code 스킬"
 }
