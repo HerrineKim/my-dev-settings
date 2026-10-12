@@ -10,6 +10,11 @@
       "description": "오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록"
     },
     {
+      "name": "tdd-tidy-first",
+      "source": "./plugins/tdd-tidy-first",
+      "description": "Kent Beck식 TDD + Tidy First 개발 규칙 (plan.md \"go\" 워크플로)"
+    },
+    {
       "name": "ui-ux-pro-max",
       "source": "./plugins/ui-ux-pro-max",
       "description": "UI/UX 디자인 스킬 묶음 (ui-ux-pro-max, ui-styling, design, design-system, brand, banner-design, slides)"

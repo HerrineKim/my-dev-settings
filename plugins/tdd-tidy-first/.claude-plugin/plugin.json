@@ -1,0 +1,6 @@
+{
+  "name": "tdd-tidy-first",
+  "version": "0.1.0",
+  "description": "Kent Beck식 TDD(Red→Green→Refactor)와 Tidy First(구조/행위 변경 분리) 개발 규칙",
+  "author": { "name": "HerrineKim" }
+}

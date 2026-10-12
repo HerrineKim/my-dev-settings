@@ -18,7 +18,7 @@
 | `/ai-slop-thresher` | 한국어 초안의 상투어·과잉 설명·반복 수사를 덜어내 윤문. 사실·조건·말투는 보존 |
 | `/thresh` | `/ai-slop-thresher` 단축 호출(직접 불렀을 때만 동작) |
 
-`/daily-log`만 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
+`/daily-log`, `/tdd-tidy-first`만 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
 
 ## 외부 스킬 출처와 업데이트
 
@@ -51,6 +51,7 @@ git clone https://github.com/HerrineKim/my-claude-skills.git ~/Projects/my-claud
 ```bash
 claude plugin marketplace add HerrineKim/my-claude-skills
 claude plugin install daily-log@hyerin-skills
+claude plugin install tdd-tidy-first@hyerin-skills
 claude plugin install ui-ux-pro-max@hyerin-skills
 claude plugin install frontend-design@hyerin-skills
 claude plugin install web-design-guidelines@hyerin-skills
