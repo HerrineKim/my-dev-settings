@@ -14,8 +14,21 @@ fetch() { # <plugin> <package> <skill-list>
   done
   rm -rf "$tmp/.claude" "$tmp/skills-lock.json"
 }
-fetch ui-ux-pro-max         nextlevelbuilder/ui-ux-pro-max-skill '*'
+fetch_built() { # <plugin> <github-repo> — copy skills from the repo's prebuilt Claude plugin, minus Codex-only agents/
+  git clone -q --depth 1 "https://github.com/$2.git" "$tmp/src"
+  for s in "$tmp/src/plugins/$1/skills"/*/; do
+    name="$(basename "$s")"
+    rm -rf "$repo/plugins/$1/skills/$name"
+    cp -R "$s" "$repo/plugins/$1/skills/$name"
+    rm -rf "$repo/plugins/$1/skills/$name/agents"
+    echo "updated plugins/$1/skills/$name"
+  done
+  cp "$tmp/src/LICENSE" "$tmp/src/NOTICE" "$repo/plugins/$1/"
+  rm -rf "$tmp/src"
+}
+fetch ui-ux-pro-max        nextlevelbuilder/ui-ux-pro-max-skill '*'
 fetch frontend-design       anthropics/claude-code/plugins/frontend-design/skills/frontend-design '*'
 fetch web-design-guidelines vercel-labs/agent-skills web-design-guidelines
 fetch clone-website         julianromli/ai-skills clone-website
+fetch_built ai-slop-thresher Burntgogi/ai-slop-thresher
 find "$repo/plugins" -name .DS_Store -delete

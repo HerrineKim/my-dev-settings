@@ -28,6 +28,11 @@
       "name": "clone-website",
       "source": "./plugins/clone-website",
       "description": "웹사이트 픽셀 단위 복제 (Next.js + shadcn/ui + Tailwind)"
+    },
+    {
+      "name": "ai-slop-thresher",
+      "source": "./plugins/ai-slop-thresher",
+      "description": "한국어 윤문: AI 말투·과잉 설명 덜어내기 (ai-slop-thresher, thresh)"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

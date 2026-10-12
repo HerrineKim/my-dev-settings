@@ -1,0 +1,6 @@
+{
+  "name": "ai-slop-thresher",
+  "version": "1.2.4",
+  "description": "한국어 초안의 AI 말투·과잉 설명을 덜어내는 윤문 (Burntgogi/ai-slop-thresher 벤더링)",
+  "author": { "name": "HerrineKim" }
+}
