@@ -17,8 +17,9 @@
 | `/clone-website` | URL을 섹션별로 분석(CSS·에셋·인터랙션)해 Next.js + shadcn/ui + Tailwind로 픽셀 단위 복제. 브라우저 MCP 필요 |
 | `/ai-slop-thresher` | 한국어 초안의 상투어·과잉 설명·반복 수사를 덜어내 윤문. 사실·조건·말투는 보존 |
 | `/thresh` | `/ai-slop-thresher` 단축 호출(직접 불렀을 때만 동작) |
+| `/riverlog-knowledge` | 개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고에서 관련 노트를 찾아 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받아 옴 |
 
-`/daily-log`, `/tdd-tidy-first`만 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
+`/daily-log`, `/tdd-tidy-first`, `/riverlog-knowledge`는 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
 
 ## 외부 스킬 출처와 업데이트
 
@@ -57,9 +58,19 @@ claude plugin install frontend-design@hyerin-skills
 claude plugin install web-design-guidelines@hyerin-skills
 claude plugin install clone-website@hyerin-skills
 claude plugin install ai-slop-thresher@hyerin-skills
+claude plugin install riverlog-knowledge@hyerin-skills
 ```
 
 이 경우 명령어는 `/daily-log:daily-log`처럼 플러그인 이름이 앞에 붙습니다.
+
+## 전역 CLAUDE.md 설정
+
+`/riverlog-knowledge`가 개발 작업마다 자동으로 쓰이도록 새 기기의 `~/.claude/CLAUDE.md` 끝(OMC 마커 바깥)에 아래를 추가합니다.
+
+```markdown
+## riverlog 지식 창고
+개발 작업(구현·설계·디버깅·리뷰·기술 선택)을 시작할 때는 항상 `/riverlog-knowledge` 스킬로 riverlog 지식 창고(`~/Projects/riverlog/content/knowledge`, 없으면 github.com/HerrineKim/riverlog)에서 관련 노트를 먼저 찾아 참고한다. 노트의 관례·주의점은 따르되, API·버전 정보는 공식 문서와 현재 코드가 우선이다.
+```
 
 ## 기기 이름
 
