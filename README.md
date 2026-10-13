@@ -65,12 +65,7 @@ claude plugin install riverlog-knowledge@hyerin-skills
 
 ## 전역 CLAUDE.md 설정
 
-`/riverlog-knowledge`가 개발 작업마다 자동으로 쓰이도록 새 기기의 `~/.claude/CLAUDE.md` 끝(OMC 마커 바깥)에 아래를 추가합니다.
-
-```markdown
-## riverlog 지식 창고
-개발 작업(구현·설계·디버깅·리뷰·기술 선택)을 시작할 때는 항상 `/riverlog-knowledge` 스킬로 riverlog 지식 창고(`~/Projects/riverlog/content/knowledge`, 없으면 github.com/HerrineKim/riverlog)에서 관련 노트를 먼저 찾아 참고한다. 노트의 관례·주의점은 따르되, API·버전 정보는 공식 문서와 현재 코드가 우선이다.
-```
+모든 프로젝트에 적용할 공통 지시는 `global-claude.md`에 있습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 내용 수정은 `git pull`만으로 반영됩니다.
 
 ## 기기 이름
 
