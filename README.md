@@ -20,6 +20,7 @@
 | `/error-message-ko` | toast·alert·에러 상태·`HTTPException(detail)` 등 사용자에게 보이는 에러 문구를 쓸 때 원문 노출 없이 한국어로 안내 |
 | `/supabase-db-optimization` | Supabase 테이블·쿼리·마이그레이션·RLS·인덱스·검색 필터 작업 시 성능·메모리·보안 점검 |
 | `/make-interfaces-feel-better` | 애니메이션·hover·그림자·테두리·타이포·아이콘 등 UI 디테일 다듬기 원칙 |
+| `/note` | 어느 프로젝트에서든 자료(글·URL·파일)를 riverlog 지식 창고 노트로 재구성해 넣고 인덱스·링크까지 갱신. `~/Projects/riverlog`(또는 `$RIVERLOG_DIR`)에서 작업 |
 | `/riverlog-knowledge` | 개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고에서 관련 노트를 찾아 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받아 옴 |
 
 `/daily-log`, `/tdd-tidy-first`, `/riverlog-knowledge`는 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
@@ -34,6 +35,7 @@
 | `clone-website` | [julianromli/ai-skills](https://github.com/julianromli/ai-skills/tree/main/skills/clone-website) |
 | `make-interfaces-feel-better` | [jakubkrehel/make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better) (MIT) |
 | `error-message-ko`, `supabase-db-optimization` | [HerrineKim/claude-skills](https://github.com/HerrineKim/claude-skills) (비공개 팀 레포, `gh auth` 필요) |
+| `note` | [HerrineKim/riverlog](https://github.com/HerrineKim/riverlog/tree/main/.claude/skills/note) — 벤더링 때 `plugins/note/global-preamble.md`(레포 위치 찾기)를 앞에 끼워 넣음 |
 | `ai-slop-thresher` (2개 스킬) | [Burntgogi/ai-slop-thresher](https://github.com/Burntgogi/ai-slop-thresher) (Apache-2.0) |
 
 최신 버전으로 다시 받으려면 `./vendor.sh` 실행 후 `git diff`를 확인하고 커밋합니다.
@@ -76,6 +78,7 @@ claude plugin install riverlog-knowledge@hyerin-skills
 claude plugin install error-message-ko@hyerin-skills
 claude plugin install supabase-db-optimization@hyerin-skills
 claude plugin install make-interfaces-feel-better@hyerin-skills
+claude plugin install note@hyerin-skills
 ```
 
 이 경우 명령어는 `/daily-log:daily-log`처럼 플러그인 이름이 앞에 붙습니다.

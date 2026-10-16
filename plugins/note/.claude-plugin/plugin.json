@@ -1,0 +1,6 @@
+{
+  "name": "note",
+  "version": "0.1.0",
+  "description": "어느 프로젝트에서든 riverlog 지식 창고에 노트 추가·보강 (HerrineKim/riverlog의 /note 벤더링)",
+  "author": { "name": "HerrineKim" }
+}

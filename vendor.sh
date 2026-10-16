@@ -43,3 +43,18 @@ rm -rf "$repo/plugins/make-interfaces-feel-better/skills/make-interfaces-feel-be
 fetch_private error-message-ko         HerrineKim/claude-skills
 fetch_private supabase-db-optimization HerrineKim/claude-skills
 find "$repo/plugins" -name .DS_Store -delete
+
+# /note lives in the riverlog repo; vendor it and inject the "find the riverlog repo" preamble so it works from any project.
+git clone -q --depth 1 https://github.com/HerrineKim/riverlog.git "$tmp/riverlog"
+rm -rf "$repo/plugins/note/skills/note"
+cp -R "$tmp/riverlog/.claude/skills/note" "$repo/plugins/note/skills/note"
+python3 - "$repo/plugins/note/skills/note/SKILL.md" "$repo/plugins/note/global-preamble.md" <<'PY'
+import re, sys
+skill, pre = (open(p, encoding="utf-8").read() for p in sys.argv[1:3])
+skill = skill.replace("riverlog 지식 창고(content/knowledge)에", "어느 프로젝트에서든 riverlog 지식 창고(~/Projects/riverlog의 content/knowledge)에", 1)
+head = re.match(r"^---\n.*?\n---\n\n#[^\n]*\n(?:\n[^#\n][^\n]*)*\n", skill, re.S)
+skill = skill[: head.end()] + pre + skill[head.end():]
+open(sys.argv[1], "w", encoding="utf-8").write(skill)
+PY
+echo "updated plugins/note/skills/note"
+find "$repo/plugins" -name .DS_Store -delete

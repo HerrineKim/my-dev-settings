@@ -58,6 +58,11 @@
       "name": "make-interfaces-feel-better",
       "source": "./plugins/make-interfaces-feel-better",
       "description": "UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙"
+    },
+    {
+      "name": "note",
+      "source": "./plugins/note",
+      "description": "어느 프로젝트에서든 riverlog 지식 창고에 노트 추가·보강"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"
