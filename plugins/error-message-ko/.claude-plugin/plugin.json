@@ -1,0 +1,6 @@
+{
+  "name": "error-message-ko",
+  "version": "0.1.0",
+  "description": "사용자에게 보이는 한국어 에러 문구 작성·점검 규칙 (HerrineKim/claude-skills 벤더링)",
+  "author": { "name": "HerrineKim" }
+}

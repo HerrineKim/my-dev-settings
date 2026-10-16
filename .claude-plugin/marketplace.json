@@ -43,6 +43,21 @@
       "name": "riverlog-knowledge",
       "source": "./plugins/riverlog-knowledge",
       "description": "개발 전에 riverlog 지식 창고에서 관련 노트 참고"
+    },
+    {
+      "name": "error-message-ko",
+      "source": "./plugins/error-message-ko",
+      "description": "사용자에게 보이는 한국어 에러 문구 작성·점검"
+    },
+    {
+      "name": "supabase-db-optimization",
+      "source": "./plugins/supabase-db-optimization",
+      "description": "Supabase/Postgres 쿼리·RLS·인덱스 성능·보안 점검"
+    },
+    {
+      "name": "make-interfaces-feel-better",
+      "source": "./plugins/make-interfaces-feel-better",
+      "description": "UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

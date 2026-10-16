@@ -15,6 +15,15 @@ for skill in "$repo"/plugins/*/skills/*/; do
   echo "linked /$name -> ${skill%/}"
 done
 
+# Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.
+bindir="$HOME/.local/bin"
+mkdir -p "$bindir"
+for cmd in "$repo"/bin/*; do
+  ln -sfn "$cmd" "$bindir/$(basename "$cmd")"
+  echo "linked $(basename "$cmd") -> $bindir"
+done
+case ":$PATH:" in *":$bindir:"*) ;; *) echo "! PATH에 $bindir 추가 필요: echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.zshrc";; esac
+
 # Import this repo's shared global instructions into ~/.claude/CLAUDE.md (idempotent).
 claude_md="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/CLAUDE.md"
 touch "$claude_md"

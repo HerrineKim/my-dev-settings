@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""List globally installed Claude Code skills with a one-line description.
+
+Usage: skills-ls [keyword]   # keyword filters by name/description (case-insensitive)
+Sources: ~/.claude/skills (incl. synced/*) and skills of user-scope plugins.
+"""
+import json, os, re, shutil, sys, unicodedata
+from pathlib import Path
+
+home = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
+query = " ".join(sys.argv[1:]).lower()
+width = shutil.get_terminal_size((120, 20)).columns
+color = sys.stdout.isatty()
+
+def frontmatter(md):
+    try:
+        text = md.read_text(encoding="utf-8")
+    except OSError:
+        return {}
+    m = re.match(r"^---\n(.*?)\n---", text, re.S)
+    if not m:
+        return {}
+    meta, key = {}, None
+    for line in m.group(1).splitlines():
+        kv = re.match(r"^([\w-]+):\s*(.*)$", line)
+        if kv:
+            key, val = kv.group(1), kv.group(2).strip()
+            meta[key] = "" if val in (">", ">-", "|", "|-") else val.strip("\"'")
+        elif key and line.startswith((" ", "\t")):
+            meta[key] = (meta[key] + " " + line.strip()).strip()
+    return meta
+
+def cells(ch):
+    return 2 if unicodedata.east_asian_width(ch) in "WF" else 1
+
+def clip(text, room):
+    if sum(map(cells, text)) <= room:
+        return text
+    out, used = "", 1
+    for ch in text:
+        if used + cells(ch) > room:
+            break
+        out, used = out + ch, used + cells(ch)
+    return out + "…"
+
+def skill_dirs(root):
+    return sorted(p.parent for p in root.glob("*/SKILL.md"))
+
+groups = []  # (title, [(name, desc)])
+local = home / "skills"
+if local.is_dir():
+    groups.append(("~/.claude/skills", skill_dirs(local)))
+    for sync in sorted((local / "synced").glob("*")):
+        groups.append(("claude.ai synced", skill_dirs(sync)))
+try:
+    plugins = json.loads((home / "plugins/installed_plugins.json").read_text())["plugins"]
+except (OSError, ValueError, KeyError):
+    plugins = {}
+for pid, installs in sorted(plugins.items()):
+    for inst in installs:
+        if inst.get("scope") == "user":
+            groups.append((f"plugin {pid}", skill_dirs(Path(inst["installPath"]) / "skills")))
+
+total = 0
+for title, dirs in groups:
+    rows = []
+    for d in dirs:
+        meta = frontmatter(d / "SKILL.md")
+        name, desc = meta.get("name") or d.name, meta.get("description", "")
+        if query and query not in (name + " " + desc).lower():
+            continue
+        rows.append((name, desc))
+    if not rows:
+        continue
+    print(f"\033[1m{title}\033[0m ({len(rows)})" if color else f"{title} ({len(rows)})")
+    pad = min(max(len(n) for n, _ in rows), 28)
+    for name, desc in rows:
+        room = max(width - pad - 4, 20)
+        desc = clip(desc, room)
+        label = f"\033[36m{name:<{pad}}\033[0m" if color else f"{name:<{pad}}"
+        print(f"  {label}  {desc}")
+    total += len(rows)
+    print()
+print(f"{total} skills" + (f" matching '{query}'" if query else ""))

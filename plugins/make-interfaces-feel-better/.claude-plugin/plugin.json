@@ -1,0 +1,6 @@
+{
+  "name": "make-interfaces-feel-better",
+  "version": "0.1.0",
+  "description": "UI 디테일(애니메이션·그림자·타이포·마이크로 인터랙션) 다듬기 원칙 (jakubkrehel/make-interfaces-feel-better 벤더링)",
+  "author": { "name": "HerrineKim" }
+}
