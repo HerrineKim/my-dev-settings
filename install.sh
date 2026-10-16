@@ -3,7 +3,8 @@
 # Safe to re-run; `git pull` afterwards updates all machines' skills in place.
 set -euo pipefail
 repo="$(cd "$(dirname "$0")" && pwd)"
-dest="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills"
+claude_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+dest="$claude_dir/skills"
 mkdir -p "$dest"
 for skill in "$repo"/plugins/*/skills/*/; do
   name="$(basename "$skill")"
@@ -30,6 +31,45 @@ touch "$claude_md"
 if ! grep -q "<!-- MY-CLAUDE-SKILLS:START -->" "$claude_md"; then
   printf '\n<!-- MY-CLAUDE-SKILLS:START -->\n@%s/global-claude.md\n<!-- MY-CLAUDE-SKILLS:END -->\n' "$repo" >> "$claude_md"
   echo "added global-claude.md import to $claude_md"
+fi
+
+# daily-log: mirror this machine's transcripts to the shared folder so /daily-log on any Mac sees them.
+# The folder lives in iCloud Drive by default (config.json "shared_dir"); each Mac writes under its own name.
+sync_cmd="python3 \"\${CLAUDE_CONFIG_DIR:-\$HOME/.claude}/skills/daily-log/scripts/sync_transcripts.py\""
+python3 - "$claude_dir/settings.json" "$sync_cmd" <<'PY'
+import json, sys
+from pathlib import Path
+path, cmd = Path(sys.argv[1]), sys.argv[2]
+try:
+    settings = json.loads(path.read_text()) if path.exists() else {}
+except ValueError as exc:
+    sys.exit(f"! {path} 를 JSON으로 읽을 수 없어 훅을 등록하지 못했습니다 ({exc}). 파일을 고친 뒤 install.sh를 다시 실행하세요.")
+hooks = settings.setdefault("hooks", {})
+added = []
+for event in ("Stop", "SessionEnd", "SessionStart"):
+    groups = hooks.setdefault(event, [])
+    # Match any registration of this script (an older path, or the plugin's hooks.json) so it never runs twice.
+    if any("sync_transcripts.py" in str(h.get("command", "")) for g in groups for h in g.get("hooks", [])):
+        continue
+    groups.append({"hooks": [{"type": "command", "command": cmd, "timeout": 20}]})
+    added.append(event)
+if added:
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(settings, ensure_ascii=False, indent=2) + "\n")
+    tmp.replace(path)
+    print("daily-log sync hooks added to", path, "->", ", ".join(added))
+else:
+    print("daily-log sync hooks already present in", path)
+PY
+shared="$(python3 -c "
+import json,os,sys; sys.path.insert(0, '$repo/plugins/daily-log/skills/daily-log/scripts')
+from daily_log_common import load_config, shared_dir
+print(shared_dir(load_config('$repo/plugins/daily-log/skills/daily-log/config.json')))")"
+if [ -d "$(dirname "$(dirname "$shared")")" ]; then
+  mkdir -p "$shared" && echo "shared transcript folder: $shared"
+  echo '{}' | python3 "$repo/plugins/daily-log/skills/daily-log/scripts/sync_transcripts.py" && echo "initial transcript sync done"
+else
+  echo "! iCloud Drive 폴더가 없어 기기 간 기록 공유를 건너뜁니다. config.json의 shared_dir를 다른 공유 폴더로 바꾸고 다시 실행하세요."
 fi
 
 command -v gh >/dev/null || echo "! GitHub CLI 없음: brew install gh && gh auth login"

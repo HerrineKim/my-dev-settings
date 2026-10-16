@@ -1,0 +1,14 @@
+{
+  "description": "Mirror this machine's Claude Code transcripts to the shared folder (iCloud Drive) so /daily-log on any machine sees them.",
+  "hooks": {
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/skills/daily-log/scripts/sync_transcripts.py", "timeout": 20 } ] }
+    ],
+    "SessionEnd": [
+      { "hooks": [ { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/skills/daily-log/scripts/sync_transcripts.py", "timeout": 20 } ] }
+    ],
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/skills/daily-log/scripts/sync_transcripts.py", "timeout": 20 } ] }
+    ]
+  }
+}

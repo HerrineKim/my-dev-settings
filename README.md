@@ -4,7 +4,7 @@
 
 | 스킬 | 설명 |
 |---|---|
-| `/daily-log` | 오늘(00:00~실행 시각) Claude Code 작업 + GitHub 반영 내역을 노션 "2026 데일리 업무 회고"에 기록. 날짜당 페이지 1개, 재실행 시 이어 쓰기 |
+| `/daily-log` | 오늘(00:00~실행 시각) Claude Code 작업 + GitHub 반영 내역을 노션 "2026 데일리 업무 회고"에 기록. 날짜당 페이지 1개, 재실행 시 이어 쓰기. 다른 맥북에서 한 Claude 작업도 iCloud Drive로 모아 함께 기록 |
 | `/ui-ux-pro-max` | UI/UX 디자인 판단 데이터(스타일·팔레트·폰트 조합·UX 가이드·차트·스택별 구현). 인터페이스 설계·구현·리뷰 시 |
 | `/ui-styling` | shadcn/ui + Tailwind 기반 UI 구현, 테마·다크모드·접근성 컴포넌트 |
 | `/design` | 로고·CIP·배너·아이콘·소셜 이미지 등 종합 디자인 |
@@ -56,7 +56,10 @@ git clone https://github.com/HerrineKim/my-claude-skills.git ~/Projects/my-claud
 ~/Projects/my-claude-skills/install.sh
 ```
 
+`install.sh`는 스킬을 심볼릭 링크하고, `/daily-log`용 훅(Stop·SessionEnd·SessionStart)을 `~/.claude/settings.json`에 등록하고, iCloud Drive에 공유 폴더(`claude-daily-log/transcripts/<기기명>/`)를 만든다. 이 훅이 각 맥북의 Claude 기록을 공유 폴더에 복사해 두므로, `/daily-log`를 어느 맥북에서 돌려도 모든 기기의 작업이 들어간다. **쓰는 맥북마다** `install.sh`를 한 번씩 돌려야 한다.
+
 필요한 것
+- **iCloud Drive**(기기 간 기록 공유용). 다른 공유 폴더를 쓰려면 `plugins/daily-log/skills/daily-log/config.json`의 `shared_dir`를 바꾼다
 - **GitHub CLI**: `brew install gh && gh auth login`
 - **Notion**: claude.ai 계정의 Notion 커넥터(계정에 붙어 있어 기기마다 따로 설정할 필요 없음)
 - Python 3 (macOS 기본 포함, 외부 패키지 없음)
@@ -64,6 +67,8 @@ git clone https://github.com/HerrineKim/my-claude-skills.git ~/Projects/my-claud
 업데이트: `git -C ~/Projects/my-claude-skills pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
 
 ### 플러그인으로 설치하는 방법(대안)
+
+`install.sh`(심볼릭 링크)와 플러그인 설치를 한 기기에서 함께 쓰지 않는다. daily-log 훅이 두 번 등록되어 기록 복사가 중복 실행된다.
 
 ```bash
 claude plugin marketplace add HerrineKim/my-claude-skills
