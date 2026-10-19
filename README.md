@@ -1,6 +1,10 @@
-# my-claude-skills
+# my-dev-settings
 
-개인 Claude Code 스킬 모음.
+맥마다 맞춰 두는 개발 환경 설정. Claude Code 스킬과 설치 앱 목록(`apps/Brewfile`)이 들어 있습니다.
+
+> 예전 이름은 `my-claude-skills`입니다. 이미 받아 둔 맥은 아래 [이름 변경 후 옮기기](#이름-변경-후-옮기기)를 보세요.
+
+## Claude Code 스킬
 
 | 스킬 | 설명 |
 |---|---|
@@ -52,8 +56,9 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 ## 새 맥북에 설치
 
 ```bash
-git clone https://github.com/HerrineKim/my-claude-skills.git ~/Projects/my-claude-skills
-~/Projects/my-claude-skills/install.sh
+git clone https://github.com/HerrineKim/my-dev-settings.git ~/Projects/my-dev-settings
+~/Projects/my-dev-settings/install.sh
+apps-sync   # 앱 설치(아래 '앱 맞추기')
 ```
 
 `install.sh`는 스킬을 심볼릭 링크하고, `/daily-log`용 훅(Stop·SessionEnd·SessionStart)을 `~/.claude/settings.json`에 등록하고, iCloud Drive에 공유 폴더(`claude-daily-log/transcripts/<기기명>/`)를 만든다. 이 훅이 각 맥북의 Claude 기록을 공유 폴더에 복사해 두므로, `/daily-log`를 어느 맥북에서 돌려도 모든 기기의 작업이 들어간다. **쓰는 맥북마다** `install.sh`를 한 번씩 돌려야 한다.
@@ -64,14 +69,14 @@ git clone https://github.com/HerrineKim/my-claude-skills.git ~/Projects/my-claud
 - **Notion**: claude.ai 계정의 Notion 커넥터(계정에 붙어 있어 기기마다 따로 설정할 필요 없음)
 - Python 3 (macOS 기본 포함, 외부 패키지 없음)
 
-업데이트: `git -C ~/Projects/my-claude-skills pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
+업데이트: `git -C ~/Projects/my-dev-settings pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
 
 ### 플러그인으로 설치하는 방법(대안)
 
 `install.sh`(심볼릭 링크)와 플러그인 설치를 한 기기에서 함께 쓰지 않는다. daily-log 훅이 두 번 등록되어 기록 복사가 중복 실행된다.
 
 ```bash
-claude plugin marketplace add HerrineKim/my-claude-skills
+claude plugin marketplace add HerrineKim/my-dev-settings
 claude plugin install daily-log@hyerin-skills
 claude plugin install tdd-tidy-first@hyerin-skills
 claude plugin install ui-ux-pro-max@hyerin-skills
@@ -87,6 +92,31 @@ claude plugin install note@hyerin-skills
 ```
 
 이 경우 명령어는 `/daily-log:daily-log`처럼 플러그인 이름이 앞에 붙습니다.
+
+## 앱 맞추기
+
+설치할 앱은 `apps/Brewfile` 한 곳에 적습니다. Homebrew 앱·CLI와 App Store 앱(`mas`)이 들어 있고, 어느 쪽으로도 설치할 수 없는 앱은 `apps/manual.md`에 적습니다.
+
+```bash
+apps-sync          # 이 맥에 없는 앱 설치. dmg로 직접 깔아 둔 앱은 지우지 않고 Homebrew 관리로 넘김(--adopt)
+apps-sync check    # 없는 앱만 보여 주고 설치하지 않음
+apps-sync diff     # 이 맥에는 있는데 Brewfile에 없는 brew·App Store 앱
+```
+
+새 앱을 깔았으면 `apps-sync diff`로 나온 줄을 `apps/Brewfile`에 옮기고 커밋·푸시합니다. 다른 맥에서는 `git pull` 후 `apps-sync`를 실행하면 같아집니다. App Store 앱은 App Store에 로그인돼 있어야 설치됩니다. 은행·공공 사이트 보안 프로그램은 사이트가 알아서 설치하므로 목록에서 뺐습니다.
+
+`install.sh`가 `bin/apps-sync`를 `~/.local/bin`에 링크합니다.
+
+## 이름 변경 후 옮기기
+
+`my-claude-skills`로 받아 둔 맥에서는 한 번만 아래를 실행합니다. GitHub가 옛 주소를 새 주소로 넘겨 주지만, 폴더 이름과 링크까지 맞추려면 필요합니다.
+
+```bash
+mv ~/Projects/my-claude-skills ~/Projects/my-dev-settings
+~/Projects/my-dev-settings/install.sh
+```
+
+`install.sh`가 git remote를 새 주소로 바꾸고, 스킬 링크를 새 폴더로 다시 걸고, `~/.claude/CLAUDE.md`의 옛 import 블록을 새 블록으로 바꿉니다. 플러그인 방식으로 설치했다면 `claude plugin marketplace add HerrineKim/my-dev-settings`로 다시 추가합니다.
 
 ## 전역 CLAUDE.md 설정
 

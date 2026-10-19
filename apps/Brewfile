@@ -1,0 +1,50 @@
+# 맥마다 맞춰 둘 앱 목록. `apps-sync`로 설치하고, 새로 깐 앱은 `apps-sync add`로 반영한다.
+# Homebrew로 설치할 수 없는 앱은 apps/manual.md에 적는다.
+
+tap "codingnoye/tap"
+
+# CLI
+brew "bash"
+brew "gh"
+brew "git"
+brew "mas"
+brew "node"
+brew "nvm"
+brew "yarn"
+brew "zsh"
+
+# 개발
+cask "claude"
+cask "cursor"
+cask "docker-desktop"
+cask "ghostty"
+cask "github"
+cask "virtualbox"
+
+# 브라우저·업무
+cask "google-chrome"
+cask "notion"
+cask "obsidian"
+cask "figma"
+cask "deepl"
+
+# 디자인 (Illustrator는 Creative Cloud 앱에서 설치)
+cask "adobe-creative-cloud"
+
+# 유틸리티
+cask "aldente"
+cask "4k-video-downloader+"
+cask "codingnoye/tap/gksdud"
+
+# App Store (mas가 App Store에 로그인된 계정으로 설치)
+mas "Bandizip 365", id: 1596426184
+mas "GoodNotes 5", id: 1444383602
+mas "KakaoTalk", id: 869223134
+mas "Microsoft Excel", id: 462058435
+mas "Microsoft PowerPoint", id: 462062816
+mas "Microsoft Word", id: 462054704
+mas "Notability", id: 360593530
+mas "OneDrive", id: 823766827
+mas "Polaris Office", id: 1098211970
+mas "RunCat Neo", id: 6757801838
+mas "Telegram", id: 747648890

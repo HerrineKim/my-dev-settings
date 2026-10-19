@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Keep installed apps the same on every Mac, using apps/Brewfile as the list.
+#
+# Usage: apps-sync          # install what this Mac is missing (apps already installed by hand are adopted)
+#        apps-sync check    # list what this Mac is missing, install nothing
+#        apps-sync diff     # list apps in /Applications that neither the Brewfile nor apps/manual.md mentions
+set -euo pipefail
+repo="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+brewfile="$repo/apps/Brewfile"
+
+if ! command -v brew >/dev/null; then
+  echo "Homebrew가 없습니다. 먼저 설치하세요: https://brew.sh" >&2; exit 1
+fi
+
+# Compare the Brewfile with what is really on disk. An app counts as installed when its bundle is in
+# /Applications, however it got there (dmg, App Store, Homebrew), so a hand-installed Mac is not reported as missing.
+compare() {
+  local casks info
+  casks="$(grep -oE '^cask "[^"]+"' "$brewfile" | sed -E 's/^cask "(.*)"/\1/')"
+  info="$(mktemp)"; trap 'rm -f "$info"' RETURN
+  # shellcheck disable=SC2086
+  brew info --cask --json=v2 $casks > "$info"
+  python3 -I - "$1" "$brewfile" "$repo/apps/manual.md" "$info" <<'PY'
+import json, re, subprocess, sys
+from pathlib import Path
+mode, brewfile, manual, info = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])
+roots = [Path("/Applications"), Path("/Applications/Utilities"), Path.home() / "Applications"]
+on_disk = {p.name for r in roots if r.is_dir() for p in r.iterdir() if p.suffix == ".app" or p.is_dir()}
+
+cask_apps = {}  # cask token -> app bundle names it installs
+for c in json.loads(info.read_text())["casks"]:
+    apps = [a for art in c["artifacts"] for a in art.get("app", []) if isinstance(a, str)]
+    # pkg-based casks (virtualbox) name their app only in uninstall paths; installer-only ones
+    # (adobe-creative-cloud) not at all, so the display name is the last thing to match.
+    apps += re.findall(r"/Applications/([^/\"]+\.app)", json.dumps(c["artifacts"]))
+    names = c["name"] + [c["token"]]
+    cask_apps[c["token"]] = apps or [n + s for n in names for s in (".app", "")]
+
+text = brewfile.read_text()
+mas_ids = dict((int(i), n) for n, i in re.findall(r'^mas "([^"]+)", id: (\d+)', text, re.M))
+mas_on_disk = {}
+for name in on_disk:
+    p = Path("/Applications") / name
+    if (p / "Contents/_MASReceipt").exists():
+        out = subprocess.run(["mdls", "-raw", "-name", "kMDItemAppStoreAdamID", str(p)], capture_output=True, text=True).stdout
+        if out.strip().isdigit(): mas_on_disk[int(out)] = name
+formulae = set(subprocess.run(["brew", "list", "--formula", "-1"], capture_output=True, text=True).stdout.split())
+
+if mode == "check":
+    missing = [f"brew {f}" for f in re.findall(r'^brew "([^"]+)"', text, re.M) if f.split("/")[-1] not in formulae]
+    disk_lower = {n.lower() for n in on_disk}
+    missing += [f"cask {t}" for t, apps in cask_apps.items() if not any(a.lower() in disk_lower for a in apps)]
+    missing += [f'mas "{n}" ({i})' for i, n in mas_ids.items() if i not in mas_on_disk]
+    print("\n".join(missing) if missing else "Brewfile의 앱이 모두 설치돼 있습니다.")
+    sys.exit(1 if missing else 0)
+
+# Only top-level apps the user installed; /Applications/Utilities holds macOS tools and Adobe helpers.
+top = {p.name for r in (Path("/Applications"), Path.home() / "Applications") if r.is_dir() for p in r.iterdir()}
+covered = {a.lower() for apps in cask_apps.values() for a in apps} | {n.lower() for n in mas_on_disk.values()}
+manual_text = manual.read_text() if manual.exists() else ""
+skip = {"Safari.app", "Utilities", "Chrome Apps.localized", "Claude Code URL Handler.app", ".DS_Store", ".localized"}
+extra = sorted(n for n in top - skip if n.lower() not in covered and Path(n).stem not in manual_text)
+print("\n".join(extra) if extra else "목록에 없는 앱이 없습니다.")
+PY
+}
+
+case "${1:-install}" in
+  install)
+    # --adopt: an app already in /Applications (installed from a dmg) is taken over instead of failing.
+    HOMEBREW_CASK_OPTS="--adopt" brew bundle install --file="$brewfile" || {
+      echo "! 일부 항목을 설치하지 못했습니다. 위 오류를 확인하세요." >&2
+      echo "  App Store 앱은 App Store 앱에 로그인돼 있어야 설치됩니다." >&2
+      exit 1
+    }
+    echo "Brewfile에 없는 앱은 $repo/apps/manual.md 를 보고 직접 설치하세요."
+    ;;
+  check)
+    compare check
+    ;;
+  diff)
+    compare diff
+    echo "(위 앱을 $brewfile 에 넣거나, Homebrew·App Store에 없으면 apps/manual.md 에 적고 커밋하세요.)"
+    ;;
+  *)
+    sed -n '4,6p' "$0" | sed 's/^# //' >&2; exit 2
+    ;;
+esac

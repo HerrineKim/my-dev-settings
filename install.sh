@@ -28,9 +28,20 @@ case ":$PATH:" in *":$bindir:"*) ;; *) echo "! PATH에 $bindir 추가 필요: ec
 # Import this repo's shared global instructions into ~/.claude/CLAUDE.md (idempotent).
 claude_md="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/CLAUDE.md"
 touch "$claude_md"
-if ! grep -q "<!-- MY-CLAUDE-SKILLS:START -->" "$claude_md"; then
-  printf '\n<!-- MY-CLAUDE-SKILLS:START -->\n@%s/global-claude.md\n<!-- MY-CLAUDE-SKILLS:END -->\n' "$repo" >> "$claude_md"
+# Drop the block written before the repo was renamed (my-claude-skills -> my-dev-settings), then add the current one.
+if grep -q "<!-- MY-CLAUDE-SKILLS:START -->" "$claude_md"; then
+  sed -i '' '/<!-- MY-CLAUDE-SKILLS:START -->/,/<!-- MY-CLAUDE-SKILLS:END -->/d' "$claude_md"
+  echo "removed old my-claude-skills import from $claude_md"
+fi
+if ! grep -q "<!-- MY-DEV-SETTINGS:START -->" "$claude_md"; then
+  printf '\n<!-- MY-DEV-SETTINGS:START -->\n@%s/global-claude.md\n<!-- MY-DEV-SETTINGS:END -->\n' "$repo" >> "$claude_md"
   echo "added global-claude.md import to $claude_md"
+fi
+
+# Repo renamed from my-claude-skills: point an old clone's remote at the new name.
+if git -C "$repo" remote get-url origin 2>/dev/null | grep -q "my-claude-skills"; then
+  git -C "$repo" remote set-url origin https://github.com/HerrineKim/my-dev-settings.git
+  echo "updated git remote to HerrineKim/my-dev-settings"
 fi
 
 # daily-log: mirror this machine's transcripts to the shared folder so /daily-log on any Mac sees them.
@@ -75,3 +86,4 @@ fi
 command -v gh >/dev/null || echo "! GitHub CLI 없음: brew install gh && gh auth login"
 gh auth status >/dev/null 2>&1 || echo "! gh 로그인 필요: gh auth login"
 echo "노션은 claude.ai 계정의 Notion 커넥터를 쓰므로 같은 계정으로 로그인하면 추가 설정이 없습니다."
+echo "앱을 다른 맥과 맞추려면 apps-sync 를 실행하세요(apps/Brewfile 기준)."
