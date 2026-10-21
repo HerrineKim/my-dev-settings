@@ -40,6 +40,7 @@ fetch clone-website         julianromli/ai-skills clone-website
 fetch_built ai-slop-thresher Burntgogi/ai-slop-thresher
 fetch make-interfaces-feel-better jakubkrehel/make-interfaces-feel-better make-interfaces-feel-better
 rm -rf "$repo/plugins/make-interfaces-feel-better/skills/make-interfaces-feel-better/agents" # Codex-only
+fetch marketingskills       coreyhaines31/marketingskills '*'
 fetch_private error-message-ko         HerrineKim/claude-skills
 fetch_private supabase-db-optimization HerrineKim/claude-skills
 find "$repo/plugins" -name .DS_Store -delete
