@@ -1,0 +1,6 @@
+{
+  "name": "karpathy-guidelines",
+  "version": "1.0.0",
+  "description": "LLM 코딩 실수 줄이는 행동 지침: 먼저 생각·단순하게·필요한 곳만 수정·검증 기준 정의 (multica-ai/andrej-karpathy-skills 벤더링)",
+  "author": { "name": "HerrineKim" }
+}

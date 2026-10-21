@@ -68,6 +68,16 @@
       "name": "marketingskills",
       "source": "./plugins/marketingskills",
       "description": "마케팅 스킬 묶음 (CRO·카피라이팅·SEO·광고·분석·그로스 등 52개)"
+    },
+    {
+      "name": "karpathy-guidelines",
+      "source": "./plugins/karpathy-guidelines",
+      "description": "Karpathy식 코딩 행동 지침 (가정 드러내기·단순함·외과적 수정·검증 기준)"
+    },
+    {
+      "name": "antislop",
+      "source": "./plugins/antislop",
+      "description": "AI 티 나는 UI·카피·코드 걸러내기 (antislop, -ui, -copywriting, -code, -human, -layoutmobile)"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"
