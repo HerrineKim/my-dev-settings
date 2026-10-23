@@ -24,10 +24,11 @@ git -C "$RL" status --short --branch   # 다른 사람이 손대던 변경이 �
 git -C "$RL" pull --ff-only            # 실패하면 멈추고 보고한다
 ```
 
+- `main`이 아닌 브랜치에 있으면 이전 작업이 남은 것이다. 사용자에게 알리고 이어서 할지 묻는다. 새 작업 브랜치는 6번 절차대로 첫 커밋 전에 만든다.
 - 아래 본문의 `content/…`, `.claude/skills/note/…`, `next.config.ts` 경로는 모두 `$RL` 기준이다. 셸 작업 디렉터리는 명령마다 초기화될 수 있으므로 셸 명령은 항상 `cd "$RL" && <명령>` 형태로 실행한다(예: `cd "$RL" && node .claude/skills/note/scripts/check-note.mjs content/knowledge/<경로>.md`).
 - 단, 재료로 받은 상대 경로 파일(`$ARGUMENTS`)은 `$RL`이 아니라 지금 프로젝트 기준으로 읽는다.
 - 파일을 읽고 고칠 때는 `$RL/content/knowledge/…` 절대 경로를 쓴다.
-- 커밋·푸시도 `git -C "$RL"`로 한다. 현재 작업 중인 프로젝트 레포에는 아무것도 커밋하지 않는다.
+- 커밋·푸시·PR도 `git -C "$RL"`(gh는 `cd "$RL" &&`)로 한다. 현재 작업 중인 프로젝트 레포에는 아무것도 커밋하지 않는다.
 - 현재 프로젝트에서 얻은 재료라도 회사 내부 업무·코드·고객 정보는 노트에 넣지 않는다(사이트는 공개된다). 개념만 뽑아 쓴다.
 
 ## 0. 입력 파악
@@ -193,7 +194,10 @@ grep -rl -E "/<slug>\)|\[\[<slug>[|#\]]|<slug>\.md" content/knowledge           
 - 만든/고친 파일 경로와 사이트 URL(`/knowledge/dictionary/<분야>/<slug>` — 소문자)
 - 노트 구성 한 줄 요약, 뺀 내용(불확실한 사실)이 있으면 그것
 - 5-1번 주변 정리 결과(병합·이동·삭제한 노트, 또는 「대상 없음」)
-- 커밋 여부를 AskUserQuestion으로 묻는다. **푸시는 곧 배포**이므로 사용자가 원할 때만 한다.
-  커밋 메시지 형식: `Add knowledge note: <제목>` (보강이면 `Update knowledge note: <제목>`)
-- 커밋은 노트마다 하되, **푸시는 노트마다 하지 않는다.** 이번 작업의 노트를 모두 커밋한 뒤 한 번만 푸시한다.
-  노트마다 푸시하면 빌드(3~4분)가 쌓여 앞 배포가 취소되고, GitHub에 failure로 남는다.
+- 커밋 여부를 AskUserQuestion으로 묻는다. riverlog `main`은 보호돼 있어 **직접 푸시가 거부된다**(「Changes must be made through a pull request」). 모든 변경은 브랜치와 PR로 넣는다.
+  1. 첫 커밋 전에 최신 `main`에서 작업 브랜치를 만든다: `git -C "$RL" switch -c note/<slug 또는 주제>`
+  2. 커밋은 노트마다 한다. 커밋 메시지 형식: `Add knowledge note: <제목>` (보강이면 `Update knowledge note: <제목>`)
+  3. 이번 작업의 노트를 모두 커밋한 뒤 브랜치를 **한 번만** 푸시하고, PR을 하나 연다: `cd "$RL" && gh pr create --base main`. 본문에 노트 목록, 주변 정리 결과, `check-note.mjs` 결과를 적는다.
+  4. **머지는 곧 배포**(Vercel 빌드 3~4분)이므로 사용자가 원할 때만 한다: `gh pr merge <번호> --merge --delete-branch`. 한 작업 = PR 하나로 묶는다. 노트마다 PR을 만들거나 PR 여러 개를 연달아 머지하면 빌드가 쌓여 앞 배포가 취소되고, GitHub에 failure로 남는다.
+  5. 머지한 뒤 `git -C "$RL" switch main && git -C "$RL" pull --ff-only`로 돌아오고 로컬 브랜치를 지운다.
+  - PR에 올린 커밋을 `git push origin HEAD:main`으로 밀지 않는다. GitHub가 그 PR을 머지된 것으로 처리해 버린다.
