@@ -45,18 +45,23 @@ for name in on_disk:
         out = subprocess.run(["mdls", "-raw", "-name", "kMDItemAppStoreAdamID", str(p)], capture_output=True, text=True).stdout
         if out.strip().isdigit(): mas_on_disk[int(out)] = name
 formulae = set(subprocess.run(["brew", "list", "--formula", "-1"], capture_output=True, text=True).stdout.split())
+brew_casks = set(subprocess.run(["brew", "list", "--cask", "-1"], capture_output=True, text=True).stdout.split())
 
 if mode == "check":
     missing = [f"brew {f}" for f in re.findall(r'^brew "([^"]+)"', text, re.M) if f.split("/")[-1] not in formulae]
     disk_lower = {n.lower() for n in on_disk}
-    missing += [f"cask {t}" for t, apps in cask_apps.items() if not any(a.lower() in disk_lower for a in apps)]
-    missing += [f'mas "{n}" ({i})' for i, n in mas_ids.items() if i not in mas_on_disk]
+    # CLI-only casks (claude-code) put no app on disk, so Homebrew's own list counts too.
+    missing += [f"cask {t}" for t, apps in cask_apps.items()
+                if t.split("/")[-1] not in brew_casks and not any(a.lower() in disk_lower for a in apps)]
+    missing += [f'mas "{n}" ({i})' for i, n in mas_ids.items() if i not in mas_on_disk and f"{n}.app".lower() not in disk_lower]
     print("\n".join(missing) if missing else "Brewfile의 앱이 모두 설치돼 있습니다.")
     sys.exit(1 if missing else 0)
 
 # Only top-level apps the user installed; /Applications/Utilities holds macOS tools and Adobe helpers.
 top = {p.name for r in (Path("/Applications"), Path.home() / "Applications") if r.is_dir() for p in r.iterdir()}
-covered = {a.lower() for apps in cask_apps.values() for a in apps} | {n.lower() for n in mas_on_disk.values()}
+# An App Store entry also covers the same app installed from the vendor's own installer (Office, Telegram).
+covered = {a.lower() for apps in cask_apps.values() for a in apps} | {n.lower() for n in mas_on_disk.values()} \
+    | {f"{n}.app".lower() for n in mas_ids.values()}
 manual_text = manual.read_text() if manual.exists() else ""
 skip = {"Safari.app", "Utilities", "Chrome Apps.localized", "Claude Code URL Handler.app", ".DS_Store", ".localized"}
 extra = sorted(n for n in top - skip if n.lower() not in covered and Path(n).stem not in manual_text)
