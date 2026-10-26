@@ -1,0 +1,17 @@
+/* DS(Taply Design System) 색 — 레이아웃·문구·글꼴(Pretendard)은 아티팩트 그대로.
+   파랑은 주요 버튼 · 선택된 컨트롤 · 포커스 · 차트 강조에만. 배지 · 카운트 · 활성 내비는 원본 v4의 회색 톤을 따른다. */
+:root:root:root{
+  --blue:#3182f6!important;--blueT:#2272eb!important;--blueTint:rgba(49,130,246,.16)!important;--blueSoft:rgba(49,130,246,.06)!important;
+  --red:#f04452!important;--redT:#e42939!important;--redTint:rgba(240,68,82,.16)!important;
+  --green:#03b26c!important;--greenT:#029359!important;--greenTint:rgba(2,162,98,.16)!important;
+  --orange:#ffc342!important;--orangeT:#dd7d02!important;--orangeTint:rgba(255,179,49,.16)!important;
+}
+.btn.pri,.pbtn.pri,.pbtn2.pri,.qbtn.pri,.btn.pri[disabled],.btn[disabled][style*="var(--blue)"]{background:#3182f6!important;color:#fff!important;border-color:#3182f6!important}
+.radio.on{box-shadow:inset 0 0 0 6px #3182f6!important}
+.phone .radio.on{box-shadow:inset 0 0 0 7px #3182f6!important}
+.chk.on,.cbx.on,.tgl[aria-pressed=true],.chip.dark,.phone .chip.dark,.pck,.bar.on,.tk-pill.btn-like,.tk-st.on .bar{background:#3182f6!important;color:#fff}
+.tile.on,.tile2.on,.mopt.on,.chip.on,.ptile.on,.phone .ptile.on{box-shadow:inset 0 0 0 1.5px #3182f6!important}
+.spin{border-top-color:#3182f6!important;animation:none!important}
+.inp.focus,.inp:focus-within,.switcher.focus,select.pk-on,.phone .inp:focus-within{box-shadow:inset 0 0 0 1.5px #3182f6!important}
+*{animation:none!important;transition:none!important;caret-color:transparent}
+.toast{display:none!important}

@@ -27,10 +27,11 @@
 | `/note` | 어느 프로젝트에서든 자료(글·URL·파일)를 riverlog 지식 창고 노트로 재구성해 넣고 인덱스·링크까지 갱신. `~/Projects/riverlog`(또는 `$RIVERLOG_DIR`)에서 작업 |
 | `/riverlog-knowledge` | 개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고에서 관련 노트를 찾아 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받아 옴 |
 | `/karpathy-guidelines` | Karpathy가 짚은 LLM 코딩 실수를 줄이는 지침: 가정·모호함 드러내기, 요청한 만큼만 단순하게, 필요한 줄만 수정, 검증 가능한 성공 기준 정하기. 코드 작성·리뷰·리팩터링 시 |
+| `/figma-artifact-import` | HTML 프로토타입(아티팩트·웹앱) 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김. PNG 데이터 채널, DS 색 치환, Pretendard 치환용 로컬 Figma 플러그인, 변환 버그 검수 체크리스트 포함 |
 | `antislop` (6개) | 생성 결과의 뻔한 AI 티 필터. `/antislop`(핵심 규칙)에 `/antislop-ui`(색·레이아웃·모션), `/antislop-copywriting`(영문 카피), `/antislop-code`(쓸모없는 주석 정리, 코드는 그대로), `/antislop-human`(대비·키보드·포커스, 대비 계산 스크립트 포함), `/antislop-layoutmobile`(반응형·터치 영역)을 함께 씀. 스타일을 정해 주지 않고 걸러내기만 함 |
 | `marketingskills` (52개) | CRO·카피라이팅(`/copywriting`, `/copy-editing`)·SEO(`/seo-audit`, `/ai-seo`, `/programmatic-seo`)·광고(`/ads`, `/ad-creative`)·분석(`/analytics`, `/ab-testing`)·가격(`/pricing`)·런칭(`/launch`)·이메일 등 마케팅 전반. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 |
 
-`/daily-log`, `/tdd-tidy-first`, `/riverlog-knowledge`는 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
+`/daily-log`, `/tdd-tidy-first`, `/riverlog-knowledge`, `/figma-artifact-import`는 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
 
 ## 외부 스킬 출처와 업데이트
 

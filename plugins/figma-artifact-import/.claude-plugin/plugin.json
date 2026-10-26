@@ -1,0 +1,6 @@
+{
+  "name": "figma-artifact-import",
+  "version": "0.1.0",
+  "description": "HTML 프로토타입 화면을 Figma MCP로 대량 반영 (PNG 데이터 채널, DS 색 치환, 글꼴 치환 플러그인, 변환 검수)",
+  "author": { "name": "HerrineKim" }
+}
