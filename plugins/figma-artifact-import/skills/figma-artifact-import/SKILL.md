@@ -34,8 +34,8 @@ taply-pg-front(2026-10)에서 v4 아티팩트 77화면 × 데스크톱/모바일
 - **한쪽 테두리 색**: 두께 0인 면의 `border-color`는 글자색(거의 검정)이다. 두께 > 0인 면의 색만 쓴다. 안 그러면 표 구분선이 전부 검게 나온다.
 - **`display:contents`**: `checkVisibility()`가 false를 돌려준다. contents면 그 검사를 건너뛴다(dl 그리드 행이 통째로 빠짐).
 - **접힌 `<details>`**: 숨은 내용이 그려진다 → `checkVisibility({contentVisibilityAuto:true, visibilityProperty:true})`로 거른다.
-- **가상 요소**: 높이 0 + `border-top: dashed`인 절취선, `radial-gradient(circle at …)`로 판 반원 홈, 회전한 두 면 테두리로 그린 꺾쇠(▾), 인라인 상태 점(●)은 따로 처리한다. 점은 글자 첫 줄 바로 앞에 붙인다(칸 왼쪽 기준이면 오른쪽 정렬 글과 겹침).
-- **그리기 순서**: `position` 있는 요소(드롭다운·메뉴·툴팁)는 형제 중 뒤에 그린다(z-index 순). 안 그러면 드롭다운이 뒤로 숨는다.
+- **가상 요소**: 높이 0 + `border-top: dashed`인 절취선, `radial-gradient(circle at …)`로 판 반원 홈, 회전한 두 면 테두리로 그린 꺾쇠(▾), 인라인 상태 점(●)은 따로 처리한다. 점은 글자 첫 줄 바로 앞에 붙이되, 부모가 flex면 `column-gap`만큼 띄운다(칸 왼쪽 기준이면 오른쪽 정렬 글과 겹치고, gap을 빼먹으면 점이 글자에 붙음).
+- **그리기 순서**: `position` 있는 요소(드롭다운·메뉴·툴팁)는 형제 중 뒤에 그린다(z-index 순). 그래도 부모(사이드바·헤더) 밖으로 튀어나온 팝오버는 뒤에 오는 형제 영역에 덮인다 → 빌드 후 그림자 있는 오버레이 중 부모 밖으로 넘친 것은 화면 최상위로 꺼내 맨 앞에 둔다.
 - **그라데이션**: 단색이 아니면 배경으로 칠하지 않는다(차트 격자가 회색 판이 됨). 딱 끊기는 `linear-gradient`(진행 막대)는 구간 사각형으로.
 - **줄바꿈**: 브라우저가 실제로 끊은 위치에 `\n`을 넣고 Figma는 자동 너비로 둔다(Figma는 한국어 `keep-all`을 모른다).
 - **말줄임**: 범위 rect는 잘린 뒤가 아니라 전체 폭이다 → `text-overflow: ellipsis`면 요소 안쪽 폭으로 자르고 `textTruncation='ENDING'`.
