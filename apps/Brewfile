@@ -19,15 +19,12 @@ brew "zsh"
 
 # 개발
 cask "claude"
-cask "claude-code@latest"
 cask "cursor"
 cask "docker-desktop"
 cask "ghostty"
 cask "github"
-cask "orbstack"
 cask "proxyman"
 cask "virtualbox"
-cask "visual-studio-code"
 
 # 브라우저·업무
 cask "google-chrome"
@@ -42,28 +39,21 @@ cask "adobe-creative-cloud"
 
 # 유틸리티
 cask "aldente"
-cask "4k-video-downloader+"
 cask "codingnoye/tap/gksdud"
 cask "iina"
 cask "input-source-pro"
 cask "jordanbaird-ice"
 cask "karabiner-elements"
 cask "maccy"
-cask "malwarebytes"
 cask "monitorcontrol"
 cask "raycast"
-cask "rectangle"
-cask "sensei"
 cask "shottr"
-cask "xnapper"
 
 # App Store (mas가 App Store에 로그인된 계정으로 설치)
 mas "Bandizip 365", id: 1596426184
 mas "GoodNotes 5", id: 1444383602
 mas "KakaoTalk", id: 869223134
 mas "Microsoft Excel", id: 462058435
-mas "Microsoft OneNote", id: 784801555
-mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft Word", id: 462054704
 mas "Notability", id: 360593530
