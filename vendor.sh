@@ -34,7 +34,7 @@ fetch_private() { # <plugin> <github-repo> — copy skills/<plugin> from a priva
   rm -rf "$tmp/src"
 }
 fetch ui-ux-pro-max        nextlevelbuilder/ui-ux-pro-max-skill '*'
-fetch frontend-design       anthropics/claude-code/plugins/frontend-design/skills/frontend-design '*'
+fetch frontend-design       anthropics/skills frontend-design
 fetch web-design-guidelines vercel-labs/agent-skills web-design-guidelines
 fetch clone-website         julianromli/ai-skills clone-website
 fetch_built ai-slop-thresher Burntgogi/ai-slop-thresher
@@ -43,6 +43,18 @@ rm -rf "$repo/plugins/make-interfaces-feel-better/skills/make-interfaces-feel-be
 fetch karpathy-guidelines   multica-ai/andrej-karpathy-skills karpathy-guidelines
 fetch antislop              miqdadbadjuber/anti-slop '*'
 fetch marketingskills       coreyhaines31/marketingskills '*'
+fetch k-skill               NomaDamas/k-skill '*'
+fetch code-review-graph     tirth8205/code-review-graph '*'
+fetch diagram-design        cathrynlavery/diagram-design diagram-design
+fetch korean-law            chrisryugj/korean-law-mcp korean-law
+# android-reverse-engineering ships a prebuilt Claude plugin (skill + /decompile command) with no NOTICE file.
+git clone -q --depth 1 https://github.com/SimoneAvogadro/android-reverse-engineering-skill.git "$tmp/src"
+rm -rf "$repo/plugins/android-reverse-engineering/skills" "$repo/plugins/android-reverse-engineering/commands"
+mkdir -p "$repo/plugins/android-reverse-engineering"
+cp -R "$tmp/src/plugins/android-reverse-engineering/skills" "$tmp/src/plugins/android-reverse-engineering/commands" "$repo/plugins/android-reverse-engineering/"
+cp "$tmp/src/LICENSE" "$tmp/src/THIRD_PARTY_NOTICES.md" "$repo/plugins/android-reverse-engineering/"
+rm -rf "$tmp/src"
+echo "updated plugins/android-reverse-engineering"
 fetch_private error-message-ko         HerrineKim/claude-skills
 fetch_private supabase-db-optimization HerrineKim/claude-skills
 find "$repo/plugins" -name .DS_Store -delete
@@ -61,3 +73,23 @@ open(sys.argv[1], "w", encoding="utf-8").write(skill)
 PY
 echo "updated plugins/note/skills/note"
 find "$repo/plugins" -name .DS_Store -delete
+
+# Upstream usage docs, copied verbatim into docs/upstream/<plugin>/ (linked from docs/skills/<plugin>.md).
+upstream_docs() { # <plugin> <github-repo> <path>...
+  local plugin="$1" src="$2"; shift 2
+  git clone -q --depth 1 "https://github.com/$src.git" "$tmp/docs-src"
+  rm -rf "$repo/docs/upstream/$plugin"; mkdir -p "$repo/docs/upstream/$plugin"
+  for f in "$@"; do cp "$tmp/docs-src/$f" "$repo/docs/upstream/$plugin/"; done
+  rm -rf "$tmp/docs-src"
+  echo "updated docs/upstream/$plugin"
+}
+upstream_docs k-skill NomaDamas/k-skill k-skills-list.md docs/setup.md docs/install.md docs/security-and-secrets.md
+upstream_docs code-review-graph tirth8205/code-review-graph docs/USAGE.md docs/COMMANDS.md docs/TROUBLESHOOTING.md
+upstream_docs diagram-design cathrynlavery/diagram-design README.md docs/cookbook.md
+upstream_docs korean-law chrisryugj/korean-law-mcp README.md
+upstream_docs android-reverse-engineering SimoneAvogadro/android-reverse-engineering-skill README.md
+upstream_docs marketingskills coreyhaines31/marketingskills README.md
+upstream_docs ui-ux-pro-max nextlevelbuilder/ui-ux-pro-max-skill README.md
+upstream_docs antislop miqdadbadjuber/anti-slop README.md
+upstream_docs ai-slop-thresher Burntgogi/ai-slop-thresher README.md
+python3 "$repo/scripts/gen-skill-docs.py"

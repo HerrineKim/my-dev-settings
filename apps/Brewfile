@@ -13,9 +13,17 @@ brew "node"
 brew "nvm"
 brew "python@3.12"
 brew "supabase/tap/supabase"
+brew "uv"
 brew "yarn"
 brew "yt-dlp"
 brew "zsh"
+
+# 안드로이드 리버스 엔지니어링(/android-reverse-engineering)
+brew "apktool"
+brew "dex2jar"
+brew "jadx"
+brew "vineflower"
+cask "android-platform-tools"
 
 # 개발
 cask "claude"

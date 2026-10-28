@@ -83,6 +83,31 @@
       "name": "figma-artifact-import",
       "source": "./plugins/figma-artifact-import",
       "description": "HTML 프로토타입 화면을 Figma MCP로 대량 반영"
+    },
+    {
+      "name": "k-skill",
+      "source": "./plugins/k-skill",
+      "description": "한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 132개)"
+    },
+    {
+      "name": "android-reverse-engineering",
+      "source": "./plugins/android-reverse-engineering",
+      "description": "Android APK/JAR/AAR 디컴파일(jadx)·호출 흐름 추적·API 추출 (스킬 + /decompile)"
+    },
+    {
+      "name": "code-review-graph",
+      "source": "./plugins/code-review-graph",
+      "description": "코드 지식 그래프(MCP)로 변경 영향 범위만 읽는 리뷰·디버깅·리팩터링 (스킬 7개 + MCP 서버)"
+    },
+    {
+      "name": "diagram-design",
+      "source": "./plugins/diagram-design",
+      "description": "아키텍처·플로차트·시퀀스·ERD 등 40여 종 다이어그램을 에디토리얼 스타일 SVG/HTML로"
+    },
+    {
+      "name": "korean-law",
+      "source": "./plugins/korean-law",
+      "description": "법제처 Open API MCP로 법령·판례·행정규칙·자치법규 조회와 인용 검증"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

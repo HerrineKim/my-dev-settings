@@ -6,6 +6,8 @@
 
 ## Claude Code 스킬
 
+스킬별 준비물·호출법·사용 예와 원조 GitHub 링크는 [`docs/skills/`](docs/skills/README.md)에 플러그인별로 정리되어 있습니다.
+
 | 스킬 | 설명 |
 |---|---|
 | `/daily-log` | 오늘(00:00~실행 시각) Claude Code 작업 + GitHub 반영 내역을 노션 "2026 데일리 업무 회고"에 기록. 날짜당 페이지 1개, 재실행 시 이어 쓰기. 다른 맥북에서 한 Claude 작업도 iCloud Drive로 모아 함께 기록 |
@@ -30,6 +32,11 @@
 | `/figma-artifact-import` | HTML 프로토타입(아티팩트·웹앱) 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김. PNG 데이터 채널, DS 색 치환, Pretendard 치환용 로컬 Figma 플러그인, 변환 버그 검수 체크리스트 포함 |
 | `antislop` (6개) | 생성 결과의 뻔한 AI 티 필터. `/antislop`(핵심 규칙)에 `/antislop-ui`(색·레이아웃·모션), `/antislop-copywriting`(영문 카피), `/antislop-code`(쓸모없는 주석 정리, 코드는 그대로), `/antislop-human`(대비·키보드·포커스, 대비 계산 스크립트 포함), `/antislop-layoutmobile`(반응형·터치 영역)을 함께 씀. 스타일을 정해 주지 않고 걸러내기만 함 |
 | `marketingskills` (52개) | CRO·카피라이팅(`/copywriting`, `/copy-editing`)·SEO(`/seo-audit`, `/ai-seo`, `/programmatic-seo`)·광고(`/ads`, `/ad-creative`)·분석(`/analytics`, `/ab-testing`)·가격(`/pricing`)·런칭(`/launch`)·이메일 등 마케팅 전반. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 |
+| `k-skill` (132개) | 한국 생활·업무 자동화. 교통(`/korean-transit-route`, `/seoul-subway-arrival`, `/express-bus-booking`)·날씨(`/korea-weather`, `/fine-dust-location`)·쇼핑(`/coupang-product-search`, `/danawa-price-search`, `/daangn-used-goods-search`)·공공데이터(`/korean-law-search`, `/k-dart`, `/kosis-stats`, `/bok-ecos-stats`)·한글 문서(`/hwp`, `/korean-spell-check`) 등. 키가 필요한 스킬은 `/k-skill-setup`으로 먼저 설정 |
+| `/android-reverse-engineering` | APK·XAPK·JAR·AAR을 jadx로 디컴파일하고 호출 흐름을 따라가 앱이 쓰는 API를 정리. Java·jadx 필요(`scripts/check-deps.sh`). 플러그인으로 설치하면 `/decompile` 커맨드도 생김 |
+| `code-review-graph` (7개) | 코드 구조를 그래프(MCP)로 만들어 변경 영향 범위만 읽는 리뷰·디버깅. `/build-graph`로 프로젝트마다 한 번 만들고 `/review-delta`, `/review-pr`, `/debug-issue`, `/refactor-safely`, `/explore-codebase`, `/review-changes` 사용 |
+| `/diagram-design` | 아키텍처·플로차트·시퀀스·ERD·간트·Sankey 등 40여 종 다이어그램을 에디토리얼 스타일 HTML/SVG/PNG로. drawio·Mermaid·excalidraw 가져오기 |
+| `/korean-law` | 법제처 Open API MCP(korean-law)로 법령·판례·행정규칙·자치법규 조회와 인용 검증. 키 없이 공용 한도로 동작 |
 
 `/daily-log`, `/tdd-tidy-first`, `/riverlog-knowledge`, `/figma-artifact-import`는 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
 
@@ -38,7 +45,7 @@
 | 플러그인 | 출처 |
 |---|---|
 | `ui-ux-pro-max` (7개 스킬) | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) |
-| `frontend-design` | [anthropics/claude-code](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design) |
+| `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design) (예전 위치 anthropics/claude-code에서 옮겨짐) |
 | `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
 | `clone-website` | [julianromli/ai-skills](https://github.com/julianromli/ai-skills/tree/main/skills/clone-website) |
 | `make-interfaces-feel-better` | [jakubkrehel/make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better) (MIT) |
@@ -48,8 +55,13 @@
 | `karpathy-guidelines` | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) (MIT) |
 | `antislop` (6개 스킬) | [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop) (MIT) — 스킬 폴더만 받고 플러그인의 대비 검사 MCP 서버는 뺌 |
 | `marketingskills` (52개 스킬) | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) |
+| `k-skill` (132개 스킬) | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
+| `code-review-graph` (7개 스킬) | [tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph) (MIT). 스킬만 받고, MCP 서버는 `uvx code-review-graph serve`로 실행 |
+| `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) |
+| `korean-law` | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고, MCP는 공개 서버 `mcp.gomdori.app/law`에 연결 |
+| `android-reverse-engineering` | [SimoneAvogadro/android-reverse-engineering-skill](https://github.com/SimoneAvogadro/android-reverse-engineering-skill) (Apache-2.0). 스킬과 `/decompile` 커맨드를 받음. 커맨드는 `${CLAUDE_PLUGIN_ROOT}`를 써서 플러그인 설치 때만 동작 |
 
-최신 버전으로 다시 받으려면 `./vendor.sh` 실행 후 `git diff`를 확인하고 커밋합니다.
+최신 버전으로 다시 받으려면 `./vendor.sh` 실행 후 `git diff`를 확인하고 커밋합니다. 외부 스킬을 새로 들일 때는 `scripts/gen-skill-docs.py`의 `SOURCES`에도 레포와 경로를 적어 원조 링크가 맞게 나오도록 합니다. `vendor.sh`는 외부 레포의 사용 문서를 `docs/upstream/`에 복사하고 `scripts/gen-skill-docs.py`로 `docs/skills/`도 다시 만듭니다. 스킬을 직접 추가·수정했을 때는 `python3 scripts/gen-skill-docs.py`만 실행하면 됩니다(각 문서의 GENERATED 표시 위쪽은 손으로 쓴 부분이라 그대로 둡니다).
 
 ## 설치된 스킬 보기
 
@@ -68,13 +80,15 @@ git clone https://github.com/HerrineKim/my-dev-settings.git ~/Projects/my-dev-se
 apps-sync   # 앱 설치(아래 '앱 맞추기')
 ```
 
-`install.sh`는 스킬을 심볼릭 링크하고, `/daily-log`용 훅(Stop·SessionEnd·SessionStart)을 `~/.claude/settings.json`에 등록하고, iCloud Drive에 공유 폴더(`claude-daily-log/transcripts/<기기명>/`)를 만든다. 이 훅이 각 맥북의 Claude 기록을 공유 폴더에 복사해 두므로, `/daily-log`를 어느 맥북에서 돌려도 모든 기기의 작업이 들어간다. **쓰는 맥북마다** `install.sh`를 한 번씩 돌려야 한다.
+`install.sh`는 스킬을 심볼릭 링크하고, 일부 스킬이 쓰는 MCP 서버(`code-review-graph`, `korean-law`)를 user 스코프로 등록하고, `/daily-log`용 훅(Stop·SessionEnd·SessionStart)을 `~/.claude/settings.json`에 등록하고, iCloud Drive에 공유 폴더(`claude-daily-log/transcripts/<기기명>/`)를 만든다. 이 훅이 각 맥북의 Claude 기록을 공유 폴더에 복사해 두므로, `/daily-log`를 어느 맥북에서 돌려도 모든 기기의 작업이 들어간다. **쓰는 맥북마다** `install.sh`를 한 번씩 돌려야 한다.
 
 필요한 것
 - **iCloud Drive**(기기 간 기록 공유용). 다른 공유 폴더를 쓰려면 `plugins/daily-log/skills/daily-log/config.json`의 `shared_dir`를 바꾼다
 - **GitHub CLI**: `brew install gh && gh auth login`
 - **Notion**: claude.ai 계정의 Notion 커넥터(계정에 붙어 있어 기기마다 따로 설정할 필요 없음)
 - Python 3 (macOS 기본 포함, 외부 패키지 없음)
+- **uv**: code-review-graph MCP 실행용(`brew install uv`, Brewfile에 있음)
+- android-reverse-engineering을 쓰려면 Java·jadx 등(Brewfile에 있음, `apps-sync`로 설치)
 
 업데이트: `git -C ~/Projects/my-dev-settings pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
 
@@ -99,6 +113,11 @@ claude plugin install note@hyerin-skills
 claude plugin install karpathy-guidelines@hyerin-skills
 claude plugin install antislop@hyerin-skills
 claude plugin install marketingskills@hyerin-skills
+claude plugin install k-skill@hyerin-skills
+claude plugin install android-reverse-engineering@hyerin-skills
+claude plugin install code-review-graph@hyerin-skills
+claude plugin install diagram-design@hyerin-skills
+claude plugin install korean-law@hyerin-skills
 ```
 
 이 경우 명령어는 `/daily-log:daily-log`처럼 플러그인 이름이 앞에 붙습니다.

@@ -16,6 +16,18 @@ for skill in "$repo"/plugins/*/skills/*/; do
   echo "linked /$name -> ${skill%/}"
 done
 
+# MCP servers some vendored skills call (code-review-graph, korean-law), registered once at user scope.
+if command -v claude >/dev/null; then
+  claude mcp get code-review-graph >/dev/null 2>&1 || {
+    command -v uvx >/dev/null || echo "! code-review-graph MCP는 uv가 필요: brew install uv"
+    claude mcp add -s user code-review-graph -- uvx code-review-graph serve >/dev/null && echo "added MCP code-review-graph (user)"; }
+  # 법제처 키 없이 공용 한도로 연결. 본인 키는 docs/skills/korean-law.md 참고.
+  claude mcp get korean-law >/dev/null 2>&1 || {
+    claude mcp add -s user --transport http korean-law https://mcp.gomdori.app/law >/dev/null && echo "added MCP korean-law (user)"; }
+else
+  echo "! claude CLI 없음: code-review-graph·korean-law MCP 등록을 건너뜁니다."
+fi
+
 # Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.
 bindir="$HOME/.local/bin"
 mkdir -p "$bindir"
