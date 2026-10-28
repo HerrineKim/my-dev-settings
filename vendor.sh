@@ -26,13 +26,6 @@ fetch_built() { # <plugin> <github-repo> — copy skills from the repo's prebuil
   cp "$tmp/src/LICENSE" "$tmp/src/NOTICE" "$repo/plugins/$1/"
   rm -rf "$tmp/src"
 }
-fetch_private() { # <plugin> <github-repo> — copy skills/<plugin> from a private repo (needs gh auth)
-  gh repo clone "$2" "$tmp/src" -- -q --depth 1
-  rm -rf "$repo/plugins/$1/skills/$1"
-  cp -R "$tmp/src/skills/$1" "$repo/plugins/$1/skills/$1"
-  echo "updated plugins/$1/skills/$1"
-  rm -rf "$tmp/src"
-}
 fetch ui-ux-pro-max        nextlevelbuilder/ui-ux-pro-max-skill '*'
 fetch frontend-design       anthropics/skills frontend-design
 fetch web-design-guidelines vercel-labs/agent-skills web-design-guidelines
@@ -55,8 +48,6 @@ cp -R "$tmp/src/plugins/android-reverse-engineering/skills" "$tmp/src/plugins/an
 cp "$tmp/src/LICENSE" "$tmp/src/THIRD_PARTY_NOTICES.md" "$repo/plugins/android-reverse-engineering/"
 rm -rf "$tmp/src"
 echo "updated plugins/android-reverse-engineering"
-fetch_private error-message-ko         HerrineKim/claude-skills
-fetch_private supabase-db-optimization HerrineKim/claude-skills
 find "$repo/plugins" -name .DS_Store -delete
 
 # /note lives in the riverlog repo; vendor it and inject the "find the riverlog repo" preamble so it works from any project.

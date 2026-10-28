@@ -1,6 +1,0 @@
-{
-  "name": "supabase-db-optimization",
-  "version": "0.1.0",
-  "description": "Supabase/Postgres 스키마·쿼리·RLS·인덱스 성능·보안 점검 (HerrineKim/claude-skills 벤더링)",
-  "author": { "name": "HerrineKim" }
-}

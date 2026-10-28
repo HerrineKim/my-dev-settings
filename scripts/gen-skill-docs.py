@@ -31,8 +31,6 @@ SOURCES = {
     "korean-law": ("chrisryugj/korean-law-mcp", "skills/{s}"),
     "android-reverse-engineering": ("SimoneAvogadro/android-reverse-engineering-skill",
                                     "plugins/android-reverse-engineering/skills/{s}"),
-    "error-message-ko": ("HerrineKim/claude-skills", "skills/{s}"),
-    "supabase-db-optimization": ("HerrineKim/claude-skills", "skills/{s}"),
     "note": ("HerrineKim/riverlog", ".claude/skills/{s}"),
 }
 OWN = ("HerrineKim/my-dev-settings", "plugins/{p}/skills/{s}")
