@@ -1,6 +1,6 @@
 # frontend-design
 
-Anthropic 공식 스킬. 템플릿 같지 않은 UI 미학·타이포 방향을 잡는다. 출처: [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design)
+Anthropic 공식 스킬. 템플릿 같지 않은 UI 미학·타이포 방향을 잡는다. 출처: [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design)(예전 위치 anthropics/claude-code에서 옮겨짐)
 
 ## 사용 예
 - "랜딩 페이지 새로 만들어 줘. 흔한 SaaS 느낌 말고"

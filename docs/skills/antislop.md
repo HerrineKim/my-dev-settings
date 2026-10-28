@@ -1,6 +1,6 @@
 # antislop
 
-생성 결과의 뻔한 AI 티를 걸러내는 필터(6개). 스타일을 정해 주지 않고 걸러내기만 한다. 출처: [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop) (MIT). 원문 README: [`../upstream/antislop/README.md`](../upstream/antislop/README.md)
+생성 결과의 뻔한 AI 티를 걸러내는 필터(6개). 스타일을 정해 주지 않고 걸러내기만 한다. 출처: [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop) (MIT). 원문 README: [`../upstream/antislop/README.md`](../upstream/antislop/README.md). 원조는 플러그인에 대비 검사 MCP 서버도 있지만 여기서는 스킬 폴더만 받는다
 
 ## 사용 예
 - `/antislop`(핵심 규칙)을 기본으로 켜고, 작업에 따라 `/antislop-ui`, `/antislop-copywriting`, `/antislop-code`, `/antislop-human`, `/antislop-layoutmobile`을 함께 쓴다

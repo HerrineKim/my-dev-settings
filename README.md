@@ -1,125 +1,88 @@
 # my-dev-settings
 
-맥마다 맞춰 두는 개발 환경 설정. Claude Code 스킬과 설치 앱 목록(`apps/Brewfile`)이 들어 있습니다.
+맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`).
 
-> 예전 이름은 `my-claude-skills`입니다. 이미 받아 둔 맥은 아래 [이름 변경 후 옮기기](#이름-변경-후-옮기기)를 보세요.
+## 설치와 업데이트
 
-## Claude Code 스킬
+```bash
+git clone https://github.com/HerrineKim/my-dev-settings.git ~/Projects/my-dev-settings
+~/Projects/my-dev-settings/install.sh   # 쓰는 맥마다 한 번
+apps-sync                               # 앱 설치(아래 '앱 맞추기')
+```
 
-스킬별 준비물·호출법·사용 예와 원조 GitHub 링크는 [`docs/skills/`](docs/skills/README.md)에 플러그인별로 정리되어 있습니다.
+업데이트는 `git -C ~/Projects/my-dev-settings pull`. 스킬은 심볼릭 링크라 바로 반영됩니다.
 
-| 스킬 | 설명 |
-|---|---|
-| `/daily-log` | 오늘(00:00~실행 시각) Claude Code 작업 + GitHub 반영 내역을 노션 "2026 데일리 업무 회고"에 기록. 날짜당 페이지 1개, 재실행 시 이어 쓰기. 다른 맥북에서 한 Claude 작업도 iCloud Drive로 모아 함께 기록 |
-| `/ui-ux-pro-max` | UI/UX 디자인 판단 데이터(스타일·팔레트·폰트 조합·UX 가이드·차트·스택별 구현). 인터페이스 설계·구현·리뷰 시 |
-| `/ui-styling` | shadcn/ui + Tailwind 기반 UI 구현, 테마·다크모드·접근성 컴포넌트 |
-| `/design` | 로고·CIP·배너·아이콘·소셜 이미지 등 종합 디자인 |
-| `/design-system` | 디자인 토큰(원시→의미→컴포넌트), 컴포넌트 스펙 |
-| `/brand` | 브랜드 보이스·비주얼 아이덴티티·메시징 |
-| `/banner-design` | 소셜·광고·히어로·인쇄용 배너 디자인 |
-| `/slides` | Chart.js 기반 HTML 프레젠테이션 |
-| `/frontend-design` | Anthropic 공식. 템플릿 같지 않은 UI 미학·타이포 방향 잡기 |
-| `/web-design-guidelines` | Vercel Web Interface Guidelines로 UI 코드 접근성·UX 리뷰 |
-| `/clone-website` | URL을 섹션별로 분석(CSS·에셋·인터랙션)해 Next.js + shadcn/ui + Tailwind로 픽셀 단위 복제. 브라우저 MCP 필요 |
-| `/ai-slop-thresher` | 한국어 초안의 상투어·과잉 설명·반복 수사를 덜어내 윤문. 사실·조건·말투는 보존 |
-| `/thresh` | `/ai-slop-thresher` 단축 호출(직접 불렀을 때만 동작) |
-| `/make-interfaces-feel-better` | 애니메이션·hover·그림자·테두리·타이포·아이콘 등 UI 디테일 다듬기 원칙 |
-| `/note` | 어느 프로젝트에서든 자료(글·URL·파일)를 riverlog 지식 창고 노트로 재구성해 넣고 인덱스·링크까지 갱신. `~/Projects/riverlog`(또는 `$RIVERLOG_DIR`)에서 작업 |
-| `/riverlog-knowledge` | 개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고에서 관련 노트를 찾아 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받아 옴 |
-| `/karpathy-guidelines` | Karpathy가 짚은 LLM 코딩 실수를 줄이는 지침: 가정·모호함 드러내기, 요청한 만큼만 단순하게, 필요한 줄만 수정, 검증 가능한 성공 기준 정하기. 코드 작성·리뷰·리팩터링 시 |
-| `/figma-artifact-import` | HTML 프로토타입(아티팩트·웹앱) 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김. PNG 데이터 채널, DS 색 치환, Pretendard 치환용 로컬 Figma 플러그인, 변환 버그 검수 체크리스트 포함 |
-| `antislop` (6개) | 생성 결과의 뻔한 AI 티 필터. `/antislop`(핵심 규칙)에 `/antislop-ui`(색·레이아웃·모션), `/antislop-copywriting`(영문 카피), `/antislop-code`(쓸모없는 주석 정리, 코드는 그대로), `/antislop-human`(대비·키보드·포커스, 대비 계산 스크립트 포함), `/antislop-layoutmobile`(반응형·터치 영역)을 함께 씀. 스타일을 정해 주지 않고 걸러내기만 함 |
-| `marketingskills` (52개) | CRO·카피라이팅(`/copywriting`, `/copy-editing`)·SEO(`/seo-audit`, `/ai-seo`, `/programmatic-seo`)·광고(`/ads`, `/ad-creative`)·분석(`/analytics`, `/ab-testing`)·가격(`/pricing`)·런칭(`/launch`)·이메일 등 마케팅 전반. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 |
-| `k-skill` (132개) | 한국 생활·업무 자동화. 교통(`/korean-transit-route`, `/seoul-subway-arrival`, `/express-bus-booking`)·날씨(`/korea-weather`, `/fine-dust-location`)·쇼핑(`/coupang-product-search`, `/danawa-price-search`, `/daangn-used-goods-search`)·공공데이터(`/korean-law-search`, `/k-dart`, `/kosis-stats`, `/bok-ecos-stats`)·한글 문서(`/hwp`, `/korean-spell-check`) 등. 키가 필요한 스킬은 `/k-skill-setup`으로 먼저 설정 |
-| `/android-reverse-engineering` | APK·XAPK·JAR·AAR을 jadx로 디컴파일하고 호출 흐름을 따라가 앱이 쓰는 API를 정리. Java·jadx 필요(`scripts/check-deps.sh`). 플러그인으로 설치하면 `/decompile` 커맨드도 생김 |
-| `code-review-graph` (7개) | 코드 구조를 그래프(MCP)로 만들어 변경 영향 범위만 읽는 리뷰·디버깅. `/build-graph`로 프로젝트마다 한 번 만들고 `/review-delta`, `/review-pr`, `/debug-issue`, `/refactor-safely`, `/explore-codebase`, `/review-changes` 사용 |
-| `/diagram-design` | 아키텍처·플로차트·시퀀스·ERD·간트·Sankey 등 40여 종 다이어그램을 에디토리얼 스타일 HTML/SVG/PNG로. drawio·Mermaid·excalidraw 가져오기 |
-| `/korean-law` | 법제처 Open API MCP(korean-law)로 법령·판례·행정규칙·자치법규 조회와 인용 검증. 키 없이 공용 한도로 동작 |
+`install.sh`가 하는 일(여러 번 실행해도 안전)
+- `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움
+- `bin/`의 `skills-ls`, `apps-sync`를 `~/.local/bin`에 링크
+- `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
+- MCP 서버 `code-review-graph`, `korean-law`를 user 스코프로 등록
+- `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
-`/daily-log`, `/tdd-tidy-first`, `/riverlog-knowledge`, `/figma-artifact-import`는 직접 만든 스킬이고, 나머지는 외부 스킬을 `plugins/` 아래에 벤더링한 것입니다(출처는 아래).
-
-## 외부 스킬 출처와 업데이트
-
-| 플러그인 | 출처 |
-|---|---|
-| `ui-ux-pro-max` (7개 스킬) | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) |
-| `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design) (예전 위치 anthropics/claude-code에서 옮겨짐) |
-| `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
-| `clone-website` | [julianromli/ai-skills](https://github.com/julianromli/ai-skills/tree/main/skills/clone-website) |
-| `make-interfaces-feel-better` | [jakubkrehel/make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better) (MIT) |
-| `note` | [HerrineKim/riverlog](https://github.com/HerrineKim/riverlog/tree/main/.claude/skills/note) — 벤더링 때 `plugins/note/global-preamble.md`(레포 위치 찾기)를 앞에 끼워 넣음 |
-| `ai-slop-thresher` (2개 스킬) | [Burntgogi/ai-slop-thresher](https://github.com/Burntgogi/ai-slop-thresher) (Apache-2.0) |
-| `karpathy-guidelines` | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) (MIT) |
-| `antislop` (6개 스킬) | [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop) (MIT) — 스킬 폴더만 받고 플러그인의 대비 검사 MCP 서버는 뺌 |
-| `marketingskills` (52개 스킬) | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) |
-| `k-skill` (132개 스킬) | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
-| `code-review-graph` (7개 스킬) | [tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph) (MIT). 스킬만 받고, MCP 서버는 `uvx code-review-graph serve`로 실행 |
-| `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) |
-| `korean-law` | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고, MCP는 공개 서버 `mcp.gomdori.app/law`에 연결 |
-| `android-reverse-engineering` | [SimoneAvogadro/android-reverse-engineering-skill](https://github.com/SimoneAvogadro/android-reverse-engineering-skill) (Apache-2.0). 스킬과 `/decompile` 커맨드를 받음. 커맨드는 `${CLAUDE_PLUGIN_ROOT}`를 써서 플러그인 설치 때만 동작 |
-
-최신 버전으로 다시 받으려면 `./vendor.sh` 실행 후 `git diff`를 확인하고 커밋합니다. 외부 스킬을 새로 들일 때는 `scripts/gen-skill-docs.py`의 `SOURCES`에도 레포와 경로를 적어 원조 링크가 맞게 나오도록 합니다. `vendor.sh`는 외부 레포의 사용 문서를 `docs/upstream/`에 복사하고 `scripts/gen-skill-docs.py`로 `docs/skills/`도 다시 만듭니다. 스킬을 직접 추가·수정했을 때는 `python3 scripts/gen-skill-docs.py`만 실행하면 됩니다(각 문서의 GENERATED 표시 위쪽은 손으로 쓴 부분이라 그대로 둡니다).
-
-## 설치된 스킬 보기
+필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
 
 ```bash
 skills-ls            # 전역 스킬 전체: ~/.claude/skills, claude.ai 동기화 스킬, user 플러그인 스킬
 skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 ```
 
-`install.sh`가 `bin/skills-ls`를 `~/.local/bin`에 링크합니다.
+## Claude Code 스킬
 
-## 새 맥북에 설치
+스킬별 준비물·호출법·사용 예·원조 GitHub 링크는 [`docs/skills/`](docs/skills/README.md)에 플러그인별로 있습니다. 외부 레포의 사용 문서 원문은 `docs/upstream/`에 있습니다.
 
-```bash
-git clone https://github.com/HerrineKim/my-dev-settings.git ~/Projects/my-dev-settings
-~/Projects/my-dev-settings/install.sh
-apps-sync   # 앱 설치(아래 '앱 맞추기')
-```
+| 플러그인 | 내용 | 출처 |
+|---|---|---|
+| `daily-log` | 오늘 Claude Code 작업과 GitHub 반영 내역을 노션 업무 회고에 기록 | 직접 만듦 |
+| `tdd-tidy-first` | Kent Beck식 TDD + Tidy First(plan.md "go" 워크플로) | 직접 만듦 |
+| `riverlog-knowledge` | 개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고 노트 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받음 | 직접 만듦 |
+| `figma-artifact-import` | HTML 프로토타입 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김 | 직접 만듦 |
+| `note` | 자료(글·URL·파일)를 riverlog 노트로 재구성해 넣고 인덱스·링크 갱신. `~/Projects/riverlog`(또는 `$RIVERLOG_DIR`) | [HerrineKim/riverlog](https://github.com/HerrineKim/riverlog/tree/main/.claude/skills/note). 벤더링 때 `plugins/note/global-preamble.md`(레포 위치 찾기)를 앞에 끼워 넣음 |
+| `ui-ux-pro-max` (7) | UI/UX 판단 데이터와 `/ui-styling`, `/design`, `/design-system`, `/brand`, `/banner-design`, `/slides` | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) |
+| `frontend-design` | 템플릿 같지 않은 UI 미학·타이포 방향 | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design) |
+| `web-design-guidelines` | Vercel Web Interface Guidelines로 UI 코드 리뷰 | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
+| `make-interfaces-feel-better` | 애니메이션·그림자·타이포·아이콘 등 UI 디테일 원칙 | [jakubkrehel/make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better) (MIT) |
+| `clone-website` | URL을 Next.js + shadcn/ui + Tailwind로 픽셀 단위 복제. 브라우저 MCP 필요 | [julianromli/ai-skills](https://github.com/julianromli/ai-skills/tree/main/skills/clone-website) |
+| `diagram-design` | 아키텍처·플로차트·시퀀스·ERD 등 40여 종 다이어그램(HTML/SVG/PNG), drawio·Mermaid·excalidraw 가져오기 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT) |
+| `antislop` (6) | 생성 결과의 뻔한 AI 티 필터(UI·카피·코드 주석·접근성·반응형). 걸러내기만 하고 스타일은 정하지 않음 | [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop) (MIT). 대비 검사 MCP 서버는 뺌 |
+| `ai-slop-thresher` (2) | 한국어 초안 윤문. `/thresh`는 직접 불렀을 때만 동작하는 단축 호출 | [Burntgogi/ai-slop-thresher](https://github.com/Burntgogi/ai-slop-thresher) (Apache-2.0) |
+| `karpathy-guidelines` | LLM 코딩 실수를 줄이는 지침(가정 드러내기·단순함·필요한 줄만 수정·검증 기준) | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) (MIT) |
+| `code-review-graph` (7) | 코드 그래프(MCP)로 변경 영향 범위만 읽는 리뷰·디버깅. 프로젝트마다 `/build-graph` 먼저 | [tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph) (MIT). 스킬만 받고 MCP는 `uvx code-review-graph serve` |
+| `android-reverse-engineering` | APK·JAR·AAR 디컴파일(jadx), 호출 흐름 추적, API 추출 | [SimoneAvogadro/android-reverse-engineering-skill](https://github.com/SimoneAvogadro/android-reverse-engineering-skill) (Apache-2.0). `/decompile` 커맨드는 `${CLAUDE_PLUGIN_ROOT}`를 써서 플러그인 설치 때만 동작 |
+| `marketingskills` (52) | CRO·카피·SEO·광고·분석·가격·런칭·이메일 등. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) |
+| `k-skill` (132) | 한국 생활·업무(교통·날씨·쇼핑·공공데이터·한글 문서 등). 키가 필요한 스킬은 `/k-skill-setup` 먼저 | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
+| `korean-law` | 법제처 Open API MCP로 법령·판례 조회와 인용 검증. 키 없이 공용 한도 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고 MCP는 공개 서버 `mcp.gomdori.app/law` |
 
-`install.sh`는 스킬을 심볼릭 링크하고, 일부 스킬이 쓰는 MCP 서버(`code-review-graph`, `korean-law`)를 user 스코프로 등록하고, `/daily-log`용 훅(Stop·SessionEnd·SessionStart)을 `~/.claude/settings.json`에 등록하고, iCloud Drive에 공유 폴더(`claude-daily-log/transcripts/<기기명>/`)를 만든다. 이 훅이 각 맥북의 Claude 기록을 공유 폴더에 복사해 두므로, `/daily-log`를 어느 맥북에서 돌려도 모든 기기의 작업이 들어간다. **쓰는 맥북마다** `install.sh`를 한 번씩 돌려야 한다.
+### 외부 스킬 업데이트·추가
 
-필요한 것
-- **iCloud Drive**(기기 간 기록 공유용). 다른 공유 폴더를 쓰려면 `plugins/daily-log/skills/daily-log/config.json`의 `shared_dir`를 바꾼다
-- **GitHub CLI**: `brew install gh && gh auth login`
-- **Notion**: claude.ai 계정의 Notion 커넥터(계정에 붙어 있어 기기마다 따로 설정할 필요 없음)
-- Python 3 (macOS 기본 포함, 외부 패키지 없음)
-- **uv**: code-review-graph MCP 실행용(`brew install uv`, Brewfile에 있음)
-- android-reverse-engineering을 쓰려면 Java·jadx 등(Brewfile에 있음, `apps-sync`로 설치)
-
-업데이트: `git -C ~/Projects/my-dev-settings pull` — 스킬은 심볼릭 링크라 바로 반영됩니다.
+- 최신으로 다시 받기: `./vendor.sh` 실행 → `git diff` 확인 → 커밋. 스킬과 함께 `docs/upstream/`을 다시 복사하고 `docs/skills/`도 다시 만듭니다.
+- 새 외부 스킬을 들일 때: `vendor.sh`에 받는 줄을, `scripts/gen-skill-docs.py`의 `SOURCES`에 레포와 경로를 추가합니다(원조 링크용).
+- 스킬을 직접 추가·수정했을 때: `python3 scripts/gen-skill-docs.py`만 실행. 각 문서의 GENERATED 표시 위쪽은 손으로 쓴 부분이라 그대로 둡니다.
 
 ### 플러그인으로 설치하는 방법(대안)
 
-`install.sh`(심볼릭 링크)와 플러그인 설치를 한 기기에서 함께 쓰지 않는다. daily-log 훅이 두 번 등록되어 기록 복사가 중복 실행된다.
+`install.sh`와 한 기기에서 함께 쓰지 않습니다(daily-log 훅이 두 번 등록되어 기록 복사가 중복 실행됨). 이 방식에서는 명령어 앞에 플러그인 이름이 붙습니다(`/daily-log:daily-log`).
 
 ```bash
 claude plugin marketplace add HerrineKim/my-dev-settings
-claude plugin install daily-log@hyerin-skills
-claude plugin install tdd-tidy-first@hyerin-skills
-claude plugin install ui-ux-pro-max@hyerin-skills
-claude plugin install frontend-design@hyerin-skills
-claude plugin install web-design-guidelines@hyerin-skills
-claude plugin install clone-website@hyerin-skills
-claude plugin install ai-slop-thresher@hyerin-skills
-claude plugin install riverlog-knowledge@hyerin-skills
-claude plugin install make-interfaces-feel-better@hyerin-skills
-claude plugin install note@hyerin-skills
-claude plugin install karpathy-guidelines@hyerin-skills
-claude plugin install antislop@hyerin-skills
-claude plugin install marketingskills@hyerin-skills
-claude plugin install k-skill@hyerin-skills
-claude plugin install android-reverse-engineering@hyerin-skills
-claude plugin install code-review-graph@hyerin-skills
-claude plugin install diagram-design@hyerin-skills
-claude plugin install korean-law@hyerin-skills
+for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
+  web-design-guidelines make-interfaces-feel-better clone-website diagram-design antislop ai-slop-thresher \
+  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law; do
+  claude plugin install "$p@hyerin-skills"
+done
 ```
 
-이 경우 명령어는 `/daily-log:daily-log`처럼 플러그인 이름이 앞에 붙습니다.
+## daily-log
+
+`/daily-log`는 오늘(00:00~실행 시각) Claude Code 작업과 GitHub 반영 내역(push·PR·리뷰·이슈)을 노션 "2026 데일리 업무 회고"의 날짜별 페이지에 기록합니다. 같은 날 다시 실행하면 같은 기기의 마지막 기록 이후만 이어 씁니다.
+
+- `install.sh`가 등록한 훅(Stop·SessionEnd·SessionStart)이 각 맥의 Claude 기록을 iCloud Drive 공유 폴더(`claude-daily-log/transcripts/<기기명>/`)에 복사하므로, 어느 맥에서 실행해도 모든 기기의 작업이 들어갑니다. 다른 공유 폴더를 쓰려면 `plugins/daily-log/skills/daily-log/config.json`의 `shared_dir`를 바꿉니다.
+- 노션은 claude.ai 계정의 Notion 커넥터를 씁니다(기기마다 따로 설정할 필요 없음).
+- 기록 블록의 기기 이름은 호스트 이름이 기본이고 `DAILY_LOG_MACHINE`으로 바꿉니다(예: `~/.zshrc`에 `export DAILY_LOG_MACHINE=회사맥`).
+- 한계: Claude Code(CLI·데스크톱 Code 탭) 기록만 읽습니다. claude.ai 웹·앱의 일반 채팅은 로컬에 남지 않아 수집되지 않습니다. 기록은 각 맥 로컬에 있으므로 맥마다 `install.sh`를 실행해 둬야 그 기기의 작업이 들어갑니다.
 
 ## 앱 맞추기
 
-설치할 앱은 `apps/Brewfile` 한 곳에 적습니다. Homebrew 앱·CLI와 App Store 앱(`mas`)이 들어 있고, 어느 쪽으로도 설치할 수 없는 앱은 `apps/manual.md`에 적습니다.
+설치할 앱은 `apps/Brewfile` 한 곳에 적습니다(Homebrew 앱·CLI, App Store 앱은 `mas`). 어느 쪽으로도 설치할 수 없는 앱은 `apps/manual.md`에 적습니다.
 
 ```bash
 apps-sync          # 이 맥에 없는 앱 설치. dmg로 직접 깔아 둔 앱은 지우지 않고 Homebrew 관리로 넘김(--adopt)
@@ -127,13 +90,15 @@ apps-sync check    # 없는 앱만 보여 주고 설치하지 않음
 apps-sync diff     # 이 맥에는 있는데 Brewfile에 없는 brew·App Store 앱
 ```
 
-새 앱을 깔았으면 `apps-sync diff`로 나온 줄을 `apps/Brewfile`에 옮기고 커밋·푸시합니다. 다른 맥에서는 `git pull` 후 `apps-sync`를 실행하면 같아집니다. App Store 앱은 App Store에 로그인돼 있어야 설치됩니다. 은행·공공 사이트 보안 프로그램은 사이트가 알아서 설치하므로 목록에서 뺐습니다.
+새 앱을 깔았으면 `apps-sync diff`로 나온 줄을 Brewfile에 옮기고 커밋·푸시합니다. 다른 맥에서는 `git pull` 후 `apps-sync`. App Store 앱은 App Store에 로그인돼 있어야 설치됩니다. 은행·공공 사이트 보안 프로그램은 사이트가 알아서 설치하므로 목록에서 뺐습니다.
 
-`install.sh`가 `bin/apps-sync`를 `~/.local/bin`에 링크합니다.
+## 전역 CLAUDE.md
+
+모든 프로젝트에 적용할 공통 지시는 `global-claude.md`에 있습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 수정은 `git pull`만으로 반영됩니다.
 
 ## 이름 변경 후 옮기기
 
-`my-claude-skills`로 받아 둔 맥에서는 한 번만 아래를 실행합니다. GitHub가 옛 주소를 새 주소로 넘겨 주지만, 폴더 이름과 링크까지 맞추려면 필요합니다.
+예전 이름은 `my-claude-skills`입니다. 그 이름으로 받아 둔 맥에서는 한 번만 실행합니다(GitHub가 옛 주소를 넘겨 주지만 폴더 이름과 링크까지 맞추려면 필요).
 
 ```bash
 mv ~/Projects/my-claude-skills ~/Projects/my-dev-settings
@@ -141,17 +106,3 @@ mv ~/Projects/my-claude-skills ~/Projects/my-dev-settings
 ```
 
 `install.sh`가 git remote를 새 주소로 바꾸고, 스킬 링크를 새 폴더로 다시 걸고, `~/.claude/CLAUDE.md`의 옛 import 블록을 새 블록으로 바꿉니다. 플러그인 방식으로 설치했다면 `claude plugin marketplace add HerrineKim/my-dev-settings`로 다시 추가합니다.
-
-## 전역 CLAUDE.md 설정
-
-모든 프로젝트에 적용할 공통 지시는 `global-claude.md`에 있습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 내용 수정은 `git pull`만으로 반영됩니다.
-
-## 기기 이름
-
-노션 기록 블록에는 기기 이름이 붙고, 재실행 시 같은 기기의 마지막 기록 이후만 추가합니다.
-기본값은 호스트 이름이며 `DAILY_LOG_MACHINE` 환경변수로 바꿀 수 있습니다(예: `~/.zshrc`에 `export DAILY_LOG_MACHINE=회사맥`).
-
-## 한계
-
-- Claude Code(CLI·데스크톱 Code 탭) 기록만 읽습니다. claude.ai 웹/앱의 일반 채팅은 로컬에 남지 않아 수집되지 않습니다.
-- Claude 기록은 각 맥북 로컬에만 있으므로, 맥북마다 한 번씩 실행해야 그 기기의 작업이 기록됩니다.

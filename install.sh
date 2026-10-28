@@ -15,6 +15,11 @@ for skill in "$repo"/plugins/*/skills/*/; do
   ln -sfn "${skill%/}" "$target"
   echo "linked /$name -> ${skill%/}"
 done
+# Drop links to skills that were removed from this repo (only links pointing into it, so others are left alone).
+for link in "$dest"/*; do
+  [ -L "$link" ] && [ ! -e "$link" ] || continue
+  case "$(readlink "$link")" in "$repo"/plugins/*) rm "$link"; echo "removed stale /$(basename "$link")";; esac
+done
 
 # MCP servers some vendored skills call (code-review-graph, korean-law), registered once at user scope.
 if command -v claude >/dev/null; then
