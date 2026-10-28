@@ -25,6 +25,8 @@ taply-pg-front(2026-10)에서 v4 아티팩트 77화면 × 데스크톱/모바일
 - `use_figma`에는 **fetch가 없다**, 코드는 **50k자 제한**. 데이터를 코드에 붙여 넣으면 출력 토큰이 폭발하고 LLM이 base64를 옮겨 적다 틀린다 → PNG 채널을 쓴다.
 - `figma.getImageByHash(h)`는 **이미지가 있는 페이지로 먼저 `setCurrentPageAsync`** 해야 null이 아니다. 빌더는 임시 페이지에서 바이트를 다 읽은 뒤 대상 페이지로 넘어간다.
 - **MCP는 서버에서 실행돼 로컬 글꼴을 못 본다.** Pretendard처럼 Google Fonts에 없는 글꼴은 Mac에 설치해도, Figma를 재시작해도 `loadFontAsync`가 실패한다. 해법: Noto Sans KR의 다른 굵기를 표식으로 넣고(500→Medium, 600→Bold, 700→Black) `figma-font-swap/` 로컬 플러그인으로 데스크톱 앱에서 일괄 치환. (Figma → Plugins → Development → Import plugin from manifest → 실행)
+  - 디자인 시스템처럼 Noto Sans KR이 표식이 아니라 진짜 글꼴인 파일은 `figma-ds-font-swap/`을 쓴다. 굵기를 그대로 옮기고(Bold → Bold), 글꼴 변수(FONT_FAMILY · FONT_STYLE)와 텍스트 스타일까지 바꾼다. 표식 파일에 쓰면 Bold가 SemiBold로 안 바뀌니 둘을 섞지 않는다.
+  - Figma의 Noto Sans KR에는 SemiBold가 없다(Thin · Light · DemiLight · Regular · Medium · Bold · Black). 기존 Pretendard 글자를 MCP로 다시 만들 때는 SemiBold → Bold, Bold → Black 표식으로 넣는다.
 - **렌더 글꼴 = 최종 글꼴**이어야 한다. 위치를 Pretendard 폭으로 재고 Noto로 그리면 글자끼리 겹치고 "·" 간격이 무너진다. 최종 글꼴(치환 후)로 렌더한다.
 - 폰트 링크 때문에 `load` 이벤트가 안 올 수 있다 → `waitUntil:'domcontentloaded'` + `document.fonts.ready`에 타임아웃.
 - 문구 치환(예: em dash)을 HTML 소스 전체에 `replaceAll` 하면 JS가 깨져 페이지가 멈출 수 있다 → 직렬화 단계에서 글자 단위로 바꾼다.

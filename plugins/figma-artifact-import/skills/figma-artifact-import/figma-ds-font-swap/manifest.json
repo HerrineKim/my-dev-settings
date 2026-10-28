@@ -1,0 +1,8 @@
+{
+  "name": "DS font swap: Noto Sans KR → Pretendard (same weight)",
+  "id": "local-ds-font-swap-pretendard",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page"
+}
