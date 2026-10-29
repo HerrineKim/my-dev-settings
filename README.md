@@ -30,6 +30,24 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 
 스킬별 준비물·호출법·사용 예·원조 GitHub 링크는 [`docs/skills/`](docs/skills/README.md)에 플러그인별로 있습니다. 외부 레포의 사용 문서 원문은 `docs/upstream/`에 있습니다.
 
+### 주기적으로 점검할 스킬
+
+코드베이스를 정기적으로(릴리스 전, 의존성·설정 변경 후, 커밋·PR 전) 훑을 때 쓰는 스킬 모음입니다. 사용자나 에이전트가 체크리스트로 써도 됩니다. 공격·침투 성격의 스킬은 본인이 소유했거나 서면으로 허가받은 대상에만 씁니다(아래 `cybersecurity` 설명 참고).
+
+| 스킬 | 언제·어떻게 |
+|---|---|
+| `/security-review` (Claude Code 기본) | 커밋·PR 전 변경분의 취약점·시크릿 노출을 훑을 때 |
+| `/code-review` (Claude Code 기본) | PR 전 변경분의 버그·품질 리뷰. 깊게 볼 때 `/code-review ultra` |
+| `/02-vulnerability-scanner` | 의존성 추가·릴리스 전 의존성·CVE·설정(하드코딩 시크릿 포함) 점검 |
+| `/20-supply-chain-security` | 새 패키지·락파일 변경 후 타이포스쿼팅·악성 패키지·CI 훅 점검 |
+| `/09-web-security` | 웹·API 핸들러 변경 시 OWASP Top 10 관점 점검 |
+| `/10-cloud-security` | Terraform·IaC·쿠버네티스 매니페스트 변경 시 설정 미스 점검 |
+| `/13-crypto-analysis` | 배포 환경 TLS 엔드포인트·암호화 코드 정기 점검 |
+| `/review-changes`·`/review-pr` (code-review-graph) | 큰 변경을 영향 범위 중심으로 리뷰. 프로젝트마다 `/build-graph` 먼저 |
+| `/web-design-guidelines` | UI 코드 변경 시 접근성·인터페이스 가이드라인 점검 |
+| `/antislop-code` | 커밋 전 생성·수정 코드의 뻔한 AI 주석만 정리(코드는 안 건드림) |
+| `/karpathy-guidelines` | LLM이 만든 코드의 가정·단순함·수정 범위·검증 기준 점검 |
+
 | 플러그인 | 내용 | 출처 |
 |---|---|---|
 | `daily-log` | 오늘 Claude Code 작업과 GitHub 반영 내역을 노션 업무 회고에 기록 | 직접 만듦 |
@@ -51,6 +69,7 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 | `marketingskills` (52) | CRO·카피·SEO·광고·분석·가격·런칭·이메일 등. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) |
 | `k-skill` (132) | 한국 생활·업무(교통·날씨·쇼핑·공공데이터·한글 문서 등). 키가 필요한 스킬은 `/k-skill-setup` 먼저 | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
 | `korean-law` | 법제처 Open API MCP로 법령·판례 조회와 인용 검증. 키 없이 공용 한도 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고 MCP는 공개 서버 `mcp.gomdori.app/law` |
+| `cybersecurity` (22) | 증거 기반 보안 방법론: 정찰·취약점·웹/클라우드/모바일/OT 보안·악성코드·위협 헌팅·IR·SOC·로그·암호·공급망·레드/블루/퍼플팀·GRC. 정기 점검용은 위 '주기적으로 점검할 스킬' 참고 | [Masriyan/Claude-Code-CyberSecurity-Skill](https://github.com/Masriyan/Claude-Code-CyberSecurity-Skill) (MIT). 공격·침투 스킬(03·14·22)과 안전 민감 스킬(16·18)은 권한·범위 게이트가 있으니 허가받은 대상에만. 딸린 스크립트는 복사만 하고 실행 안 함 |
 
 ### 외부 스킬 업데이트·추가
 
@@ -66,7 +85,7 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 claude plugin marketplace add HerrineKim/my-dev-settings
 for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
   web-design-guidelines make-interfaces-feel-better clone-website diagram-design antislop ai-slop-thresher \
-  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law; do
+  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity; do
   claude plugin install "$p@hyerin-skills"
 done
 ```

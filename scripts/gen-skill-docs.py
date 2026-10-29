@@ -29,6 +29,7 @@ SOURCES = {
     "code-review-graph": ("tirth8205/code-review-graph", "skills/{s}"),
     "diagram-design": ("cathrynlavery/diagram-design", "skills/{s}"),
     "korean-law": ("chrisryugj/korean-law-mcp", "skills/{s}"),
+    "cybersecurity": ("Masriyan/Claude-Code-CyberSecurity-Skill", "skills/{s}"),
     "android-reverse-engineering": ("SimoneAvogadro/android-reverse-engineering-skill",
                                     "plugins/android-reverse-engineering/skills/{s}"),
     "note": ("HerrineKim/riverlog", ".claude/skills/{s}"),
