@@ -50,6 +50,19 @@ rm -rf "$tmp/src"
 echo "updated plugins/android-reverse-engineering"
 find "$repo/plugins" -name .DS_Store -delete
 
+# cybersecurity ships a single prebuilt Claude plugin with 22 skills + a shared cyberskill/ package that two
+# scripts import via Path(__file__).resolve().parents[3], so it must sit at the plugin root. We vendor skills
+# and that package only; its tooling repo (tests/, Makefile, CI) and any scripts are copied verbatim, never run.
+git clone -q --depth 1 https://github.com/Masriyan/Claude-Code-CyberSecurity-Skill.git "$tmp/src"
+rm -rf "$repo/plugins/cybersecurity/skills" "$repo/plugins/cybersecurity/cyberskill"
+mkdir -p "$repo/plugins/cybersecurity"
+cp -R "$tmp/src/skills" "$tmp/src/cyberskill" "$repo/plugins/cybersecurity/"
+cp "$tmp/src/LICENSE" "$tmp/src/NOTICE" "$repo/plugins/cybersecurity/"
+find "$repo/plugins/cybersecurity" -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true
+rm -rf "$tmp/src"
+echo "updated plugins/cybersecurity"
+find "$repo/plugins" -name .DS_Store -delete
+
 # /note lives in the riverlog repo; vendor it and inject the "find the riverlog repo" preamble so it works from any project.
 git clone -q --depth 1 https://github.com/HerrineKim/riverlog.git "$tmp/riverlog"
 rm -rf "$repo/plugins/note/skills/note"
@@ -83,4 +96,5 @@ upstream_docs marketingskills coreyhaines31/marketingskills README.md
 upstream_docs ui-ux-pro-max nextlevelbuilder/ui-ux-pro-max-skill README.md
 upstream_docs antislop miqdadbadjuber/anti-slop README.md
 upstream_docs ai-slop-thresher Burntgogi/ai-slop-thresher README.md
+upstream_docs cybersecurity Masriyan/Claude-Code-CyberSecurity-Skill README.md USAGE.md INSTALL.md SECURITY.md docs/QUALITY.md
 python3 "$repo/scripts/gen-skill-docs.py"

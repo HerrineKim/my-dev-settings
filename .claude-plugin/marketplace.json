@@ -98,6 +98,11 @@
       "name": "korean-law",
       "source": "./plugins/korean-law",
       "description": "법제처 Open API MCP로 법령·판례·행정규칙·자치법규 조회와 인용 검증"
+    },
+    {
+      "name": "cybersecurity",
+      "source": "./plugins/cybersecurity",
+      "description": "증거 기반 보안 스킬 묶음 22개 (정찰·취약점·웹/클라우드/모바일 보안·악성코드·위협 헌팅·IR·SOC·로그·암호·공급망·레드/블루/퍼플팀·GRC 등)"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

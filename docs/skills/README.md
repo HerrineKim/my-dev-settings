@@ -10,6 +10,7 @@
 | [antislop](antislop.md) | 6 | AI 티 나는 UI·카피·코드 걸러내기 (antislop, -ui, -copywriting, -code, -human, -layoutmobile) |
 | [clone-website](clone-website.md) | 1 | 웹사이트 픽셀 단위 복제 (Next.js + shadcn/ui + Tailwind) |
 | [code-review-graph](code-review-graph.md) | 7 | 코드 지식 그래프(MCP)로 변경 영향 범위만 읽는 리뷰·디버깅·리팩터링 (스킬 7개 + MCP 서버) |
+| [cybersecurity](cybersecurity.md) | 22 | 증거 기반 보안 스킬 묶음 22개 (정찰·취약점·웹/클라우드/모바일 보안·악성코드·위협 헌팅·IR·SOC·로그·암호·공급망·레드/블루/퍼플팀·GRC 등) |
 | [daily-log](daily-log.md) | 1 | 오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록 |
 | [diagram-design](diagram-design.md) | 1 | 아키텍처·플로차트·시퀀스·ERD 등 40여 종 다이어그램을 에디토리얼 스타일 SVG/HTML로 |
 | [figma-artifact-import](figma-artifact-import.md) | 1 | HTML 프로토타입 화면을 Figma MCP로 대량 반영 |
