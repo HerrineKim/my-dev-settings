@@ -99,6 +99,33 @@ PY
 echo "updated plugins/note/skills/note"
 find "$repo/plugins" -name .DS_Store -delete
 
+# notebooklm-wiki-pipeline ships /pdf-to-wiki as a command plus a routing helper; turn it into a skill with frontmatter
+# and the "global paths" preamble. The NotebookLM MCP itself comes from `uv tool install notebooklm-mcp-cli` (install.sh).
+git clone -q --depth 1 https://github.com/capitalparser/notebooklm-wiki-pipeline.git "$tmp/src"
+nwp="$repo/plugins/notebooklm-wiki-pipeline"
+rm -rf "$nwp/skills/pdf-to-wiki"
+mkdir -p "$nwp/skills/pdf-to-wiki/scripts" "$nwp/skills/pdf-to-wiki/config"
+cp "$tmp/src/scripts/notebook_registry.py" "$nwp/skills/pdf-to-wiki/scripts/"
+cp "$tmp/src/config/notebooks.example.json" "$nwp/skills/pdf-to-wiki/config/"
+cp "$tmp/src/LICENSE" "$nwp/"
+python3 - "$tmp/src/commands/pdf-to-wiki.md" "$nwp/global-preamble.md" "$nwp/skills/pdf-to-wiki/SKILL.md" <<'PY'
+import sys
+cmd, pre = (open(p, encoding="utf-8").read() for p in sys.argv[1:3])
+cmd = cmd.replace("OUTPUT_DIR=~/vault/00_Wiki/AI_Generated", "OUTPUT_DIR=(위 '전역 실행'의 OUTPUT_DIR)")
+cmd = cmd.replace("설치 후 위 경로를 본인 Obsidian vault의 저장 위치로 바꿔라.\n\n", "")
+front = """---
+name: pdf-to-wiki
+description: Google Drive의 대용량 PDF를 Claude 컨텍스트에 넣지 않고 NotebookLM(MCP)이 읽게 한 뒤, 분석 결과만 받아 Obsidian Wiki 노트로 저장한다. 주제별 NotebookLM 노트북을 재사용하되 질의는 대상 PDF source 하나로 한정한다. "PDF를 위키 노트로", "드라이브 PDF 정리", "NotebookLM으로 요약해서 옵시디언에" 요청에 사용.
+argument-hint: "<drive_url_or_file_id> [wiki_title] [--topic topic_id]"
+---
+
+"""
+head, sep, rest = cmd.partition("\n\n")  # keep the "# /pdf-to-wiki" title, then insert the preamble
+open(sys.argv[3], "w", encoding="utf-8").write(front + head + "\n" + pre + "\n" + rest)
+PY
+rm -rf "$tmp/src"
+echo "updated plugins/notebooklm-wiki-pipeline/skills/pdf-to-wiki"
+
 # Upstream usage docs, copied verbatim into docs/upstream/<plugin>/ (linked from docs/skills/<plugin>.md).
 upstream_docs() { # <plugin> <github-repo> <path>...
   local plugin="$1" src="$2"; shift 2
@@ -117,6 +144,7 @@ upstream_docs marketingskills coreyhaines31/marketingskills README.md
 upstream_docs ui-ux-pro-max nextlevelbuilder/ui-ux-pro-max-skill README.md
 upstream_docs antislop miqdadbadjuber/anti-slop README.md
 upstream_docs ai-slop-thresher Burntgogi/ai-slop-thresher README.md
+upstream_docs notebooklm-wiki-pipeline capitalparser/notebooklm-wiki-pipeline README.md README.ko.md docs/adr/0001-notebooklm-mcp-approach.md
 upstream_docs magnus-agent-skills magnus919/agent-skills README.md LICENSE.md
 upstream_docs ecc affaan-m/ECC README.md COMMANDS-QUICK-REF.md TROUBLESHOOTING.md
 upstream_docs front-end-checklist thedaviddias/Front-End-Checklist README.md

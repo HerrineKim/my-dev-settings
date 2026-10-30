@@ -24,6 +24,7 @@
 | [make-interfaces-feel-better](make-interfaces-feel-better.md) | 1 | UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙 |
 | [marketingskills](marketingskills.md) | 52 | 마케팅 스킬 묶음 (CRO·카피라이팅·SEO·광고·분석·그로스 등 52개) |
 | [note](note.md) | 1 | 어느 프로젝트에서든 riverlog 지식 창고에 노트 추가·보강 |
+| [notebooklm-wiki-pipeline](notebooklm-wiki-pipeline.md) | 1 | /pdf-to-wiki: Drive PDF를 NotebookLM MCP로 읽혀 Obsidian Wiki 노트로 저장(nlm CLI·MCP 별도 설치) |
 | [riverlog-knowledge](riverlog-knowledge.md) | 1 | 새 작업 전에 riverlog 지식 창고에서 관련 노트 참고 |
 | [tdd-tidy-first](tdd-tidy-first.md) | 1 | Kent Beck식 TDD + Tidy First 개발 규칙 (plan.md "go" 워크플로) |
 | [ui-polish](ui-polish.md) | 1 | UI 스킬을 순서대로 엮어 방향·AI 티·디테일·접근성·최종 점검을 한 번에 (지휘자 스킬) |

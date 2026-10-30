@@ -16,10 +16,10 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴). `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크
 - `bin/`의 `skills-ls`, `apps-sync`, `rmbg`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
-- MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
+- MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
-필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
+필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
 
 ```bash
 skills-ls            # 전역 스킬 전체: ~/.claude/skills, claude.ai 동기화 스킬, user 플러그인 스킬
@@ -78,6 +78,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 | `android-reverse-engineering` | APK·JAR·AAR 디컴파일(jadx), 호출 흐름 추적, API 추출 | [SimoneAvogadro/android-reverse-engineering-skill](https://github.com/SimoneAvogadro/android-reverse-engineering-skill) (Apache-2.0). `/decompile` 커맨드는 `${CLAUDE_PLUGIN_ROOT}`를 써서 플러그인 설치 때만 동작 |
 | `marketingskills` (52) | CRO·카피·SEO·광고·분석·가격·런칭·이메일 등. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) |
 | `k-skill` (132) | 한국 생활·업무(교통·날씨·쇼핑·공공데이터·한글 문서 등). 키가 필요한 스킬은 `/k-skill-setup` 먼저 | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
+| `notebooklm-wiki-pipeline` | `/pdf-to-wiki <Drive URL> [제목] [--topic id]`: Drive PDF를 NotebookLM이 읽게 하고 결과만 받아 Obsidian 노트로 저장(토큰 절감). 처음 한 번 `nlm login`. 저장 위치 `~/Documents/Obsidian Vault/AI_Generated`(`$PDF_TO_WIKI_OUTPUT_DIR`), 주제 registry `~/.config/pdf-to-wiki/notebooks.json`(`$PDF_TO_WIKI_REGISTRY`) | [capitalparser/notebooklm-wiki-pipeline](https://github.com/capitalparser/notebooklm-wiki-pipeline) (MIT). 커맨드를 스킬로 바꾸고 `plugins/notebooklm-wiki-pipeline/global-preamble.md`(전역 경로·도구 이름)를 끼워 넣음. MCP는 비공식 NotebookLM API 기반 |
 | `korean-law` | 법제처 Open API MCP로 법령·판례 조회와 인용 검증. 키 없이 공용 한도 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고 MCP는 공개 서버 `mcp.gomdori.app/law` |
 | `magnus-agent-skills` (182) | 개발·제품·운영·데이터·글쓰기 범용 스킬. 전역에는 `skills-exclude`의 `!` 줄에 적은 12개(frontend-engineering, react, web-accessibility, performance-optimization, playwright, supabase, systematic-debugging, api-design-and-evolution, technical-documentation, adr-authoring, agent-skills, harness-engineering)만 링크 | [magnus919/agent-skills](https://github.com/magnus919/agent-skills) (MIT) |
 | `ecc` (314) | ECC의 skills/만 받음(에이전트·훅·룰·커맨드는 oh-my-claudecode와 겹쳐 뺌). 전역에는 nextjs-turbopack, react-patterns, react-performance, react-testing, typescript-patterns, browser-qa 6개만 링크 | [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) |
@@ -98,7 +99,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 claude plugin marketplace add HerrineKim/my-dev-settings
 for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
   web-design-guidelines make-interfaces-feel-better ui-polish clone-website diagram-design antislop ai-slop-thresher \
-  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc front-end-checklist; do
+  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc front-end-checklist notebooklm-wiki-pipeline; do
   claude plugin install "$p@hyerin-skills"
 done
 ```

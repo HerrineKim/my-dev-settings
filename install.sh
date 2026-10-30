@@ -56,8 +56,16 @@ if command -v claude >/dev/null; then
     claude mcp get front-end-checklist >/dev/null 2>&1 && \
       claude mcp remove -s user front-end-checklist >/dev/null && echo "removed MCP front-end-checklist (excluded)"
   fi
+  # /pdf-to-wiki가 쓰는 NotebookLM MCP(gemini-notebook-mcp). nlm CLI를 uv tool로 받고 user 스코프로 등록. 로그인(nlm login)은 브라우저라 직접.
+  command -v nlm >/dev/null || { command -v uv >/dev/null && uv tool install notebooklm-mcp-cli >/dev/null && echo "installed nlm (uv tool)"; }
+  if command -v nlm >/dev/null; then
+    claude mcp get gemini-notebook-mcp >/dev/null 2>&1 || { nlm setup add claude-code >/dev/null && echo "added MCP gemini-notebook-mcp (user)"; }
+    nlm login --check >/dev/null 2>&1 || echo "! NotebookLM 로그인 필요(2~4주마다): nlm login"
+  else
+    echo "! nlm 없음: brew install uv 후 install.sh 다시 실행 (/pdf-to-wiki용)"
+  fi
 else
-  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist MCP 등록을 건너뜁니다."
+  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp MCP 등록을 건너뜁니다."
 fi
 
 # Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.
