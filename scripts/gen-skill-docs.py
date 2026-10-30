@@ -37,6 +37,7 @@ SOURCES = {
     "front-end-checklist": ("thedaviddias/Front-End-Checklist", "skills/{s}"),
     "ecc": ("affaan-m/ECC", "skills/{s}"),
     "jscpd": ("kucherenko/jscpd", "skills/{s}"),
+    "es-toolkit": ("toss/es-toolkit", "es-toolkit-plugin/skills"),
     "magnus-agent-skills": ("magnus919/agent-skills", "{s}"),
 }
 OWN = ("HerrineKim/my-dev-settings", "plugins/{p}/skills/{s}")

@@ -14,6 +14,8 @@
 | [daily-log](daily-log.md) | 1 | 오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록 |
 | [diagram-design](diagram-design.md) | 1 | 아키텍처·플로차트·시퀀스·ERD 등 40여 종 다이어그램을 에디토리얼 스타일 SVG/HTML로 |
 | [ecc](ecc.md) | 314 | ECC 스킬 314개 (언어·프레임워크 패턴·테스트·보안·에이전트 하네스 등, 에이전트·훅은 제외). 전역에는 6개만 링크 |
+| [es-hangul](es-hangul.md) | 1 | 토스 es-hangul로 조사·초성·자모·숫자 한글화·로마자·키보드 변환을 처리하게 하는 스킬과 API 문서 |
+| [es-toolkit](es-toolkit.md) | 3 | 토스 es-toolkit 공식 스킬: 설치·import 가이드, 함수 추천, lodash 마이그레이션(이름에 es-toolkit- 접두어) |
 | [figma-artifact-import](figma-artifact-import.md) | 1 | HTML 프로토타입 화면을 Figma MCP로 대량 반영 |
 | [front-end-checklist](front-end-checklist.md) | 391 | Front-End Checklist 규칙 391개 스킬 + 통합 감사 스킬 + 원격 MCP. 전역에는 frontend-checklist-global만 링크 |
 | [frontend-design](frontend-design.md) | 1 | Anthropic frontend-design: 템플릿 같지 않은 UI 미학 가이드 |

@@ -133,6 +133,43 @@ for f in server.py pyproject.toml uv.lock .python-version LICENSE .env.example; 
 rm -rf "$tmp/src"
 echo "updated mcp/financial-datasets"
 
+# es-toolkit ships a Claude plugin whose skills are named guide/migrate/recommend; prefix them so the global
+# /guide etc. names stay free, and point their cross-references at the new names.
+git clone -q --depth 1 https://github.com/toss/es-toolkit.git "$tmp/src"
+rm -rf "$repo/plugins/es-toolkit/skills"; mkdir -p "$repo/plugins/es-toolkit/skills"
+for s in "$tmp/src/es-toolkit-plugin/skills"/*/; do
+  name="es-toolkit-$(basename "$s")"
+  cp -R "$s" "$repo/plugins/es-toolkit/skills/$name"
+  sed -i '' -e "s/^name: .*/name: $name/" -e 's#/es-toolkit:\([a-z]*\)#/es-toolkit-\1#g' "$repo/plugins/es-toolkit/skills/$name/SKILL.md"
+  echo "updated plugins/es-toolkit/skills/$name"
+done
+cp "$tmp/src/LICENSE" "$repo/plugins/es-toolkit/"
+rm -rf "$tmp/src"
+
+# es-hangul has no agent skill; plugins/es-hangul/skills/es-hangul/SKILL.md is ours, and its references/api.md is
+# rebuilt here from the upstream Korean API docs (frontmatter, imports and the Sandpack playground stripped).
+git clone -q --depth 1 https://github.com/toss/es-hangul.git "$tmp/src"
+python3 - "$tmp/src/docs/src/pages/docs/api" "$repo/plugins/es-hangul/skills/es-hangul/references/api.md" "$(git -C "$tmp/src" rev-parse --short HEAD)" <<'PY2'
+import re, sys
+from pathlib import Path
+src, out, rev = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
+parts = [f"# es-hangul API (한국어 문서 모음)\n\n원본: https://github.com/toss/es-hangul/tree/{rev}/docs/src/pages/docs/api\n"]
+for group in sorted(p for p in src.iterdir() if p.is_dir()):
+    parts.append(f"\n# {group.name}\n")
+    for f in sorted(group.glob("*.ko.mdx")):
+        t = f.read_text(encoding="utf-8")
+        t = re.sub(r"^---\n.*?\n---\n", "", t, flags=re.S)
+        t = re.sub(r"^import .*\n", "", t, flags=re.M)
+        t = re.split(r"\n## 사용해보기", t)[0]
+        t = re.sub(r"^(#+) ", r"#\1 ", t, flags=re.M).strip()
+        parts.append("\n" + t + "\n")
+out.parent.mkdir(parents=True, exist_ok=True)
+out.write_text("".join(parts), encoding="utf-8")
+PY2
+cp "$tmp/src/LICENSE" "$repo/plugins/es-hangul/"
+rm -rf "$tmp/src"
+echo "updated plugins/es-hangul/skills/es-hangul/references/api.md"
+
 # Upstream usage docs, copied verbatim into docs/upstream/<plugin>/ (linked from docs/skills/<plugin>.md).
 upstream_docs() { # <plugin> <github-repo> <path>...
   local plugin="$1" src="$2"; shift 2

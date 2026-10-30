@@ -133,6 +133,16 @@
       "name": "jscpd",
       "source": "./plugins/jscpd",
       "description": "중복 코드 탐지 jscpd 사용법과 DRY 리팩터링·코드베이스 비교·마이그레이션·정리 스킬 5개(jscpd CLI 별도 설치)"
+    },
+    {
+      "name": "es-toolkit",
+      "source": "./plugins/es-toolkit",
+      "description": "토스 es-toolkit 공식 스킬: 설치·import 가이드, 함수 추천, lodash 마이그레이션(이름에 es-toolkit- 접두어)"
+    },
+    {
+      "name": "es-hangul",
+      "source": "./plugins/es-hangul",
+      "description": "토스 es-hangul로 조사·초성·자모·숫자 한글화·로마자·키보드 변환을 처리하게 하는 스킬과 API 문서"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

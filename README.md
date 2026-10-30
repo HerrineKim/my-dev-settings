@@ -80,6 +80,8 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 | `k-skill` (132) | 한국 생활·업무(교통·날씨·쇼핑·공공데이터·한글 문서 등). 키가 필요한 스킬은 `/k-skill-setup` 먼저 | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
 | `notebooklm-wiki-pipeline` | `/pdf-to-wiki <Drive URL> [제목] [--topic id]`: Drive PDF를 NotebookLM이 읽게 하고 결과만 받아 Obsidian 노트로 저장(토큰 절감). 처음 한 번 `nlm login`. 저장 위치 `~/Documents/Obsidian Vault/AI_Generated`(`$PDF_TO_WIKI_OUTPUT_DIR`), 주제 registry `~/.config/pdf-to-wiki/notebooks.json`(`$PDF_TO_WIKI_REGISTRY`) | [capitalparser/notebooklm-wiki-pipeline](https://github.com/capitalparser/notebooklm-wiki-pipeline) (MIT). 커맨드를 스킬로 바꾸고 `plugins/notebooklm-wiki-pipeline/global-preamble.md`(전역 경로·도구 이름)를 끼워 넣음. MCP는 비공식 NotebookLM API 기반 |
 | `jscpd` (5) | 중복 코드 탐지 [jscpd](https://jscpd.dev) 사용법(`/jscpd`)과 `/dry-refactoring`, `/codebase-refactoring`(`--health` 기준 중복·죽은 코드·복잡도 정리), `/compare-codebases`, `/code-migration`. CLI는 Brewfile의 `jscpd`. MCP는 프로젝트마다 `claude mcp add -s project jscpd -- jscpd --mcp .`(전역 등록하면 세션마다 스캔해서 뺌) | [kucherenko/jscpd](https://github.com/kucherenko/jscpd) (MIT) |
+| `es-toolkit` (3) | lodash 대체 유틸 [es-toolkit](https://es-toolkit.dev) 공식 스킬: `/es-toolkit-guide`(설치·import), `/es-toolkit-recommend`(함수 추천), `/es-toolkit-migrate`(lodash 마이그레이션, strict·compat). 라이브러리 자체는 프로젝트마다 설치 | [toss/es-toolkit](https://github.com/toss/es-toolkit/tree/main/es-toolkit-plugin) (MIT). 원래 이름 guide·migrate·recommend가 너무 일반적이라 벤더링 때 `es-toolkit-` 접두어를 붙임 |
+| `es-hangul` | 한글 처리(조사·받침·초성 검색·자모·숫자/금액 한글화·수사·로마자·발음·한영 키보드)를 직접 짜지 않고 [es-hangul](https://es-hangul.slash.page) 함수로. 라이브러리는 프로젝트마다 설치 | 직접 만듦. `references/api.md`는 [toss/es-hangul](https://github.com/toss/es-hangul) (MIT) 한국어 API 문서를 `vendor.sh`가 모은 것 |
 | `korean-law` | 법제처 Open API MCP로 법령·판례 조회와 인용 검증. 키 없이 공용 한도 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고 MCP는 공개 서버 `mcp.gomdori.app/law` |
 | `magnus-agent-skills` (182) | 개발·제품·운영·데이터·글쓰기 범용 스킬. 전역에는 `skills-exclude`의 `!` 줄에 적은 12개(frontend-engineering, react, web-accessibility, performance-optimization, playwright, supabase, systematic-debugging, api-design-and-evolution, technical-documentation, adr-authoring, agent-skills, harness-engineering)만 링크 | [magnus919/agent-skills](https://github.com/magnus919/agent-skills) (MIT) |
 | `ecc` (314) | ECC의 skills/만 받음(에이전트·훅·룰·커맨드는 oh-my-claudecode와 겹쳐 뺌). 전역에는 nextjs-turbopack, react-patterns, react-performance, react-testing, typescript-patterns, browser-qa 6개만 링크 | [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) |
@@ -100,7 +102,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 claude plugin marketplace add HerrineKim/my-dev-settings
 for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
   web-design-guidelines make-interfaces-feel-better ui-polish clone-website diagram-design antislop ai-slop-thresher \
-  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc front-end-checklist notebooklm-wiki-pipeline jscpd; do
+  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc front-end-checklist notebooklm-wiki-pipeline jscpd es-toolkit es-hangul; do
   claude plugin install "$p@hyerin-skills"
 done
 ```
