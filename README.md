@@ -16,7 +16,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴)
 - `bin/`의 `skills-ls`, `apps-sync`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
-- MCP 서버 `code-review-graph`, `korean-law`를 user 스코프로 등록
+- MCP 서버 `code-review-graph`, `korean-law`를 user 스코프로 등록. `korean-law`가 `skills-exclude`에 있으면 등록하지 않고 이미 있으면 지움
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
 필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
