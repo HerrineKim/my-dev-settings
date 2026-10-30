@@ -42,12 +42,17 @@
     {
       "name": "riverlog-knowledge",
       "source": "./plugins/riverlog-knowledge",
-      "description": "개발 전에 riverlog 지식 창고에서 관련 노트 참고"
+      "description": "새 작업 전에 riverlog 지식 창고에서 관련 노트 참고"
     },
     {
       "name": "make-interfaces-feel-better",
       "source": "./plugins/make-interfaces-feel-better",
       "description": "UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙"
+    },
+    {
+      "name": "ui-polish",
+      "source": "./plugins/ui-polish",
+      "description": "UI 스킬을 순서대로 엮어 방향·AI 티·디테일·접근성·최종 점검을 한 번에 (지휘자 스킬)"
     },
     {
       "name": "note",

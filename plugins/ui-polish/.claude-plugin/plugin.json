@@ -1,0 +1,6 @@
+{
+  "name": "ui-polish",
+  "version": "0.1.0",
+  "description": "설치된 UI 스킬(frontend-design, antislop, make-interfaces-feel-better, web-design-guidelines 등)을 순서대로 엮어 UI 개선을 한 번에 진행하는 지휘자 스킬",
+  "author": { "name": "HerrineKim" }
+}

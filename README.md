@@ -52,8 +52,9 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 |---|---|---|
 | `daily-log` | 오늘 Claude Code 작업과 GitHub 반영 내역을 노션 업무 회고에 기록 | 직접 만듦 |
 | `tdd-tidy-first` | Kent Beck식 TDD + Tidy First(plan.md "go" 워크플로) | 직접 만듦 |
-| `riverlog-knowledge` | 개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고 노트 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받음 | 직접 만듦 |
+| `riverlog-knowledge` | 새 작업(개발·디자인·리뷰·문서·글쓰기·조사) 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고 노트 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받음 | 직접 만듦 |
 | `figma-artifact-import` | HTML 프로토타입 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김 | 직접 만듦 |
+| `ui-polish` | 설치된 UI 스킬(frontend-design·antislop·make-interfaces-feel-better·web-design-guidelines)을 순서대로 불러 UI 개선을 한 번에. `--review`·`--quick` 모드 | 직접 만듦 |
 | `note` | 자료(글·URL·파일)를 riverlog 노트로 재구성해 넣고 인덱스·링크 갱신. `~/Projects/riverlog`(또는 `$RIVERLOG_DIR`) | [HerrineKim/riverlog](https://github.com/HerrineKim/riverlog/tree/main/.claude/skills/note). 벤더링 때 `plugins/note/global-preamble.md`(레포 위치 찾기)를 앞에 끼워 넣음 |
 | `ui-ux-pro-max` (7) | UI/UX 판단 데이터와 `/ui-styling`, `/design`, `/design-system`, `/brand`, `/banner-design`, `/slides` | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) |
 | `frontend-design` | 템플릿 같지 않은 UI 미학·타이포 방향 | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design) |
@@ -84,7 +85,7 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 ```bash
 claude plugin marketplace add HerrineKim/my-dev-settings
 for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
-  web-design-guidelines make-interfaces-feel-better clone-website diagram-design antislop ai-slop-thresher \
+  web-design-guidelines make-interfaces-feel-better ui-polish clone-website diagram-design antislop ai-slop-thresher \
   karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity; do
   claude plugin install "$p@hyerin-skills"
 done

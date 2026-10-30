@@ -1,6 +1,6 @@
 # riverlog-knowledge
 
-개발 작업 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고(`content/knowledge`)에서 관련 노트를 찾아 참고한다. `global-claude.md`가 개발 작업마다 먼저 쓰도록 지시한다. 직접 만든 스킬.
+새 작업(개발·디자인·리뷰·문서·글쓰기·조사) 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고(`content/knowledge`)에서 관련 노트를 찾아 참고한다. `global-claude.md`가 작업마다 먼저 쓰도록 지시한다. 다른 스킬이 작업을 이끌어도, 서브에이전트에 맡길 때도 마찬가지다. 직접 만든 스킬.
 
 ## 준비
 - `~/Projects/riverlog`에 클론해 두면 그걸 읽고, 없으면 `~/.cache/riverlog`로 받아 온다
@@ -17,7 +17,7 @@
 
 ### `/riverlog-knowledge`
 
-개발 작업(구현·설계·디버깅·리뷰·기술 선택)을 시작할 때 riverlog 지식 창고(HerrineKim/riverlog의 content/knowledge)에서 관련 노트를 찾아 사용자의 기존 정리·관례·결정을 참고한다. 어느 프로젝트에서든 코드를 쓰기 전에 사용. "지식 창고 참고", "riverlog 찾아봐", "내가 정리한 거 있어?" 요청에도 사용.
+작업의 종류와 상관없이(개발·디자인·리뷰·문서·글쓰기·조사 등) 새 작업을 시작할 때 riverlog 지식 창고(HerrineKim/riverlog의 content/knowledge)에서 관련 노트를 찾아 사용자의 기존 정리·관례·결정을 참고한다. 어느 프로젝트에서든 다른 스킬보다 먼저 쓰고, 서브에이전트에 일을 맡길 때도 브리프에 넣는다. "지식 창고 참고", "riverlog 찾아봐", "내가 정리한 거 있어?" 요청에도 사용.
 
 - 호출: `/riverlog-knowledge` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 원조 GitHub: [HerrineKim/my-dev-settings](https://github.com/HerrineKim/my-dev-settings/tree/HEAD/plugins/riverlog-knowledge/skills/riverlog-knowledge) (이 레포에서 만듦)
