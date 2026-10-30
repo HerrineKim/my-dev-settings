@@ -47,8 +47,11 @@ cask "adobe-creative-cloud"
 
 # 유틸리티
 cask "aldente"
+cask "appcleaner"
 cask "codingnoye/tap/gksdud"
+cask "daisydisk"
 cask "iina"
+cask "imageoptim"
 cask "input-source-pro"
 cask "jordanbaird-ice"
 cask "karabiner-elements"

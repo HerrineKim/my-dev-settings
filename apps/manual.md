@@ -7,6 +7,7 @@ Homebrew와 App Store에 없어서 `apps-sync`가 설치하지 못하는 앱이�
 | Atlas (`dev.atlas.ide`) | 배포처에서 받은 dmg | ChatGPT Atlas 브라우저와 다른 앱 |
 | Adobe Illustrator 2026 | Creative Cloud 앱 | `adobe-creative-cloud` 설치 후 |
 | Photon Studio (`com.tenzen.photon`) | 배포처에서 받은 dmg | |
+| Battery Guru (`io.macdaddy.batteryguru`) | 배포처에서 받은 dmg | App Store의 같은 이름 앱과 다른 앱 |
 
 ## 목록에 넣지 않는 것
 
