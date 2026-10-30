@@ -13,7 +13,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 업데이트는 `git -C ~/Projects/my-dev-settings pull`. 스킬은 심볼릭 링크라 바로 반영됩니다.
 
 `install.sh`가 하는 일(여러 번 실행해도 안전)
-- `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움
+- `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴)
 - `bin/`의 `skills-ls`, `apps-sync`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
 - MCP 서버 `code-review-graph`, `korean-law`를 user 스코프로 등록

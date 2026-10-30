@@ -1,0 +1,8 @@
+# install.sh가 ~/.claude/skills에 링크하지 않는 플러그인(plugins/ 아래 폴더 이름, 한 줄에 하나).
+# 레포와 vendor.sh에는 그대로 두므로 줄을 지우고 install.sh를 다시 실행하면 돌아옵니다.
+# 2026-10-30: 설치 후 사용 기록 0회라 뺌.
+marketingskills
+k-skill
+korean-law
+figma-artifact-import
+diagram-design
