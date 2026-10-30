@@ -18,6 +18,7 @@
 | [k-skill](k-skill.md) | 132 | 한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 132개) |
 | [karpathy-guidelines](karpathy-guidelines.md) | 1 | Karpathy식 코딩 행동 지침 (가정 드러내기·단순함·외과적 수정·검증 기준) |
 | [korean-law](korean-law.md) | 1 | 법제처 Open API MCP로 법령·판례·행정규칙·자치법규 조회와 인용 검증 |
+| [magnus-agent-skills](magnus-agent-skills.md) | 182 | 범용 스킬 묶음 182개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크 |
 | [make-interfaces-feel-better](make-interfaces-feel-better.md) | 1 | UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙 |
 | [marketingskills](marketingskills.md) | 52 | 마케팅 스킬 묶음 (CRO·카피라이팅·SEO·광고·분석·그로스 등 52개) |
 | [note](note.md) | 1 | 어느 프로젝트에서든 riverlog 지식 창고에 노트 추가·보강 |

@@ -1,0 +1,121 @@
+# System One ecosystem radar
+
+Original Jev/Laya/CLM snapshot checked 2026-09-25; the linked open-candidate
+screening was checked 2026-09-27. This is a discovery aid, not a quality ranking.
+Download counts, stars, and community benchmark claims move quickly. Confirm
+model card, code, license, revision, and target-data evaluation before adoption.
+
+## Primary candidates
+
+| Candidate | What is established publicly | Operational posture |
+|---|---|---|
+| TypeSafe Jev | Managed Choice/Score/Noul API; experimental images on 1.13/1.14, Box on 1.14, and opt-in long context; [current aliases and feature gates](jev.md) | Hosted only; no public weight download |
+| Convai Innovations Laya | Open Apache-2.0 family; Python runtime; English, multilingual, and specialist checkpoints; router | Self-host Python; community ONNX/Node adapter also exists |
+| Laya typed-decisions | Laya specialist checkpoint for four documented workflows | Explicit opt-in specialist; not a general silent default |
+| Contrastive-LM CLM-v0.1-8B | Open Apache-2.0 head over frozen Qwen3-8B; Choice/Score/Noul wire API plus candidate ranking | Self-host Qwen3-8B pooling encoder and CLM head; see [CLM guidance](clm.md) |
+
+## OpenAI Decisions API: preview watch
+
+Checked 2026-10-04 against the [official DevDay 2026 recap](https://openai.com/index/devday-2026-recap/).
+OpenAI describes Luna answering user-defined questions with finite predefined
+answers from text or image context, for classification, routing, and next-action
+selection. The announcement says limited preview, with a broader release planned;
+that plan is not evidence of general availability.
+
+Treat this as a candidate to investigate when preview access and current API
+documentation are available. The announcement does not establish a public
+endpoint, SDK request schema, Choice/Score/Noul compatibility, probability or
+confidence semantics, calibration, limits, or performance parity with Jev.
+Do not invent an integration or silently substitute it behind a Jev adapter.
+Refresh the release status and actual API contract before implementation, then
+qualify the adapter and evaluate text and image workloads separately using
+[comparison design](comparison-design.md). Image support here does not imply
+that another decision model can inspect pixels.
+
+## Select a model for the actual decision
+
+Start with the cheapest deterministic rule or existing workflow that can meet the decision contract. If learned judgment is needed, use these as **shortlist rules**, then run a matched held-out comparison before selecting a winner:
+
+| Need or constraint | Candidate to investigate first | Decision boundary |
+|---|---|---|
+| Managed typed API with no model-hosting capacity | Jev | Keep provider egress, cost, and availability in the contract; no self-hosted Jev weights |
+| Private typed Choice/Score/Noul service with smaller or multilingual checkpoint choices | Laya family | Select the exact checkpoint and validate language, option budget, calibration, and runtime |
+| Closed candidate ranking, repeated action pool, or best-of-N verifier with 8B encoder capacity | CLM | Candidate-set probabilities are relative; published verifier wins require task fine-tuning and do not transfer automatically |
+| Local English label classification without a probability-distribution requirement | GLiNER2.5-Decide | Its labels are not Jev-shaped Choice/Score/Noul probabilities; use an explicit adapter |
+| Clear, bounded typed classification under a small-footprint constraint | Vega (`vegaml`) to screen | Validate the specific task; favor reversible or human-reviewed use; keep exact counts and authority deterministic; see the scoped evidence below |
+| Exact eligibility, arithmetic, permissions, or irreversible approval | Deterministic code or accountable human | No model probability authorizes the action |
+| Open-ended text or image understanding | Appropriate generative or multimodal model | A closed text-candidate model cannot generate or inspect unseen modalities |
+
+### Vega (`vegaml` 0.6.1) screening note
+
+See the [pinned source revision](https://github.com/NandhaKishorM/vegaml/tree/01d2850408084034e27174621c19e01f0f0b9e92), [pinned model revision](https://huggingface.co/nandakishorm/vega-08b-public-intents/tree/73a76a4f6c4fe672e0daa2d45ddc355afc5bc9dd), and [creator write-up](https://www.nandakishorm.com/writing/vega). Vega (`vegaml` 0.6.1) is a candidate to screen on clear, bounded typed-classification tasks, especially when routing is reversible or human-reviewed. Small synthetic screening suggested bounded support-routing potential but found false phishing alarms and confident misses; it establishes neither head-to-head superiority nor production qualification. Auto-loaded adapters were inactive, so this reflects base/default behavior, not an active specialist or test-time-tuned (TTT) result. Before task qualification, verify v0.6.1 overflow, unknown-setting, and required uncertainty-field handling, plus abstain/unbound behavior. Keep exact counts and policy deterministic; enforce execution authority outside model output. Use the existing [comparison design](comparison-design.md) and [evaluation and calibration](evaluation-and-calibration.md) guidance for task-specific validation.
+
+For Jev, Laya, and CLM on the same contract, preserve state, question wording, candidate descriptions, option order policy, and independently assigned labels. Measure quality and calibration by primitive, unknown/review coverage, cold and warm latency at the same client boundary, resource cost, and end-to-end outcomes. CLM's `clm-raw` is an ablation of its encoder; it is not an independent model choice. A task-fine-tuned CLM head should be compared separately from the zero-shot reference and from any specialist Laya checkpoint.
+
+## Experimental Strands Decider
+
+Checked 2026-10-04. Strands Labs' `StrandsAgents/strands-decider-2B-hobson-v19`
+is a separate project from Mapika Decider: a Qwen3.5-2B base with LoRA and a
+pointer head for Choice/Noul/Score. Read [the pinned experimental profile](strands-decider.md)
+for native confidence, question-sensitivity failures, context rejection,
+source-only vision, training and scoped local smoke evidence. It is a candidate
+for qualification, not a Jev replacement or a benchmark winner.
+
+## Open/community candidates worth screening
+
+For source-pinned screening notes on Eikos, Shisa DE-1, AutoJev, Kev, SemIf,
+and OpenJev Verdict—including their distinct readouts, licenses, limits, and
+16 GB weights-only estimates—see [open decision-model candidates](open-decision-candidates.md).
+Those notes do not rank the candidates or establish Jev parity.
+
+These projects use a similar typed-decision contract but are independent unless
+their own cards say otherwise:
+
+- `Meanblock/JEV-CPU`: Qwen3-0.6B fine-tune with a small CPU-oriented scope.
+- `Mapika/decider-0.8b` and `Mapika/decider-2b`: open typed-decision family;
+  inspect the model card for context, limits, and serving path.
+- `GestaltLabs/Jeff-1`: a LoRA-based Jev-style adapter with a local HTTP demo.
+- `lostargon/Tiny-Jev`: a small local model with Choice/Score/Noul-style
+  methods and remote-code loading; review code before enabling `trust_remote_code`.
+- `AmeenAhmed2/zico`: a larger open decision model with a PyTorch/MLX local
+  path and its own input/runtime contract.
+- `Praveenrajus/jevify-qwen3.5-4b` and other “Jev-style” cards: candidate
+  compatibility work, not evidence of TypeSafe model identity or parity.
+- Vision/edge variants such as Laya Vision or AXERA Laya packages: useful only
+  when the input modality or accelerator is in scope; verify license and the
+  fixed option/sequence limits.
+- `fastino/GLiNER2.5-Decide`: local English classifier with call-time labels,
+  multiple heads, and optional multi-label output. Its `classify_text` result
+  is a label or labels, not a Jev-compatible probability response. See
+  [operational guidance](gliner25-decide.md) before adapting a decision client.
+
+## Screening procedure
+
+For each candidate, capture:
+
+1. Owner and model-card/repository URL; last release and immutable revision.
+2. License for weights, code, base model, tokenizer, and datasets.
+3. Actual primitives and response schema; whether probabilities are normalized.
+4. Input modality, context/head limits, option cardinality, languages, and
+   batching behavior.
+5. Load/runtime requirements, device fallback, server/client maturity, and
+   offline artifact path.
+6. Training/evaluation data, calibration method, independent held-out evidence,
+   and known failure cases.
+7. Privacy, telemetry, `trust_remote_code`, network egress, and supply-chain
+   risks.
+8. A matched target-data result and a decision: adopt, shadow, investigate, or
+   reject.
+
+## Source links
+
+- Jev official: https://typesafe.ai/blog/introducing-system-one-models-and-jev
+- Laya official repository: https://github.com/NandhaKishorM/laya
+- CLM repository and model card: https://github.com/Contrastive-LM/CLM and https://huggingface.co/Contrastive-LM/CLM-v0.1-8B
+- Open model catalog (discovery only): https://decisioneval.dev/compare/
+- JEV-CPU card: https://huggingface.co/Meanblock/JEV-CPU
+- Decider card: https://huggingface.co/Mapika/decider-0.8b
+- Jeff-1 card: https://huggingface.co/GestaltLabs/Jeff-1
+- Tiny-Jev card: https://huggingface.co/lostargon/Tiny-Jev
+- Zico card: https://huggingface.co/AmeenAhmed2/zico
+- GLiNER2.5-Decide card: https://huggingface.co/fastino/GLiNER2.5-Decide

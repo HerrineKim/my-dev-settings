@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""raleigh — CLI for the City of Raleigh civic data and services.
+
+Thin entrypoint that imports the implementation package from the same
+directory so that `scripts/raleigh` remains the executable entrypoint.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+
+# Make the sibling raleighlib package importable when this script is run
+# directly or loaded via SourceFileLoader.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
+from raleighlib.cli import main  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "skill_name": "vercel-eve",
+  "evals": [
+    {
+      "id": "self-hosted-durable-agent",
+      "prompt": "Deploy our Eve agent behind Traefik on a Node VM. It must survive restart and run a nightly schedule.",
+      "expected_output": "A deployment plan that requires persistent Workflow storage, both proxy prefixes, an explicit sandbox backend, host authentication, schedule execution, and an authenticated session-plus-resume verification path.",
+      "assertions": [
+        "Names both /eve/ and /.well-known/workflow/ proxy prefixes",
+        "Requires persistent workflow state rather than ephemeral container storage",
+        "Does not treat a health check as sufficient verification"
+      ]
+    },
+    {
+      "id": "direct-provider-without-gateway",
+      "prompt": "Use Eve on our own server with Anthropic directly. We do not want requests routed through Vercel AI Gateway.",
+      "expected_output": "Instructions to use an AI SDK Anthropic provider model object and ANTHROPIC_API_KEY rather than a string Gateway model ID.",
+      "assertions": [
+        "Distinguishes a direct provider model object from a string model ID",
+        "Does not claim BYOK bypasses the Gateway",
+        "Keeps credentials out of source files"
+      ]
+    },
+    {
+      "id": "near-miss-ai-sdk",
+      "prompt": "Add a ToolLoopAgent to our AI SDK app and make it durable.",
+      "expected_output": "Routes to an AI SDK-specific workflow rather than treating ToolLoopAgent as an Eve API.",
+      "assertions": [
+        "States that ToolLoopAgent belongs to the separate AI SDK API",
+        "Does not invent an Eve-specific ToolLoopAgent configuration"
+      ]
+    },
+    {
+      "id": "resume-after-restart",
+      "prompt": "Verify that a scheduled Eve workflow resumes correctly after a host restart.",
+      "expected_output": "The verification uses persistent state, authenticates the session, observes schedule execution, and checks resume behavior rather than only health.",
+      "assertions": [
+        "Checks persistent workflow state after restart",
+        "Verifies authenticated session and scheduled execution",
+        "Checks resume behavior beyond a health endpoint"
+      ]
+    },
+    {
+      "id": "proxy-routing-diagnosis",
+      "prompt": "An Eve workflow UI loads but scheduled callbacks fail through the reverse proxy. Diagnose the deployment without exposing credentials.",
+      "expected_output": "The diagnosis checks both required proxy prefixes, callback routing, authentication, and logs with bounded redaction, then verifies a scheduled callback end to end.",
+      "assertions": [
+        "Checks both Eve proxy prefixes and callback routing",
+        "Keeps credentials out of logs and configuration examples",
+        "Verifies an authenticated scheduled callback end to end"
+      ]
+    }
+  ]
+}

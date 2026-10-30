@@ -1,0 +1,7 @@
+{
+  "name": "magnus-agent-skills",
+  "version": "0.1.0",
+  "description": "magnus919/agent-skills 벤더링: 개발·제품·운영·데이터·글쓰기 등 범용 스킬 182개",
+  "author": { "name": "Magnus Hedemark" },
+  "license": "MIT"
+}

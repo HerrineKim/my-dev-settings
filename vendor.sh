@@ -40,6 +40,7 @@ fetch k-skill               NomaDamas/k-skill '*'
 fetch code-review-graph     tirth8205/code-review-graph '*'
 fetch diagram-design        cathrynlavery/diagram-design diagram-design
 fetch korean-law            chrisryugj/korean-law-mcp korean-law
+fetch magnus-agent-skills   magnus919/agent-skills '*'
 # android-reverse-engineering ships a prebuilt Claude plugin (skill + /decompile command) with no NOTICE file.
 git clone -q --depth 1 https://github.com/SimoneAvogadro/android-reverse-engineering-skill.git "$tmp/src"
 rm -rf "$repo/plugins/android-reverse-engineering/skills" "$repo/plugins/android-reverse-engineering/commands"
@@ -96,5 +97,6 @@ upstream_docs marketingskills coreyhaines31/marketingskills README.md
 upstream_docs ui-ux-pro-max nextlevelbuilder/ui-ux-pro-max-skill README.md
 upstream_docs antislop miqdadbadjuber/anti-slop README.md
 upstream_docs ai-slop-thresher Burntgogi/ai-slop-thresher README.md
+upstream_docs magnus-agent-skills magnus919/agent-skills README.md LICENSE.md
 upstream_docs cybersecurity Masriyan/Claude-Code-CyberSecurity-Skill README.md USAGE.md INSTALL.md SECURITY.md docs/QUALITY.md
 python3 "$repo/scripts/gen-skill-docs.py"

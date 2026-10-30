@@ -1,0 +1,301 @@
+"""Local calibration workflow: identity, blinding, pairing, and score tests."""
+
+import base64
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+from jev_eval_audit import build_request, collect_groups, question_input_sha256
+from jev_eval_calibration import (
+    compare_audits,
+    compare_labels,
+    prepare,
+    read_audit,
+    records_from_artifacts,
+    render_review_html,
+    score,
+    select_records,
+)
+
+
+class JevEvalCalibrationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        reports = self.root / "system-one" / "reports"
+        reports.mkdir(parents=True)
+        for case_id in ("case-a", "case-b"):
+            assertions = ["Describes exact authorization", "Includes an unknown path"]
+            def trial(side, case_id=case_id, assertions=assertions):
+                return {
+                    "assertions": [{"assertion": assertion, "verdict": "manual_review"} for assertion in assertions],
+                    "manifest": {"status": "completed", "outputs": {"response": f"{case_id} {side} response"}},
+                }
+            report = {"skill_name": "system-one", "case_id": case_id,
+                      "candidate": trial("candidate"), "baseline": trial("baseline")}
+            (reports / f"{case_id}.comparison.json").write_text(json.dumps(report), encoding="utf-8")
+        groups, _ = collect_groups(self.root, 24_000)
+        rows = []
+        for group in groups:
+            rows.append({"skill": group["skill"], "case_id": group["case_id"],
+                         "side": group["side"], "response_sha256": group["response_sha256"],
+                         "question_input_sha256": question_input_sha256(build_request(group)),
+                         "assertions": [{"assertion": assertion, "suggested_verdict": "met",
+                                         "met_probability": 0.9, "provider_confidence": 0.8}
+                                        for assertion in group["assertions"]]})
+        self.audit = {"schema_version": 1, "mode": "live", "advisory_only": True,
+                      "model_requested": "jev-1.13.0",
+                      "selection_scope": {"status": "selected", "expected_report_count": 2,
+                                          "observed_report_count": 2, "missing_reports": [],
+                                          "unexpected_reports": []},
+                      "counts": {"reports_seen": 2,
+                          "prose_assertions_seen": 8, "assertions_selected": 8,
+                          "groups_selected": 4,
+                          "skipped_infra_error_assertions": 0, "generation_error_sides": 0,
+                          "skipped_non_prose_manual_assertions": 0,
+                          "skipped_response": 0, "skipped_oversized_assertion": 0,
+                          "skipped_oversized_group": 0, "skipped_unpaired_assertions": 0,
+                          "assertions_omitted_by_budget": 0,
+                          "groups_not_attempted_after_error": 0,
+                          "assertions_not_attempted_after_error": 0, "provider_errors": 0},
+                      "results": rows}
+        self.audit_path = self.root / "audit.json"
+        self.audit_path.write_text(json.dumps(self.audit), encoding="utf-8")
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def test_pair_sample_is_deterministic_and_blinded(self):
+        records = records_from_artifacts(self.root, self.audit)
+        selected, sampling = select_records(records, "frozen-seed", 2, 2)
+        self.assertEqual(selected, select_records(records, "frozen-seed", 2, 2)[0])
+        self.assertEqual(sampling["population_pairs_selected"], 2)
+        self.assertEqual(sampling["challenge_items_selected"], 2)
+        population = [item for item in selected if item["sample_class"] == "population"]
+        self.assertEqual(len(population), 4)
+        by_assertion = {}
+        for item in population:
+            by_assertion.setdefault((item["case_id"], item["assertion"]), set()).add(item["side"])
+        self.assertTrue(all(sides == {"candidate", "baseline"} for sides in by_assertion.values()))
+        output = self.root / "private-review"
+        summary = prepare(self.root, self.audit_path, output, "run-1", "frozen-seed", 2, 2)
+        self.assertEqual(summary["total_review_items"], 6)
+        self.assertEqual(summary["population_pairs_selected"], 2)
+        self.assertEqual(summary["challenge_items_selected"], 2)
+        packet = (output / "review-packet.md").read_text(encoding="utf-8")
+        self.assertIn("case-a candidate response", packet)
+        self.assertNotIn("suggested_verdict", packet)
+        self.assertNotIn("met_probability", packet)
+        blind_items = json.loads((output / "review-items.json").read_text(encoding="utf-8"))
+        self.assertEqual(set(blind_items), {"schema_version", "items"})
+        self.assertEqual(len(blind_items["items"]), 6)
+        self.assertEqual(set(blind_items["items"][0]), {"id", "assertion", "response"})
+        self.assertNotIn("suggested_verdict", json.dumps(blind_items))
+        self.assertNotIn("sample_class", json.dumps(blind_items))
+        self.assertEqual(os.stat(output / "review-items.json").st_mode & 0o777, 0o600)
+        review_html = (output / "review.html").read_text(encoding="utf-8")
+        self.assertIn("case-a candidate response", review_html)
+        self.assertEqual(review_html.count('data-review-id="'), 6)
+        self.assertNotIn("suggested_verdict", review_html)
+        self.assertNotIn("met_probability", review_html)
+        self.assertIn('reviewer_kind: "human"', review_html)
+        self.assertIn("connect-src 'none'", review_html)
+        self.assertIn("Download draft", review_html)
+        self.assertIn("Download final labels", review_html)
+        private_map = (output / "private-map.json").read_text(encoding="utf-8")
+        self.assertNotIn("case-a candidate response", private_map)
+        self.assertEqual(json.loads(private_map)["sampling"], sampling)
+        self.assertEqual(os.stat(output).st_mode & 0o777, 0o700)
+        self.assertEqual(os.stat(output / "review-packet.md").st_mode & 0o777, 0o600)
+        self.assertEqual(os.stat(output / "review.html").st_mode & 0o777, 0o600)
+        label_template = json.loads((output / "labels-template.json").read_text(encoding="utf-8"))
+        self.assertEqual(label_template["reviewer_kind"], "human")
+
+    def test_offline_review_html_escapes_untrusted_response_and_assertion(self):
+        item = {
+            "id": "j123", "response_sha256": "0" * 64,
+            "response": '</pre><script>alert("response")</script>',
+            "assertion": '<img src=x onerror=alert("assertion")>',
+            "suggested_verdict": "not_met", "met_probability": 0.01,
+        }
+        page = render_review_html([item])
+        self.assertNotIn('</pre><script>alert("response")</script>', page)
+        self.assertNotIn('<img src=x onerror=alert("assertion")>', page)
+        self.assertIn('&lt;script&gt;alert', page)
+        self.assertIn('&lt;img src=x onerror=', page)
+        self.assertNotIn("suggested_verdict", page)
+        self.assertNotIn("met_probability", page)
+        self.assertIn("script-src 'sha256-", page)
+        self.assertEqual(page.count("<script>"), 1)
+        script = re.search(r"<script>(.*?)</script>", page, re.DOTALL)
+        self.assertIsNotNone(script)
+        script_hash = base64.b64encode(hashlib.sha256(script.group(1).encode()).digest()).decode()
+        self.assertIn(f"script-src 'sha256-{script_hash}'", page)
+
+    def test_mismatched_or_partial_audit_is_rejected(self):
+        self.audit["results"][0]["response_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "response identity"):
+            records_from_artifacts(self.root, self.audit)
+        self.audit["counts"]["provider_errors"] = 1
+        self.audit_path.write_text(json.dumps(self.audit), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "coverage is incomplete"):
+            read_audit(self.audit_path)
+        self.audit["counts"]["provider_errors"] = 0
+        self.audit["counts"]["skipped_non_prose_manual_assertions"] = 1
+        self.audit_path.write_text(json.dumps(self.audit), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "coverage is incomplete"):
+            read_audit(self.audit_path)
+
+    def test_question_input_drift_is_rejected_but_legacy_rows_remain_readable(self):
+        self.audit["results"][0]["question_input_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "question input"):
+            records_from_artifacts(self.root, self.audit)
+        self.audit["results"][0].pop("question_input_sha256")
+        self.audit_path.write_text(json.dumps(self.audit), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "mixes question-fingerprinted"):
+            read_audit(self.audit_path)
+        for row in self.audit["results"]:
+            row.pop("question_input_sha256", None)
+        self.assertEqual(len(records_from_artifacts(self.root, self.audit)), 8)
+
+    def test_prepare_requires_complete_frozen_selected_case_coverage(self):
+        for scope_change in (
+            None,
+            {"status": "unknown"},
+            {"status": "selected", "expected_report_count": 3,
+             "observed_report_count": 2, "missing_reports": [["system-one", "case-c"]],
+             "unexpected_reports": []},
+            {"status": "selected", "expected_report_count": 2,
+             "observed_report_count": 2, "missing_reports": [],
+             "unexpected_reports": [["system-one", "case-c"]]},
+        ):
+            audit = json.loads(json.dumps(self.audit))
+            if scope_change is None:
+                audit.pop("selection_scope")
+            else:
+                audit["selection_scope"] = scope_change
+            self.audit_path.write_text(json.dumps(audit), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "selected-case coverage"):
+                prepare(self.root, self.audit_path, self.root / "not-created", "run-1", "seed", 2, 2)
+            self.assertFalse((self.root / "not-created").exists())
+
+    def test_small_audit_caps_samples_and_reports_realized_strata(self):
+        records = records_from_artifacts(self.root, self.audit)
+        selected, sampling = select_records(records, "small-source", 16, 12)
+        self.assertEqual(sampling, {
+            "population_pairs_requested": 16,
+            "population_pairs_available": 4,
+            "population_pairs_selected": 4,
+            "challenge_items_requested": 12,
+            "challenge_items_available": 0,
+            "challenge_items_selected": 0,
+        })
+        self.assertEqual(len(selected), 8)
+        self.assertTrue(all(item["sample_class"] == "population" for item in selected))
+
+        selected, sampling = select_records(records, "partial-challenge", 3, 12)
+        self.assertEqual(sampling["population_pairs_selected"], 3)
+        self.assertEqual(sampling["challenge_items_available"], 2)
+        self.assertEqual(sampling["challenge_items_selected"], 2)
+        self.assertEqual(sum(item["sample_class"] == "challenge_high_met" for item in selected), 2)
+
+        output = self.root / "small-private-review"
+        summary = prepare(self.root, self.audit_path, output, "run-small", "small-source", 16, 12)
+        self.assertEqual(summary["population_pairs_requested"], 16)
+        self.assertEqual(summary["population_pairs_selected"], 4)
+        self.assertEqual(summary["challenge_items_requested"], 12)
+        self.assertEqual(summary["challenge_items_selected"], 0)
+        self.assertEqual(summary["total_review_items"], 8)
+
+    def test_score_keeps_population_and_challenge_separate(self):
+        records = records_from_artifacts(self.root, self.audit)
+        selected, _ = select_records(records, "frozen-seed", 2, 2)
+        private_map = {"schema_version": 1, "source_run_id": "run-1", "model": "jev-1.13.0",
+                       "items": selected}
+        labels = {"schema_version": 1, "reviewer_id": "reviewer-a", "blind_to_predictions": True,
+                  "labels": [{"id": item["id"], "label": "not_met" if index == 0 else "met",
+                              "evidence": "Checked visible response against the assertion"}
+                             for index, item in enumerate(selected)]}
+        result = score(private_map, labels)
+        self.assertEqual(result["reviewer_kind"], "unknown")
+        self.assertIn("provenance is unknown", result["limitation"])
+        self.assertEqual(result["population"]["selected"], 4)
+        self.assertEqual(result["challenge_high_met"]["selected"], 2)
+        self.assertEqual(result["population"]["resolved"] + result["challenge_high_met"]["resolved"], 6)
+        labels["reviewer_kind"] = "human"
+        human_result = score(private_map, labels)
+        self.assertEqual(human_result["reviewer_kind"], "human")
+        labels["reviewer_kind"] = "model_teacher"
+        model_result = score(private_map, labels)
+        self.assertEqual(model_result["reviewer_kind"], "model_teacher")
+        self.assertIn("pseudo-label", model_result["limitation"])
+        labels["reviewer_kind"] = "mistyped"
+        with self.assertRaisesRegex(ValueError, "reviewer_kind must be"):
+            score(private_map, labels)
+        labels["reviewer_kind"] = "model_teacher"
+        labels["labels"][0]["label"] = ""
+        with self.assertRaisesRegex(ValueError, "every review item needs"):
+            score(private_map, labels)
+
+    def test_blind_reviewer_comparison_has_no_jev_predictions(self):
+        first = {"schema_version": 1, "reviewer_id": "a", "blind_to_predictions": True,
+                 "labels": [{"id": "j1", "label": "met", "evidence": "visible contract"},
+                            {"id": "j2", "label": "not_shown", "evidence": "missing evidence"}]}
+        second = {"schema_version": 1, "reviewer_id": "b", "blind_to_predictions": True,
+                  "labels": [{"id": "j2", "label": "not_met", "evidence": "incompatible shape"},
+                             {"id": "j1", "label": "met", "evidence": "visible contract"}]}
+        result = compare_labels(first, second)
+        self.assertEqual((result["items"], result["agreements"], len(result["disagreements"])), (2, 1, 1))
+        self.assertEqual(result["reviewer_kinds"], ["unknown", "unknown"])
+        self.assertEqual(result["disagreements"][0]["id"], "j2")
+        self.assertNotIn("suggested_verdict", json.dumps(result))
+        second["reviewer_id"] = "a"
+        with self.assertRaisesRegex(ValueError, "distinct reviewer IDs"):
+            compare_labels(first, second)
+        second["reviewer_id"] = "b"
+        second["labels"][0]["id"] = "other"
+        with self.assertRaisesRegex(ValueError, "same item IDs"):
+            compare_labels(first, second)
+
+    def test_compare_cli_writes_private_disagreement_file(self):
+        first = {"schema_version": 1, "reviewer_id": "a", "blind_to_predictions": True,
+                 "labels": [{"id": "j1", "label": "met", "evidence": "visible"}]}
+        second = {"schema_version": 1, "reviewer_id": "b", "blind_to_predictions": True,
+                  "labels": [{"id": "j1", "label": "not_shown", "evidence": "missing"}]}
+        first_path, second_path, output = (self.root / name for name in ("first.json", "second.json", "comparison.json"))
+        first_path.write_text(json.dumps(first), encoding="utf-8")
+        second_path.write_text(json.dumps(second), encoding="utf-8")
+        result = subprocess.run(
+            [sys.executable, str(Path(__file__).with_name("jev_eval_calibration.py")), "compare",
+             "--first", str(first_path), "--second", str(second_path), "--output", str(output)],
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(os.stat(output).st_mode & 0o777, 0o600)
+        self.assertEqual(json.loads(output.read_text(encoding="utf-8"))["agreements"], 0)
+
+    def test_stability_requires_identical_inputs_and_reports_flip(self):
+        repeated = json.loads(json.dumps(self.audit))
+        repeated["results"][0]["assertions"][0]["suggested_verdict"] = "not_shown"
+        repeated["results"][0]["assertions"][0]["met_probability"] = 0.45
+        result = compare_audits(self.audit, repeated)
+        self.assertEqual((result["matched_groups"], result["matched_assertions"]), (4, 8))
+        self.assertEqual(len(result["verdict_flips"]), 1)
+        self.assertNotIn("Describes exact authorization", json.dumps(result))
+        repeated["results"][0]["response_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "identical response groups"):
+            compare_audits(self.audit, repeated)
+        repeated["results"][0]["response_sha256"] = self.audit["results"][0]["response_sha256"]
+        repeated["results"][0]["assertions"][0]["assertion"] = "changed criterion"
+        with self.assertRaisesRegex(ValueError, "identical assertion text"):
+            compare_audits(self.audit, repeated)
+
+
+if __name__ == "__main__":
+    unittest.main()

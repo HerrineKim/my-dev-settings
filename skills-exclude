@@ -1,5 +1,6 @@
 # install.sh가 ~/.claude/skills에 링크하지 않는 플러그인(plugins/ 아래 폴더 이름, 한 줄에 하나).
 # 레포와 vendor.sh에는 그대로 두므로 줄을 지우고 install.sh를 다시 실행하면 돌아옵니다.
+# `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크합니다.
 # 2026-10-30: 설치 후 사용 기록 0회라 뺌.
 marketingskills
 k-skill
@@ -7,3 +8,17 @@ korean-law
 figma-artifact-import
 diagram-design
 clone-website
+# 2026-10-30: magnus919/agent-skills 182개는 레포에만 두고, 프론트엔드·디버깅·문서·스킬 작성에 자주 쓸 것만 전역 링크.
+magnus-agent-skills
+!magnus-agent-skills/frontend-engineering
+!magnus-agent-skills/react
+!magnus-agent-skills/web-accessibility
+!magnus-agent-skills/performance-optimization
+!magnus-agent-skills/playwright
+!magnus-agent-skills/supabase
+!magnus-agent-skills/systematic-debugging
+!magnus-agent-skills/api-design-and-evolution
+!magnus-agent-skills/technical-documentation
+!magnus-agent-skills/adr-authoring
+!magnus-agent-skills/agent-skills
+!magnus-agent-skills/harness-engineering

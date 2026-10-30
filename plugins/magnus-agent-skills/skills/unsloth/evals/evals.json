@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "skill_name": "unsloth",
+  "evals": [
+    {
+      "id": "surface-and-mac",
+      "prompt": "I have an Apple Silicon Mac and want Unsloth. Can I use the same CUDA QLoRA notebook my coworker uses, or should I install Desktop?",
+      "expected_output": "Distinguish the products and choose a documented Mac path without claiming CUDA notebook portability.",
+      "assertions": [
+        "The response distinguishes Core Python training from Studio or Desktop workflows.",
+        "The response requires checking the selected Mac backend and model before promising training support.",
+        "The response rejects running the NVIDIA CUDA recipe unchanged on Apple Silicon."
+      ]
+    },
+    {
+      "id": "isolated-install",
+      "prompt": "Prepare an executable Unsloth installation package for an Ubuntu RTX 5070 Ti host. Its existing Torch environment belongs to another project. Use the skill's observed compatibility baseline, but do not install or run a model here. Deliver install.sh and run-record.md; distinguish tested baseline facts from this unexecuted target.",
+      "expected_output": "An isolated pinned installer and evidence record with an explicit unexecuted-target boundary.",
+      "assertions": [
+        "artifact_exists: install.sh",
+        "artifact_exists: run-record.md",
+        "The installer targets a new environment and selects the CUDA wheel index matching the pinned Torch build.",
+        "The run record identifies the observed package baseline while marking this target's training as not run."
+      ]
+    },
+    {
+      "id": "data-leakage",
+      "prompt": "My train and validation JSONL rows have different IDs but identical messages. The preflight reports overlap. Can I keep those rows because the IDs differ?",
+      "expected_output": "Treat duplicate message content as leakage regardless of IDs and describe the limited audit scope.",
+      "assertions": [
+        "The response treats identical message content across splits as leakage despite different metadata IDs.",
+        "The response proposes rebuilding splits using source or conversation groups.",
+        "The response says a clean exact-duplicate check cannot establish absence of semantic leakage."
+      ]
+    },
+    {
+      "id": "zero-masked-loss",
+      "prompt": "Create label-audit.py for text-only Qwen SFT: loss is zero after using Llama delimiters and max length 256. Deliver runnable code that renders matched training and generation templates, checks actual collated labels, and refuses partially or wholly truncated answers before training. Do not merely recommend inspecting labels.",
+      "expected_output": "Runnable tokenizer and collator audit with fail-closed target-retention checks.",
+      "assertions": [
+        "artifact_exists: label-audit.py",
+        "The code checks non-ignored labels from the actual training collator rather than inferring masking from input strings.",
+        "The code rejects both partial target truncation and zero supervised tokens.",
+        "The code derives the assistant boundary from a verified template prefix and rejects a prefix mismatch."
+      ]
+    },
+    {
+      "id": "grpo-reward-hacking",
+      "prompt": "My Unsloth GRPO model gets perfect reward by printing answer tags with wrong answers. Give me a recovery plan for a 24 GB GPU.",
+      "expected_output": "Audit rewards against adversarial outputs and budget rollout memory before another bounded run.",
+      "assertions": [
+        "The response tests the reward against at least one correctly formatted but incorrect answer.",
+        "The response evaluates held-out task correctness separately from training reward.",
+        "The response includes rollout generation or completion length in memory planning."
+      ]
+    },
+    {
+      "id": "adapter-is-not-resume",
+      "prompt": "Build resume-check.py and run-record.md for an Unsloth adapter-only folder. There is no optimizer, scheduler, trainer state or RNG file. The user wants exact step-20 resume. Produce an executable check that blocks that claim, and describe a separate fresh-optimizer continuation. Do not train here.",
+      "expected_output": "An executable missing-state check and an honest continuation record.",
+      "assertions": [
+        "artifact_exists: resume-check.py",
+        "artifact_exists: run-record.md",
+        "The executable check rejects the adapter-only folder as insufficient for stateful resume.",
+        "The record identifies optimizer, scheduler, trainer progress and RNG as required checkpoint state without claiming an executed resume."
+      ]
+    },
+    {
+      "id": "export-parity",
+      "prompt": "Create verify-export.py and run-record.md to compare a saved Unsloth candidate with GGUF in llama.cpp. Use identical rendered prompts, greedy decoding and explicit task scoring. The user requires GPU-only inference. A prior subprocess capture_output wrapper consumed 20 GB RAM. No GPU is available in this evaluation: prepare the artifacts, mark parity not run, and do not upload anything.",
+      "expected_output": "GPU-only fixed-prompt parity code with bounded process output and honest evidence status.",
+      "assertions": [
+        "artifact_exists: verify-export.py",
+        "artifact_exists: run-record.md",
+        "The runtime invocation requests GPU layer offload and the code requires observed offload before passing parity.",
+        "The code bounds runtime output and wall time and stops only its own process on failure.",
+        "The record marks parity not run and makes no model upload claim."
+      ]
+    },
+    {
+      "id": "vision-collator",
+      "prompt": "I am fine-tuning a vision model in Unsloth. Can I turn image message blocks into strings and use the plain text SFT helper and collator?",
+      "expected_output": "Preserve the image path and use the model-specific vision processor and collator.",
+      "assertions": [
+        "The response rejects stringifying image blocks as a substitute for multimodal inputs.",
+        "The response selects a vision processor and vision data collator for the training batch.",
+        "The response verifies that image information reaches an actual batch."
+      ]
+    },
+    {
+      "id": "ddp-memory",
+      "prompt": "I have two 24 GB GPUs and a model that needs 40 GB per replica. Will torchrun with two Unsloth DDP workers make it fit?",
+      "expected_output": "Explain model replication versus sharding and require a compatible capacity strategy.",
+      "assertions": [
+        "The response explains that ordinary DDP replicates the model instead of combining GPU memory.",
+        "The response proposes a smaller or quantized model, or a verified sharding path, for capacity.",
+        "The response requires a bounded distributed smoke test before a full run."
+      ]
+    },
+    {
+      "id": "inventory-evidence",
+      "prompt": "Produce stage-status.json and run-record.md from this evidence: doctor exit 0, Torch and Unsloth null; tokenizer and GPU probes not run; no checkpoint or adapter; no evaluation outputs. Use explicit pass/fail/not-run for installation, label audit, training, reload, resume and export. Do not invent logs or successful execution.",
+      "expected_output": "Machine-readable incomplete stage statuses tied to evidence, plus reproduction prerequisites.",
+      "assertions": [
+        "artifact_exists: stage-status.json",
+        "artifact_exists: run-record.md",
+        "The stage report does not mark installation, training, reload, resume or export as passed from inventory exit zero.",
+        "The record identifies missing dependencies and required runtime evidence without inventing artifacts."
+      ]
+    },
+    {
+      "id": "reproducible-smoke-package",
+      "prompt": "Prepare a runnable GPU-only 20-step Unsloth text-SFT package with smoke-config.json, train.jsonl, heldout.jsonl, sft_smoke.py and run-record.md. Pin the public model revision and use the observed package baseline. Include base/candidate scoring, saved full checkpoints, fresh-process reload and stateful resume. No GPU is available here; deliver code and mark runtime stages not run.",
+      "expected_output": "A reproducible executable package with separate held-out fixtures and honest unexecuted stages.",
+      "assertions": [
+        "artifact_exists: smoke-config.json",
+        "artifact_exists: train.jsonl",
+        "artifact_exists: heldout.jsonl",
+        "artifact_exists: sft_smoke.py",
+        "artifact_exists: run-record.md",
+        "The package pins an immutable base-model revision and resolved dependencies.",
+        "The training script saves full trainer checkpoints and separately saves the adapter and tokenizer.",
+        "The package evaluates identical held-out prompts under fixed decoding and reports explicit scoring rather than using training loss as quality evidence.",
+        "The run record marks unavailable runtime stages not run."
+      ]
+    },
+    {
+      "id": "decision-experiment-package",
+      "prompt": "Prepare a runnable local Unsloth decision-training experiment for routing support tickets, refund detection and urgency scores. Deliver train.jsonl, calibration.jsonl, test.jsonl and decision-run.md. Pin an official notebook and proposed small model revision. No GPU is available now; audit hard labels and splits offline, and prepare GPU-only model/head checks, calibration, save and fresh reload. Existing Jev confidence thresholds must not be assumed valid.",
+      "expected_output": "An auditable three-split decision-model package with dedicated head/trainer, scoring and truthful unexecuted stages.",
+      "assertions": [
+        "artifact_exists: train.jsonl",
+        "artifact_exists: calibration.jsonl",
+        "artifact_exists: test.jsonl",
+        "artifact_exists: decision-run.md",
+        "The package uses a decision-specific loader, trainer and learned head rather than claiming the text-SFT smoke script trains decision heads.",
+        "The data separates source groups across training, calibration and final test splits and validates question IDs and hard-label values.",
+        "Calibration fitting uses only the calibration split and final probability metrics use the untouched test split.",
+        "The reload plan preserves the learned head and calibration configuration and compares probabilities on fixed questions.",
+        "The plan rejects observed CPU fallback under the GPU-only constraint and marks unavailable runtime stages not run.",
+        "The migration plan validates local probability and confidence semantics rather than reusing Jev thresholds unchanged."
+      ]
+    },
+    {
+      "id": "local-agent-artifact-contract",
+      "prompt": "Prepare an Unsloth-backed Codex smoke task in an isolated workspace that creates a small FizzBuzz program and tests. Deliver agent-plan.md and stage-status.json. The loaded local model currently uses Transformers, not llama-server. Preserve existing agent settings, approvals and GPU-only inference. Do not execute or download anything yet; account for conflicting docs about the auto-started server lifetime.",
+      "expected_output": "A prepared client-specific launch and artifact test with backend, permissions and lifecycle checks.",
+      "assertions": [
+        "artifact_exists: agent-plan.md",
+        "artifact_exists: stage-status.json",
+        "The plan identifies Codex's GGUF/llama-server requirement and does not claim the resident Transformers model is compatible.",
+        "The smoke acceptance requires inspecting actual files and executing the generated program or tests with bounded runtime.",
+        "The plan preserves existing configuration and distinguishes agent-owned tools from Unsloth server tools.",
+        "The lifecycle plan records the documentation/source discrepancy and checks only run-owned server processes before cleanup.",
+        "Unexecuted launch, GPU placement and task stages are marked not run."
+      ]
+    },
+    {
+      "id": "tool-and-mcp-boundaries",
+      "prompt": "Plan a Desktop Python tool and MCP smoke test that writes result.txt in a disposable workspace and reads a harmless fixture through one selected MCP server. Produce tool-contract.md. High sandbox mode is shown in the UI, but no capability probe was recorded. Explain exactly which evidence is needed before calling the workflow offline, confined or successful; keep existing permissions.",
+      "expected_output": "A real-artifact/tool-result acceptance plan with separate execution owners and unresolved protection evidence.",
+      "assertions": [
+        "artifact_exists: tool-contract.md",
+        "The contract separates Unsloth Python/Terminal isolation, agent-owned tools and external MCP permissions.",
+        "The contract requires an actual sandbox capability and network-policy check before claiming confinement or offline operation.",
+        "Tool success requires a real workspace file and readback; MCP success requires returned fixture content.",
+        "The contract includes a harmless denied-path test outside the granted workspace without reading sensitive data.",
+        "Required unavailable OS isolation blocks that stage instead of automatically selecting Full Access."
+      ]
+    },
+    {
+      "id": "media-artifact-package",
+      "prompt": "Prepare a local Unsloth Desktop image-edit and short-audio generation package with media-plan.md and stage-status.json. I have a generic image generation model but want instruction-based edits. Keep all model computation on GPU, with no CPU offload, and do not download models yet. Tell me how to prove the outputs are usable and reproducible.",
+      "expected_output": "A model-specific media plan with component/settings records, real-artifact checks and honest unexecuted stages.",
+      "assertions": [
+        "artifact_exists: media-plan.md",
+        "artifact_exists: stage-status.json",
+        "The plan verifies instruction-edit capability for the selected model rather than equating Transform with Edit.",
+        "The record covers all model components and their revisions plus generation settings and output hashes.",
+        "GPU-only acceptance verifies actual component placement and rejects CPU offload or fallback.",
+        "Usability checks include decoded image/audio properties and a separate semantic review of the requested result.",
+        "Generation and playback stages remain not run until real outputs have been produced and inspected."
+      ]
+    },
+    {
+      "id": "quantization-comparison-plan",
+      "prompt": "Our RTX 5070 Ti F16 GGUF parity test passed. Prepare quant-plan.md and comparison.json for evaluating UD-Q4 and Dynamic NVFP4 candidates without changing the working training environment. Can we promise the video's accuracy gain or require exact output tokens from lossy quantization? GPU-only inference and independent held-out tool tasks are required; do not run or download yet.",
+      "expected_output": "A pinned, backend-specific lossy comparison plan with task metrics and separate conversion-parity evidence.",
+      "assertions": [
+        "artifact_exists: quant-plan.md",
+        "artifact_exists: comparison.json",
+        "The plan distinguishes UD GGUF, NVFP4 inference and QLoRA training formats and loaders.",
+        "The comparison pins model and quantized artifacts and fixes prompts, decoding settings, context and scoring.",
+        "Lossy quality acceptance uses predeclared task tolerances and critical-failure checks, separate from F16 conversion token parity.",
+        "The plan budgets context and auxiliary memory, requires observed GPU placement and measures complete-task latency rather than adopting vendor throughput figures.",
+        "Unexecuted candidate loads and quality comparisons are marked not run and no universal accuracy gain is promised."
+      ]
+    },
+    {
+      "id": "local-data-recipe-evidence",
+      "prompt": "Plan an Unsloth Data Recipe that generates training examples from private local documents with a local model. Produce recipe-plan.md and dataset-contract.md. The visual recipe includes an LLM Judge and an external MCP tool profile. No uploads or hosted inference are authorized. How do we preserve privacy, source splits and answer quality?",
+      "expected_output": "A provider/tool-scoped local recipe plan with source-group separation and independent quality checks.",
+      "assertions": [
+        "artifact_exists: recipe-plan.md",
+        "artifact_exists: dataset-contract.md",
+        "Every generating/judging block has its provider endpoint, model revision and data-transfer scope checked before seed documents are sent.",
+        "The external MCP tool profile is held or restricted pending authorized data scope rather than receiving private document content automatically.",
+        "Source groups are separated before synthetic derivation and exported splits are checked for leakage.",
+        "Syntax validation and the LLM Judge are treated as limited evidence; task labels and final test acceptance are independently reviewed.",
+        "The plan preserves prompts, transforms, seeds, model/provider settings and preview-to-export artifact provenance."
+      ]
+    },
+    {
+      "id": "coding-provenance-contract",
+      "prompt": "Prepare dataset-contract.md for coding SFT: bug variants from one repository were randomly split after generation; some evaluation prompts match training prompts but have different answers. We have source commits but no recorded rights decision. Tool-call traces must retain their structure. Do not train yet.",
+      "expected_output": "A prepared source-family split and provenance contract with honest audit scope.",
+      "assertions": [
+        "artifact_exists: dataset-contract.md",
+        "The contract separates related source or repository families before synthetic derivation rather than randomizing derived rows across splits.",
+        "The contract treats shared prompts as leakage even when answers differ.",
+        "The contract records source revisions and rights decisions without treating field presence as verified permission.",
+        "The contract preserves tool-call structure through a compatible processor rather than flattening it into the text-only audit contract."
+      ]
+    },
+    {
+      "id": "verifier-challenge-receipts",
+      "prompt": "Deliver reward-contract.md and challenge-receipts.json for local code GRPO. A wrong edge-case solution passes training tests; lint rewards favor empty code; the test generator rejects a correct reference patch. Include timeout and infrastructure cases. No code execution or GPU run is available.",
+      "expected_output": "A prepared reward challenge package with independent truth, distinct execution outcomes and no fabricated validation.",
+      "assertions": [
+        "artifact_exists: reward-contract.md",
+        "artifact_exists: challenge-receipts.json",
+        "The contract requires reference solutions to pass generated tests and credible wrong solutions to fail before trusting the verifier.",
+        "The reward design does not allow empty or incorrect lint-compliant outputs to outrank correct task outputs.",
+        "The contract distinguishes timeout and infrastructure failure from known incorrect task outcomes.",
+        "The package marks actual verifier execution and GPU stages not run rather than claiming synthetic receipts validate them."
+      ]
+    },
+    {
+      "id": "local-grpo-budget-signal",
+      "prompt": "Plan local-grpo.md for our 16 GB GPU. Coinbase trained 9B on a 96 GB card; our SFT used 1.4 GB. All sampled code answers now get reward zero. We require training state to remain in VRAM. Should we run for more epochs with a paged optimizer?",
+      "expected_output": "A model-specific bounded feasibility and learning-signal plan, without hardware or reasoning promises.",
+      "assertions": [
+        "artifact_exists: local-grpo.md",
+        "The plan budgets rollout state, generation grouping, activations and optimizer state separately from the SFT memory observation.",
+        "The plan identifies all-equal task rewards as missing within-group task preference and investigates exploration or verifier failures before extending training.",
+        "The plan checks optimizer paging against the all-state-in-VRAM requirement rather than assuming QLoRA guarantees residency.",
+        "The plan requires a representative model-specific pilot before claiming the 16 GB target is feasible."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+# Spec-Driven Development for AI Software Factories
+
+A methodology where structured specifications are the executable input to an AI code generation pipeline. Quality gates enforce correctness at each phase.
+
+## Why Install This Skill
+
+When your agent loads this skill, it becomes a **software factory designer** who can:
+
+- **Design an SDD pipeline** — 5-phase pipeline from SPECIFY to DELIVER with 4 phase gates
+- **Write great specs** — 7 spec quality gates that separate precise specs from vague ones
+- **Choose spec methodologies** — BDD, OpenAPI, AsyncAPI, DbC, TLA+, ADRs, C4 — matched to your context
+- **Encode NFRs** — performance, security, observability requirements in machine-readable format
+- **Translate between formats** — PRD → SPEC.md → Gherkin → OpenAPI
+- **Handle gate recovery** — revision workflows when specs fail review
+- **Review integrated releases** — check real behavior and maintainability separately without duplicating your existing planning documents
+
+## What You Get
+
+Regression cases include the relevant worked example with recorded source hashes.
+
+Business-policy recipe, release template, and a read-only fictional loan evaluator with boundary tests.
+
+| Directory | Purpose |
+|-----------|---------|
+| `SKILL.md` | Pipeline overview, loading guide, methodology quick-pick |
+| `references/` | Pipeline, quality gates, review records, assumptions, methodology selection, NFRs, and worked examples |
+| `templates/` | Specifications, task plans, reviews, verification, business-policy records, and separate behavior/engineering verdicts |
+| `scripts/` | Spec/task validators and a synthetic business-policy evaluator |
+
+## Triggers
+
+Load this when designing a spec-driven pipeline, writing an AI-ready specification, or setting up quality gates for AI code generation.
+
+## Requirements
+
+Tool-agnostic — works with Claude Code, Cursor, Hermes Agent, Devin, OpenHands, droid, or any AI coding agent.
+
+
+## Quick Start
+
+Start with the setup and first workflow in SKILL.md, then use the linked resources for the specific task you need to complete.
+
+Review records bind approval to a candidate and acceptance contract. The SPEC
+assumptions ledger gives provisional choices owners and safe decision deadlines;
+finding handoffs retain ownership and verified closure. See
+`references/review-records.md` for worked regression challenges.

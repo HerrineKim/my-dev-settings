@@ -7,14 +7,18 @@ claude_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 dest="$claude_dir/skills"
 mkdir -p "$dest"
 # Plugins listed in skills-exclude stay in the repo but are not linked globally (their skill list costs context every session).
-excluded=" $(sed 's/#.*//' "$repo/skills-exclude" 2>/dev/null | xargs) "
+# A `!plugin/skill` line links just that skill of an excluded plugin anyway.
+excluded=" $(sed 's/#.*//' "$repo/skills-exclude" 2>/dev/null | grep -v '^ *!' | xargs) "
+kept=" $(sed 's/#.*//' "$repo/skills-exclude" 2>/dev/null | sed -n 's/^ *!//p' | xargs) "
 for skill in "$repo"/plugins/*/skills/*/; do
   name="$(basename "$skill")"
   target="$dest/$name"
   plugin="${skill#"$repo"/plugins/}"; plugin="${plugin%%/*}"
   case "$excluded" in *" $plugin "*)
-    if [ -L "$target" ] && [ "$(readlink "$target")" = "${skill%/}" ]; then rm "$target"; echo "unlinked excluded /$name"; fi
-    continue;;
+    case "$kept" in *" $plugin/$name "*) ;; *)
+      if [ -L "$target" ] && [ "$(readlink "$target")" = "${skill%/}" ]; then rm "$target"; echo "unlinked excluded /$name"; fi
+      continue;;
+    esac;;
   esac
   if [ -e "$target" ] && [ ! -L "$target" ]; then
     echo "skip $name: $target exists and is not a symlink" >&2; continue

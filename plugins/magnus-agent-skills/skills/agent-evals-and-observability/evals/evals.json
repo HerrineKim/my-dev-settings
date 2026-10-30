@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "skill_name": "agent-evals-and-observability",
+  "evals": [
+    {
+      "id": "eval-dataset-design",
+      "prompt": "I want to build an evaluation set for our customer-support agent to judge whether responses are good before every release. What does the dataset design look like: what cases belong in it, how many, and how do I keep it from going stale?",
+      "expected_output": "An eval dataset design organized around the agent's task contract: the response defines a set of representative tasks sampled from real production traffic (the actual questions and edge cases users ask), each with a task description, the input, and the expected behavior, and it explains the population discipline: cases are drawn from production distributions including the failure modes the team cares about, plus a curated set of edge cases and regression cases from past incidents. The dataset's size is matched to the decision it supports (a small curated set for release gating versus a larger sampling set for tuning), and the response covers the freshness contract: a process for adding new cases from production incidents and removing or re-validating cases that no longer reflect the product, with versioning so results stay comparable across releases.",
+      "assertions": [
+        "The dataset is sampled from real production traffic and past failure modes, not invented by the team alone",
+        "Each case carries a task description, input, and expected behavior",
+        "Dataset size is matched to the decision it supports",
+        "A freshness process adds incident-derived cases and retires stale ones",
+        "Versioning keeps results comparable across releases"
+      ]
+    },
+    {
+      "id": "grader-criteria",
+      "prompt": "Our eval harness has tasks and recorded agent outputs, but the scoring is a single human judgment of 'looks good.' I want objective, repeatable grading. How do I write grader criteria that multiple reviewers (or a judge model) can apply consistently?",
+      "expected_output": "Grading criteria written as discrete, checkable requirements rather than holistic impressions: each task has pass-fail or rubric-scored criteria derived from the task contract \u2014 required content must be present, required steps must be taken, forbidden behaviors must be absent, and correctness is defined against a reference answer or verifiable facts rather than style. The response explains the rubric design: a small number of criteria (not a long checklist of trivia), each stated so that a reviewer can determine pass or fail without interpretation, with explicit handling of partial credit and a rule for when a single failure fails the whole case (e.g., a safety violation or a wrong factual claim). It also covers calibration: sample-scoring a set of outputs against the rubric, reconciling disagreements, and iterating the rubric until reviewers converge.",
+      "assertions": [
+        "Criteria are discrete and checkable, derived from the task contract",
+        "Required content, required steps, and forbidden behaviors are separated",
+        "Partial credit and fail-the-case rules are explicit",
+        "A calibration pass with disagreement reconciliation is prescribed",
+        "Rubric iteration continues until reviewers converge"
+      ]
+    },
+    {
+      "id": "regression-analysis",
+      "prompt": "Our agent's overall score went up after a prompt change, but a few individual tasks got much worse, and I suspect they are the ones that matter. How do I analyze eval results across releases to catch regressions rather than a single averaged number?",
+      "expected_output": "A regression analysis that looks below the aggregate score: the response prescribes comparing per-case results between the baseline and candidate release, separating the cases that improved, regressed, and stayed the same, and weighting the regressed cases by their production frequency and severity so a drop on a high-traffic task outweighs gains on rare ones. It explains the statistical ground rules: small eval sets produce noisy deltas, so the analysis distinguishes meaningful changes from sampling noise (via confidence bounds or a stated sample requirement) and flags regressions for investigation even when the average improves. It also covers bucketing by case category (customer-visible errors, safety, style) so the team can see which behavior class moved, and it prescribes a fix loop: investigate the regressed cases, decide whether the change or the eval is wrong, and re-run.",
+      "assertions": [
+        "Analysis compares per-case results between baseline and candidate, not just the average",
+        "Regressed cases are weighted by production frequency and severity",
+        "Statistical noise in small eval sets is accounted for with confidence bounds",
+        "Results are bucketed by behavior class such as safety, errors, and style",
+        "A fix loop investigates regressed cases and re-runs after changes"
+      ]
+    },
+    {
+      "id": "release-gate-design",
+      "prompt": "We want to gate releases on eval results so a bad change cannot ship. How do I design the release gate so it blocks real regressions without making every release an evals fire drill?",
+      "expected_output": "A release-gate design that separates the gating decision from the raw score: the response defines the gate criteria in terms of the regression analysis rather than a single threshold \u2014 no regressions on critical-path cases, no regressions beyond a tolerance band on the overall set, and the gate uses the previously established baseline for the same version of the eval set (so set changes do not silently move the goalposts). It prescribes the operational mechanics: the gate runs in CI, produces a comparable report against the merged baseline, blocks on the blocking criteria, and routes borderline results to a human review queue with the evidence attached rather than an automatic pass or fail. It also covers the escape hatch: an explicit override process with a recorded reason and owner, so the gate stays credible.",
+      "assertions": [
+        "The gate uses regression-relative criteria, not a single absolute score",
+        "The baseline is pinned to the same eval-set version so goalposts do not move",
+        "The gate runs in CI with a comparable report and blocks on critical-path regressions",
+        "Borderline results route to human review with evidence, not automatic pass or fail",
+        "An explicit, recorded override process keeps the gate credible"
+      ]
+    },
+    {
+      "id": "incident-to-case-learning",
+      "prompt": "A customer-facing incident last week traced back to an agent answer we never tested: the agent confidently gave wrong configuration advice. I want the incident to become a permanent eval case so it cannot regress. What is the incident-to-case workflow and how does trajectory review fit in?",
+      "expected_output": "An incident-to-case workflow that converts the postmortem into durable eval coverage: the response walks the process \u2014 extract the failing behavior from the incident (the wrong output, the context that produced it, the harm), turn it into a task case with the correct expected behavior and grader criteria, add it to the regression set, and verify it fails on the current release and passes on the fix. It explains where trajectory review fits: for agent failures, the answer alone may not show the flaw, so the review examines the reasoning trajectory (the steps, tool calls, and sources the agent used) to understand whether the error was a knowledge gap, a retrieval failure, or a reasoning failure, which determines the fix and the right case shape. The response also covers the loop: the new case joins the baseline, so any future release that reintroduces the behavior is blocked.",
+      "assertions": [
+        "The workflow converts the incident into a task case with expected behavior and grader criteria",
+        "The case is verified to fail on the current release and pass on the fix",
+        "Trajectory review is used to classify the failure as knowledge, retrieval, or reasoning",
+        "The failure classification drives both the fix and the case shape",
+        "The new case joins the baseline so the regression is blocked going forward"
+      ]
+    },
+    {
+      "id": "diagnostic-performance-replay",
+      "prompt": "A candidate agent scores higher on the frozen answer set, but its replayed tool calls time out under production concurrency and one rare customer slice regresses. Design the evidence and release interpretation.",
+      "expected_output": "Separate performance, diagnostic, replay, and online evidence. Compare paired case and slice outcomes, inspect timeout and trajectory causes, validate replay fidelity and side-effect suppression, and hold or condition release because the rare slice and latency failure are not erased by the aggregate score.",
+      "assertions": [
+        "Separates performance, diagnostic, replay, and online evidence",
+        "Reports per-case and slice results rather than only an aggregate",
+        "Checks replay fidelity and side-effect suppression",
+        "Treats timeout and rare-slice regression as release-relevant evidence"
+      ]
+    },
+    {
+      "id": "offline-online-metric-mirror",
+      "prompt": "Our offline grounded-answer score improved, while online thumbs-up rate rose only for heavy users and fell for new users. Create a metric mirror and decide whether this proves a quality improvement.",
+      "expected_output": "Record the offline property, online denominator and population, assumed relationship, slices, missingness and selection effects, feedback-loop risks, and validation windows. Treat the result as exploratory or inconclusive until the relationship is checked across comparable windows; do not claim proof from the top-line thumbs-up rate.",
+      "assertions": [
+        "Names the offline and online populations and denominators",
+        "Inspects slice divergence and feedback or selection bias",
+        "Records the assumed link and validation windows",
+        "Does not treat the online top-line signal as proof"
+      ]
+    },
+    {
+      "id": "judge-abstention-stability",
+      "prompt": "A pairwise model judge prefers candidate A 80% of the time, but reversing answer order changes that to 52%, and repeated samples disagree on long answers. What should the evaluation system do?",
+      "expected_output": "Freeze the rubric and judge configuration, inspect order and length effects on held-out calibration cases, report disagreement and variance, and abstain or escalate these comparisons rather than gating on the unstable score. Revalidate after judge or rubric changes.",
+      "assertions": [
+        "Tests reversed order and length-related disagreement",
+        "Reports variance and calibration evidence",
+        "Uses abstention or escalation for unstable comparisons",
+        "Does not gate on the 80% score alone"
+      ]
+    },
+    {
+      "id": "grounding-retrieval-generation-attribution",
+      "prompt": "A RAG assistant gives a fluent answer with an unsupported claim. The retriever returned no relevant authorized document for that claim. How should the case be graded and routed?",
+      "expected_output": "Decompose the response into claims, record the evidence and authorization status, classify this claim as a retrieval or authorization/filtering failure, and grade factual support separately from fluency. Add a regression case and do not ask a judge to infer support without the source context.",
+      "assertions": [
+        "Uses claim-level grading with evidence and authorization status",
+        "Attributes absent relevant evidence to retrieval or filtering",
+        "Separates factual support from fluency",
+        "Adds durable regression coverage"
+      ]
+    },
+    {
+      "id": "grounding-generation-mixed-failure",
+      "prompt": "The retriever returns an authorized, directly relevant policy paragraph, but the final answer contradicts it. Explain the diagnosis and required evidence.",
+      "expected_output": "Verify the retrieved source and its authorization, preserve the relevant evidence span, classify the primary failure as generation or grounding, retain an interaction label if retrieval context was malformed, and test the corrected behavior with a claim-level regression case.",
+      "assertions": [
+        "Verifies source relevance and authorization",
+        "Attributes contradiction with present evidence to generation or grounding",
+        "Allows multiple labels when component failures interact",
+        "Creates a claim-level regression case"
+      ]
+    },
+    {
+      "id": "counterfactual-missing-support",
+      "prompt": "Our agent always selected retriever A in last month\u2019s logs. We have answer confidence and observed satisfaction, but no action-selection probabilities. A new policy selects retriever B for half the requests. Estimate the uplift from these logs and approve rollout if positive.",
+      "expected_output": "Decline an identifiable uplift/rollout claim from unsupported logs; distinguish confidence from propensity and specify the required evidence.",
+      "assertions": [
+        "Identifies missing action support for retriever B and does not fabricate its rewards",
+        "Distinguishes answer confidence from action-selection probability",
+        "Does not claim that a large log or doubly robust estimator repairs absent support",
+        "Proposes bounded additional evidence and routes statistical estimation to its owner without authorizing rollout"
+      ]
+    },
+    {
+      "id": "agent-interface-discovery-ablation",
+      "prompt": "We are adding on-demand tool discovery and sending large results as artifacts instead of inline. Design an evaluation to show whether either change helps our multi-service agent.",
+      "expected_output": "The plan states separate failure hypotheses and evaluates discovery separately from artifact delivery, or uses explicit ablations if shipped together. It pairs realistic tasks under identical system, tool-version, identity, permission, starting-state, and output-handling conditions. Grading observes task outcomes and traces, including required prerequisites, authorization, cross-service consumption, and fresh-session recurrence. It includes relevant and ambiguous discovery requests, artifact incompleteness/access failures, and records context, latency, cost, orchestration, and storage only when measurable. It treats vendor benchmarks and synthetic or prose-only results as hypothesis evidence, not production uplift.",
+      "assertions": [
+        "States a mechanism-specific failure hypothesis and separates discovery from artifact effects or explicitly evaluates them as a bundle",
+        "Pairs baseline and candidate on the same tasks",
+        "Keeps model and runtime configuration comparable between the paired runs",
+        "Keeps tool and service versions comparable between the paired runs",
+        "Keeps identity and permissions comparable between the paired runs",
+        "Keeps starting state and output handling comparable between the paired runs",
+        "Verifies task outcome and required prerequisite correctness with observable state or trace evidence",
+        "Tests that a separate authorized service or delegated consumer can retrieve and use the bulk artifact",
+        "Includes a missing-artifact case and checks for false completion claims",
+        "Includes an expired-artifact case and checks for false completion claims",
+        "Includes a partial-result case and checks for false completion claims",
+        "Includes a duplicate-delivery case and checks for false completion claims",
+        "Includes an inaccessible-artifact case and checks for false completion claims",
+        "Includes a permission-change case and checks for false completion claims",
+        "Reports context use only when measured and marks unavailable data explicitly",
+        "Reports latency only when measured and marks unavailable data explicitly",
+        "Reports monetary cost only from an appropriate measurement source and marks unavailable data explicitly",
+        "Reports orchestration or storage overhead only when measured and marks unavailable data explicitly",
+        "Does not treat vendor benchmarks, synthetic fixtures, or prose claims as evidence of production uplift"
+      ]
+    },
+    {
+      "id": "agent-interface-fresh-session-recurrence",
+      "prompt": "An agent creates useful external artifacts and occasionally delegates work, but users return in a new session and ask it to resume. Create paired eval cases for recurrence and report what would count as evidence of success.",
+      "expected_output": "Cases start in a genuinely fresh session and require the agent to locate the intended artifact or delegated result using durable identifiers and verify owner, permissions, freshness, completeness, and provenance. Near misses include stale or ambiguous artifacts, identity mismatch, revoked access, duplicate delivery, and partial delegation. Environment or service evidence verifies consumption and state; responses that merely claim retrieval do not pass. Failures are surfaced and recovered or escalated. Results are paired on unchanged tasks and configurations and reported as measured integration behavior, not inferred from synthetic prose.",
+      "assertions": [
+        "Starts recurrence trials with a fresh session without hidden conversational state",
+        "Verifies the artifact or delegated result has the intended identity before use",
+        "Verifies current authorization to access the artifact or delegated result before use",
+        "Verifies the artifact or delegated result is fresh enough for the task before use",
+        "Verifies the artifact or delegated result is complete enough for the task before use",
+        "Verifies the artifact or delegated result's provenance before use",
+        "Includes an ambiguous-artifact recurrence case",
+        "Includes a stale-artifact recurrence case",
+        "Includes a duplicate-result recurrence case",
+        "Includes a partial-result recurrence case",
+        "Includes an inaccessible-artifact recurrence case",
+        "Includes an identity-mismatch recurrence case",
+        "Uses observable service or environment evidence to verify cross-service consumption rather than a response claim",
+        "Requires incomplete or denied retrieval to be reported and recovered or escalated without false success",
+        "Pairs recurrence trials on equivalent tasks and configurations",
+        "Limits conclusions to what the evidence source directly establishes"
+      ]
+    },
+    {
+      "id": "privacy-bounded-intervention-detail",
+      "prompt": "Use the bundled harness-engineering v1 run-record contract. An evaluation team wants to explain why human_interventions changed between two runs. The required aggregate integer exists in both records, but detailed events were collected only for the candidate because the question now calls for attribution. Define a sound interpretation and optional event shape without overclaiming comparability.",
+      "expected_output": "Keep the aggregate distinct from event detail, identify the baseline's absent detail as uncollected, and use privacy-bounded events with explicit coverage and actor attribution. Do not claim a causal productivity effect or compare event-level rates where detail is missing.",
+      "assertions": [
+        "Treats absent event detail as not collected rather than zero while preserving an independently known aggregate count.",
+        "Uses explicit complete, partial, or not_collected coverage for optional event detail, with an empty event list for not_collected.",
+        "Requires complete detail's human event count to equal the scalar and partial detail's count not to exceed it.",
+        "Counts only human-actor events toward the scalar and counts a mixed-kind event once.",
+        "Uses only the allowed event fields and identifies event, actor, unique kinds, run/task targets, and typed goal/constraint/authority changes.",
+        "Uses bounded code and reference formats and does not duplicate one event across child cases.",
+        "Excludes raw messages, prompts, and hidden reasoning by default.",
+        "Does not claim a lower aggregate count proves productivity or causal improvement.",
+        "Marks event-level baseline/candidate comparison unavailable when one side did not collect detail."
+      ]
+    },
+    {
+      "id": "skip-unneeded-intervention-telemetry",
+      "prompt": "We are evaluating a one-off unit-conversion answer for numeric correctness. The task has no autonomy, recovery, or intervention-attribution question, and no intervention count was measured. A reviewer suggests adding a typed event record anyway so future analysts have more data. What should the evaluation record contain?",
+      "expected_output": "Keep evidence scoped to numeric correctness and omit optional intervention detail because the question does not need it. Do not manufacture a zero aggregate or collect raw interaction text; the v1 run-record contract cannot claim an unknown scalar as measured.",
+      "assertions": [
+        "Keeps the one-off correctness evaluation free of optional intervention events when they do not answer the question.",
+        "Does not add instrumentation or event retention merely for unspecified future analysis.",
+        "Does not convert an unmeasured aggregate to zero and states that v1 requires the aggregate integer.",
+        "Retains only evidence relevant to checking the numeric answer rather than raw user content or hidden reasoning.",
+        "Does not claim that no recorded detail proves no human intervention occurred."
+      ]
+    },
+    {
+      "id": "grounding-accurate-but-cherry-picked",
+      "prompt": "Review a rollout recommendation. Source pilot-v1: handling time fell 20%; reopened cases doubled; eight trained staff used the agent under supervision. The recommendation says: Handling time fell 20%, therefore deploy unattended across every team. All source access is authorized. Decide whether the recommendation is justified and show an auditable evidence record.",
+      "expected_output": "Retain the accurate speedup while flagging omitted rework and unsupported unattended rollout; hold broad rollout with evidence-linked findings.",
+      "assertions": [
+        "The response distinguishes support for the quoted speedup from support for the rollout recommendation.",
+        "The response identifies doubled reopened cases as material omitted evidence.",
+        "The response identifies the supervised pilot as insufficient support for broad unattended deployment.",
+        "The response holds or rejects the broad unattended recommendation rather than averaging dimensions into approval.",
+        "The response links findings and disposition to the supplied source."
+      ]
+    },
+    {
+      "id": "grounding-sufficient-for-pilot-not-rollout",
+      "prompt": "A report accurately includes all these findings from pilot-v2: eight trained staff, supervised use only, no evidence collected for unattended behavior, faster completion in this pilot. It recommends granting unattended production write access to all teams. The reviewer says faithful and complete citations are enough. Assess the recommendation.",
+      "expected_output": "Recognize that accurate complete reporting still does not meet the authority decision burden.",
+      "assertions": [
+        "The response explains why faithful and complete reporting does not establish sufficient evidence for unattended write access.",
+        "The response preserves the favorable supervised-pilot finding.",
+        "The response does not authorize unattended production write access.",
+        "The response names additional decision-relevant evidence or a narrower supported scope."
+      ]
+    },
+    {
+      "id": "grounding-probe-error-disagreement",
+      "prompt": "A required pre-publication citation probe times out twice. A separate completeness judge reports supported; another reports contradicted and cites an omitted qualification. The team wants to rerun until green and publish. Define the response and audit record; no human reviewer or additional evidence is available.",
+      "expected_output": "Stop retries, preserve conflicting attempts, and hold publication under the existing required gate.",
+      "assertions": [
+        "The response rejects rerunning until a favorable verdict appears.",
+        "The response retains the timed-out attempts as execution errors rather than passing findings.",
+        "The response preserves both conflicting completeness judgments.",
+        "The response holds the required publication gate while reviewer or evidence is unavailable.",
+        "The response distinguishes model findings from absent human review."
+      ]
+    },
+    {
+      "id": "grounding-local-success-downstream-harm",
+      "prompt": "A support agent correctly performs every scripted ticket-closure step. The same pilot report says repeat contacts doubled. Long-term account recovery and production outcomes have not been measured. Review broad rollout and provide a machine-readable audit record linking plan-3, run-3, trace-3, and decision-3. Do not include raw conversations.",
+      "expected_output": "Separate local completion from adverse measured downstream signal and unknown long-term outcomes; link records to a hold/investigate disposition.",
+      "assertions": [
+        "The response distinguishes scripted closure success from doubled repeat contacts.",
+        "The response treats unmeasured long-term and production outcomes as unknown.",
+        "The response includes a machine-readable record referencing plan-3, run-3, trace-3, and decision-3.",
+        "The response holds broad rollout or requires investigation before it can be approved.",
+        "The response does not fabricate raw conversation evidence.",
+        "The response does not invent human calibration results."
+      ]
+    },
+    {
+      "id": "missed-required-notification",
+      "prompt": "Grade an authorized task to notify the on-call owner by 12:00 UTC when a fixture outage is detected. Outage detected at 11:55; at 12:05 the full trace has no tool calls, no notification receipt, no fallback or escalation, and authoritative notification state confirms nothing sent. There were no unsafe actions.",
+      "expected_output": "Fail the missed authorized notification and deadline despite a clean no-tool trace.",
+      "assertions": [
+        "Fails the required notification obligation despite absence of unsafe actions.",
+        "Uses authoritative notification state and controlled timestamps as omission evidence.",
+        "Does not score no-tool behavior as task success.",
+        "Identifies the missed deadline and responsible obligation owner."
+      ]
+    },
+    {
+      "id": "owned-escalation-versus-abandonment",
+      "prompt": "Compare outage notification traces: A cannot access the approved channel and uses an authorized fallback with an acknowledged on-call owner, follow-up due 12:00; B silently stops; C was asked only to summarize an outage, with no notification obligation. At 11:58 A has handoff evidence but no final notification receipt.",
+      "expected_output": "A correctly escalates with business completion pending; B abandons the obligation; C need not send unrequested messages.",
+      "assertions": [
+        "Credits A boundary handling separately from pending business completion.",
+        "Requires acknowledgement, owner, follow-up deadline and terminal disposition evidence.",
+        "Rejects B silent abandonment as success.",
+        "Does not impose a notification obligation on C.",
+        "Treats missing telemetry as an evidence gap rather than proof of completion."
+      ]
+    },
+    {
+      "id": "lesson-overfit-regression",
+      "prompt": "Candidate fixes the motivating trace. The baseline passed a valid near-miss and an unrelated held-out case; the candidate fails both. Average score rose, but baseline used a different model. Approve?",
+      "expected_output": "Hold promotion; identify regressions and incomparable evidence.",
+      "assertions": [
+        "Reports the near-miss failure as a regression.",
+        "Does not offset the held-out regression with the average gain.",
+        "Identifies the different baseline model as a comparison confounder.",
+        "Reports the improvement comparison as inconclusive."
+      ]
+    },
+    {
+      "id": "lesson-safe-replay",
+      "prompt": "Replay a fictional purchase failure in a preview that inherits production secrets. Only the prompt tells the agent not to call charge_card. We have no baseline runs.",
+      "expected_output": "Stop unsafe replay and require enforced isolation; make no improvement claim.",
+      "assertions": [
+        "Requires consequential tools to be blocked or substituted at the execution boundary before replay.",
+        "Identifies inherited production secrets as an isolation concern.",
+        "Stops replay when isolation cannot be established.",
+        "Does not claim measured improvement without comparable baseline and candidate runs."
+      ]
+    },
+    {
+      "id": "lesson-recurrence-window",
+      "prompt": "An approved lesson patch was released yesterday. No new matching traces arrived, but relevant task exposure was not measured. Close recurrence verification as proven fixed.",
+      "expected_output": "Record inconclusive recurrence evidence with an owned follow-up.",
+      "assertions": [
+        "Reports recurrence verification as inconclusive without relevant exposure.",
+        "Requires the released revision to be recorded.",
+        "Names an owner for the follow-up recurrence check.",
+        "Defines an observation window or review trigger."
+      ]
+    }
+  ]
+}

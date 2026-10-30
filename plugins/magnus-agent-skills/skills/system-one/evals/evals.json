@@ -1,0 +1,704 @@
+{
+  "schema_version": 1,
+  "skill_name": "system-one",
+  "evals": [
+    {
+      "id": "contract-design",
+      "prompt": "We need to classify support tickets into billing, technical, or other; score urgency; and decide whether a human should review. Design the System One contract and deterministic policy boundary.",
+      "expected_output": "A contract that uses Choice for routing, an explicitly ordered Score for urgency, and a separate review/abstention policy; the model does not authorize side effects.",
+      "assertions": [
+        "Defines state, question IDs, types, criteria, and an other/unknown path",
+        "Keeps thresholds, human review, authorization, and side effects in deterministic code",
+        "Explains that probabilities and confidence are evidence rather than truth or permission",
+        "Includes validation and unavailable/malformed response behavior"
+      ]
+    },
+    {
+      "id": "jev-integration",
+      "prompt": "Implement a small Python integration for TypeSafe Jev that asks three independent questions about one ticket and handles provider failures safely.",
+      "expected_output": "Uses the official System One endpoint or typesafe-sdk, keeps the key server-side, fans out independent Choice/Score/Noul questions, validates the response, and distinguishes retryable failures from contract/auth failures.",
+      "assertions": [
+        "Uses TYPESAFE_API_KEY or an equivalent server-side secret path and does not expose it to a browser",
+        "Sends one state with typed Choice, Score, and Noul questions",
+        "Validates answer IDs/types and probability ranges before policy code",
+        "Uses bounded retries/timeouts and does not turn a timeout into a confident default",
+        "States that Jev is hosted/API-only and not locally self-hostable"
+      ]
+    },
+    {
+      "id": "laya-vpc-hosting",
+      "prompt": "Describe how to self-host Laya for a private VPC service handling English and multilingual ticket triage.",
+      "expected_output": "Pins the Python/runtime/model artifacts, preloads the needed checkpoints, exposes a private authenticated wrapper with finite application-specific bounds for request size, question and option counts, concurrency, queue wait, and total deadline, and distinguishes the application's production readiness gate for required model, tokenizer, device, and calibration artifacts from the bundled adapter's device-only /readyz check.",
+      "assertions": [
+        "Uses a documented Laya checkpoint and its compatible Python runtime; does not claim Jev weights are downloadable",
+        "Preloads or otherwise keeps required checkpoints resident to avoid language-switch reloads",
+        "Limits the Laya service to private network access",
+        "Authenticates requests to the private Laya service",
+        "Bounds request size, question count, options per Choice, concurrent inference, queue wait, and total request deadline with finite application-specific limits",
+        "Redacts sensitive ticket data from logs",
+        "Distinguishes production readiness requirements for the pinned model, tokenizer, actual device, and application calibration artifact, as applicable, from the bundled adapter's device-only /readyz predicate and says to extend it before production traffic",
+        "Pins checkpoint and runtime revisions with an integrity check",
+        "Defines monitoring and rollback for a checkpoint or runtime upgrade"
+      ]
+    },
+    {
+      "id": "laya-cpp-native-serving",
+      "prompt": "We have an RTX server and want to try laya.cpp as a local replacement for our Jev-shaped typed-decision client. How should we build a safe comparison and private deployment?",
+      "expected_output": "Explains laya.cpp's native Laya runtime and compatible HTTP protocol, selects and pins a checkpoint/backend, verifies model identity and answer contract, measures matching-precision parity and end-to-end latency under batching, and protects the private endpoint.",
+      "assertions": [
+        "Distinguishes the Jev-compatible HTTP schema and model alias from actual Jev weights or model quality",
+        "Selects one explicit Laya checkpoint per server process and pins runtime, model, and backend artifacts",
+        "Validates answer IDs, types, option sets, and canonical model identity before policy code",
+        "Compares matching-precision outputs and held-out domain quality under representative batch shapes",
+        "Measures queue wait and end-to-end latency rather than relying only on published warmed throughput",
+        "Configures authentication, private network access, TLS ingress, and bounded concurrency",
+        "Retains deterministic authority and a rollback path"
+      ]
+    },
+    {
+      "id": "calibration-review",
+      "prompt": "A team wants to auto-approve account changes whenever a System One Choice confidence exceeds 0.85. Their same 22 author-written synthetic CI cases score 21/22 in two runs, with the same false negative and a Noul probability moving from 0.49 to 0.43. Their real routing data also has duplicate conversations split across train and test, source-system IDs that encode the answer, and thresholds and calibration tuned on test labels. Review the evidence and define what is needed before release. They also cite Strands Decider passing 24 repeated short routing/availability calls and 12 repeated literal-NOT calls, despite upstream reporting weak arbitrary-question sensitivity. Does this establish that limitation is fixed or justify the same threshold?",
+      "expected_output": "Rejects the universal threshold and contaminated test claim, distinguishes repeated synthetic results from independent evidence and confidence from accuracy, requires grouped splits and shortcut checks, independently labeled target data and separate calibration, and uses stricter confirmation or human review for consequential actions. Keeps the Strands smoke scoped to authored diagnostics and retains the upstream question-sensitivity caveat.",
+      "assertions": [
+        "Explains why a vendor/default confidence number is not a universal policy threshold",
+        "Does not treat repeated authored diagnostic passes, including the Strands smoke, as independent held-out evidence or calibration",
+        "Does not tune a prompt, adapter, threshold, or calibration on a repeated challenge case and then describe it as held out",
+        "Uses held-out real-output cases with labels assigned independently of the tested model",
+        "Separates a representative workload sample from deliberately risk-enriched challenge cases",
+        "Keeps related conversations from the same source group in a single partition",
+        "Tests whether source-system IDs reveal the target through a counterfactual, masking, or ablation check",
+        "Measures probability calibration and selective accuracy as automated coverage changes",
+        "Versions exact question text and Choice criteria alongside evaluation results",
+        "Uses risk-specific lanes such as automate, confirm/review, and abstain/fallback",
+        "Includes subgroup/language/out-of-domain slices and a deterministic baseline",
+        "Keeps account authority and exact eligibility checks outside the model"
+      ]
+    },
+    {
+      "id": "high-cardinality-diagnosis",
+      "prompt": "Laya performs badly when a Choice question has 77 labels, while a hosted Jev comparison is much better. Diagnose without declaring Jev universally superior.",
+      "expected_output": "Checks option/head token budgets and label rendering, explains shortlist/coarse-to-fine alternatives and conditional probabilities, and requests a matched frozen evaluation.",
+      "assertions": [
+        "Identifies Laya option/head token budget and truncation as a concrete hypothesis to inspect",
+        "Proposes deterministic shortlist, hierarchy, or increased budget with re-evaluation",
+        "Labels shortlist probabilities as conditional on the candidates sent",
+        "Demands byte-identical inputs, same labels/order policy, and matched workload evidence",
+        "Does not generalize from one benchmark or compare specialist and general models unfairly"
+      ]
+    },
+    {
+      "id": "incident-triage",
+      "prompt": "After a Laya upgrade, the endpoint is healthy but p99 latency doubled and some requests are now running on CPU. Give a bounded diagnostic and rollback decision path.",
+      "expected_output": "Checks actual device, startup/load logs, model revision, dependency/image changes, residency/reload behavior, queue time, and representative inference; then fixes on scratch or rolls back the recorded image/config.",
+      "assertions": [
+        "Treats health as insufficient and checks actual inference device and model residency",
+        "Investigates CUDA/MPS fallback, dependency/driver changes, lazy reloads, and queue time",
+        "Separates cold-start from warm p99 and repeats a matched benchmark",
+        "Uses a scratch fix-forward path or a pinned previous-image rollback",
+        "Does not mutate production without an explicit target and rollback path"
+      ]
+    },
+    {
+      "id": "observed-app-control",
+      "prompt": "Build a Jev-or-Laya-backed controller that can click one of the currently visible controls in a web app. The page may change while inference is running, and clicking Submit can send a real request.",
+      "expected_output": "A bounded observed-action loop that constrains target IDs to current controls, validates model output, rechecks freshness and authority before execution, and confirms consequential actions.",
+      "assertions": [
+        "Builds operation-compatible target choices only from the current observation and includes wait or abstain",
+        "Validates answer option IDs and distribution before policy or execution",
+        "Rechecks the target and page state immediately before acting and prevents duplicate execution on retry",
+        "Requires independent authorization and exact-action confirmation for Submit rather than trusting a model-destructive score",
+        "Verifies actual post-action outcome and does not treat a model DONE answer as proof"
+      ]
+    },
+    {
+      "id": "deadline-bound-stream",
+      "prompt": "An event arrives every 300 ms, but a typed model sometimes takes 600 ms. Design the decision loop for a live system with possible side effects.",
+      "expected_output": "Defines event freshness and deadline, drops or abstains on late results, bounds both inference and action backlogs, handles duplicate deliveries and uncertain retries safely, separates model proposals from deterministic authority, and confirms external outcomes independently.",
+      "assertions": [
+        "States what happens to a late decision instead of applying it to a newer event",
+        "Caps simultaneous inference calls at a stated concurrency limit",
+        "Bounds queued input events and defines behavior when the input queue is full",
+        "Bounds pending decisions awaiting action execution",
+        "Defines behavior when the pending action queue reaches capacity",
+        "Suppresses duplicate event deliveries before they can repeat an external side effect",
+        "Specifies a finite retry limit for failed action attempts",
+        "Defines a terminal safe or review path after retries are exhausted or an action outcome is ambiguous",
+        "Uses a stable idempotency key enforced by durable state or the downstream system so retrying after an uncertain timeout cannot repeat an external effect",
+        "Keeps exact limits, authority, and fast safety reflexes outside the model",
+        "Records a proposed decision separately from whether its action was attempted",
+        "Requires independent observation of the external effect before recording an attempted action as successful",
+        "Does not copy a trading-demo latency or threshold as a universal setting"
+      ]
+    },
+    {
+      "id": "reranking-pipeline",
+      "prompt": "We want to use System One scores to rerank the first 30 search results. How should we implement and evaluate it? Also address this extension: We have approved clips and want B-roll for narration about watering a plant. One caption says watering but its clip hash changed; another depicts rain. Can Jev pick pixels directly and can we auto-use anything above 60%? Design a reusable matching pilot.",
+      "expected_output": "Batches bounded candidate judgments, retains deterministic shortlist provenance, compares standalone and fusion ranking to baselines with independent labels, and reports end-to-end recall and cost. Uses a separate caption stage with provenance, textual decision scoring, deterministic asset resolution and eligibility, explicit no-match, and evaluation against actual clips.",
+      "assertions": [
+        "States that reranking cannot recover relevant items missing from the candidate shortlist",
+        "Creates a distinct Score or Noul question ID for each candidate; batching those questions in one System One request is allowed, but one question cannot return a score array for all candidates",
+        "Sorts or fuses the candidate judgments in deterministic code",
+        "Measures relevant-item recall in the initial candidate shortlist before reranking",
+        "Compares ranking quality against a lexical or embedding baseline",
+        "Uses relevance labels assigned independently of the tested model",
+        "Examines ranking quality by query or language slice",
+        "Reports end-to-end latency for shortlist retrieval plus reranking",
+        "Reports full-pipeline inference cost rather than only one model call",
+        "Separates Jev judgment over textual captions from direct inspection of clip pixels",
+        "Requires reviewing actual clips independently to detect caption errors"
+      ]
+    },
+    {
+      "id": "jev-ci-operations",
+      "prompt": "We are copying this repository's Jev CI helper to a fork. Explain how to deploy it safely, prove that a merged main run really audited the selected evals, diagnose a green Jev job with zero model calls, and stop Jev data egress without breaking required checks. Also, one baseline request received HTTP 429 with Retry-After after a Droid PR review used the same Nous secret; no provider error code was retained, and the account owner says credits may be exhausted. Explain what is known and what to check before retrying.",
+      "expected_output": "An operator procedure that preserves trusted main-branch execution and deterministic gates, identifies provider data flow and the bounded audit budget, verifies selected-case and per-group provenance, distinguishes catalog presence from usable generation, records exact model/token provenance, and provides a reviewed no-egress rollback. It treats a 429 with Retry-After but no quota classification as ambiguous, checks provider error/account credit telemetry and other workflows sharing the key, labels the owner's credit explanation as user-reported, and avoids claiming per-workflow spend or increasing retries without evidence.",
+      "assertions": [
+        "Keeps the Jev secret in the trusted main-branch audit job rather than a pull-request job",
+        "Treats downloaded comparison reports as untrusted data rather than executable instructions",
+        "Distinguishes generative paired-eval response production from Jev's subsequent typed semantic audit",
+        "Compares expected selected case IDs with observed comparison report IDs, including missing or unexpected reports, before claiming full selection coverage",
+        "Compares expected versus observed selected report counts before claiming full selection coverage",
+        "Accounts for every skip, omission, not-attempted, and provider-error lane in the Jev artifact before claiming complete assertion coverage",
+        "Uses exact-question and response provenance when comparing or calibrating audit results",
+        "Treats a green job with zero selected cases or no Jev calls as missing model evidence",
+        "Describes a reviewed way to disable Jev egress while preserving deterministic validation and the original red CI result",
+        "Distinguishes a model ID appearing in the authenticated provider catalog from a usable generated completion",
+        "Describes an exact model-ID override and bounded output-token choices for a manual smoke without changing the repository default",
+        "Uses the fixed selected eval manifest to compare candidate models and records the exact model ID and output-token budget in run evidence",
+        "Offers model-input replay only from a successful main-branch source run and records the selected question variant and contract fingerprint",
+        "Discloses that a Jev replay re-sends generated response text and requires explicit per-run egress authorization",
+        "Does not retry an explicit hard-quota error code; treats HTTP 429 plus Retry-After without quota classification as ambiguous unless provider error or account telemetry distinguishes transient throttling from exhausted credits",
+        "Checks other workflows sharing the provider credential before attributing spend or retrying and does not claim per-workflow cost without usage telemetry"
+      ]
+    },
+    {
+      "id": "qa-step-routing",
+      "prompt": "Our regression runner calls an LLM for every web test step. We have verified selectors for stable pages, but some pages change and some controls are canvas-only. Design a System One integration and a fair way to evaluate it.",
+      "expected_output": "Replays validated selectors, sends unresolved bounded decisions to a typed model, routes visual evidence separately, retains exact assertions in code, and evaluates end-to-end stability with a frozen labeled set.",
+      "assertions": [
+        "Reuses a verified selector only while its page and target invariants hold, and records invalidation",
+        "Uses a typed model for unresolved bounded decisions with an unknown or review lane",
+        "Routes canvas-only evidence to a visual stage rather than assuming a text-only model can inspect it",
+        "Keeps exact arithmetic, dates, mandatory tests, and release gates in deterministic code",
+        "Records proposed selector repairs for review and rollback rather than silently rewriting the suite",
+        "Compares the current runner and candidate on frozen labeled cases and end-to-end run stability",
+        "Measures repeated-input variance separately from correctness and calibration",
+        "Pins model and question revisions before tuning thresholds or comparing runs"
+      ]
+    },
+    {
+      "id": "beginner-use-case-selection",
+      "prompt": "We are new to System One models. We handle 80,000 support messages monthly, generate replies, count refunds, choose ticket queues, and run a semantic error-message guideline in CI. Which one decision should we pilot first, and how?",
+      "expected_output": "Chooses one frequent bounded judgment such as queue routing, defines its typed question and fallback, shadows the current workflow with independent labels, and separates generation, exact counts, and semantic CI gate promotion.",
+      "assertions": [
+        "Selects one bounded high-volume decision and gives its state, primitive, allowed answers, and unknown path",
+        "Keeps reply generation outside the typed classifier",
+        "Keeps exact refund counting in code, with model-produced refund tags treated as unverified until evaluated",
+        "Compares the pilot in shadow mode with current routing on independently labeled real cases",
+        "Defines action-specific costs and tunes thresholds on held-out data rather than copying an article number",
+        "Starts semantic CI checks as advisory and requires false-block and false-pass evidence before a required gate"
+      ]
+    },
+    {
+      "id": "worked-pilot-evidence",
+      "prompt": "We want to pilot System One queue routing, use it for changed-page QA selectors, and eventually make a semantic error-message check required in CI. What evidence would justify each step?",
+      "expected_output": "Defines one bounded queue contract and baseline, evaluates it in shadow mode with frozen independent labels, measures the entire QA path mix and regression detection, and requires false-block and false-pass evidence before semantic CI becomes required.",
+      "assertions": [
+        "Defines queue state, Choice options including other, validation, and a safe fallback",
+        "Uses independently labeled representative cases and a separate frozen test split for queue routing",
+        "Compares routing against the current process using wrong assignments and accepted coverage",
+        "Measures QA replay, typed resolution, and visual or generative path shares plus total journey outcomes",
+        "Tests QA stability on an unchanged build separately from detection on builds with known defects",
+        "Keeps proposed selector repairs reviewable and reversible",
+        "Starts semantic CI as advisory, then requires independently measured false blocks and false passes before a blocking gate",
+        "Treats missing semantic evidence as unresolved rather than a passing result"
+      ]
+    },
+    {
+      "id": "request-shape-and-cascade-evidence",
+      "prompt": "A team reports that Jev's singleton ticket decisions are accurate and its router is cheap. They want to batch eight questions per call, swap in Laya, and make the router automatic. Design the minimum fair experiment and say what each result would prove.",
+      "expected_output": "A frozen paired evaluation compares singleton and exact production batches per model, then compares the complete router and fallback path with deterministic, retrieval-only, and best-single-model baselines on independently labeled held-out cases.",
+      "assertions": [
+        "Compares each decision alone and in the intended batch shapes with the same state, question meaning, option policy, and case identity",
+        "Measures answer validity, correctness, calibration, and abstention by model and request shape rather than assuming singleton behavior transfers",
+        "Treats Laya as a separately pinned model needing its own matched quality and threshold evaluation",
+        "Includes deterministic or retrieval-only, best single-model, router-without-decision-signal, and full-cascade baselines on the same held-out cases",
+        "Counts retrieval, model calls, retries, fallback, review, and end-to-end latency while keeping unresolved cases visible"
+      ]
+    },
+    {
+      "id": "field-evidence-triage",
+      "prompt": "A Jev build index lists a popular browser agent, a trading bot, a router benchmark, and a claim that batching is always safe and 0.9 confidence means 90% correct. What should we reuse for another System One model? An exploratory comparison also reports a local candidate accepting more useful and weak relevance candidates, and stable arithmetic/freshness errors despite option reversal. Its labels come from a prediction-blind model judge reached through a gateway alias. Explain what transfers to a new domain and what provenance to verify.",
+      "expected_output": "Extracts bounded decision and deterministic-control patterns while grading the evidence behind each claim, rejecting transferable numeric thresholds and unverified live outcomes, and requiring target-model evaluation. Treats relevance results as a scoped precision/coverage tradeoff, repeated errors as failure hypotheses, and automated labels as pseudo-labels; verifies returned judge identity rather than trusting a gateway alias.",
+      "assertions": [
+        "Distinguishes index popularity, original post or README claims, inspected implementation, and reproduced outcomes as different evidence tiers",
+        "Constrains browser actions to fresh observed candidates and checks postconditions rather than trusting DONE",
+        "Distinguishes trading dry-run or mock behavior from confirmed live fills and profitability",
+        "Tests a router against a best simple baseline and a no-model ablation before crediting the model",
+        "Requires exact request-shape tests for batching and does not assume standalone accuracy transfers",
+        "Requires held-out calibration per task and model rather than treating 0.9 as a universal correctness rate",
+        "Keeps exact policy, side effects, math, and authority in code or accountable human control",
+        "Does not transfer Jev-specific quality, limits, or thresholds to another System One model without new evidence"
+      ]
+    },
+    {
+      "id": "rubric-cascade-correlated-errors",
+      "prompt": "Jev is uncertain on 20% of our rubric judgments. We will defer these to a different-provider LLM and call their agreement independent verification. Does arXiv:2609.29769 establish that this improves quality? Design the adoption comparison.",
+      "expected_output": "Separates observed cost savings from unproven target-workload quality gains and proposes a held-out paired error comparison.",
+      "assertions": [
+        "Rejects cross-provider agreement as independent correctness evidence",
+        "Requires independently labeled paired outputs to measure shared wrong answers",
+        "Measures fallback rescue and regression within the proposed deferral band",
+        "Inspects confident errors retained by the cascade",
+        "Separates counterfactual replay from measured live cascade latency",
+        "Selects thresholds on units separate from the final test units"
+      ]
+    },
+    {
+      "id": "rubric-ordinal-scale-mismatch",
+      "prompt": "All four judges rank essays similarly to raters but grade about a level lower. Can we add one to every score and ship? Use the rubric-judge paper to propose a bounded investigation.",
+      "expected_output": "Treats missing scale conventions as a hypothesis, inspects criterion-specific offsets and validates input revisions separately from final testing.",
+      "assertions": [
+        "Explains that ranking agreement can coexist with incorrect level placement",
+        "Requests original rater instructions or label provenance",
+        "Reports per-criterion signed level offsets",
+        "Treats missing rubric conventions as an observational hypothesis rather than experimentally proven cause",
+        "Rejects a global offset fitted and evaluated on the same cases as release evidence",
+        "Proposes a versioned input comparison on untouched labeled units"
+      ]
+    },
+    {
+      "id": "rubric-study-comparison-boundaries",
+      "prompt": "The paper finds only 8 significant differences in 27 comparisons. Three models also have close scores on repeated calls to the same 80 customer accounts, but pairwise tests are not significant. Leadership says the models are equivalent and wants the fastest one. Score should also replace Choice with the same abstention and rounding. Is this a sound benchmark conclusion, and what analysis is needed?",
+      "expected_output": "Rejects equivalence from inconclusive differences, requires cluster-paired uncertainty and a predeclared equivalence margin/procedure, separates repeated-call stability from independent sample size, and preserves primitive, decoding, abstention, batching and model-identity boundaries.",
+      "assertions": [
+        "Requires a predeclared equivalence margin and an appropriate procedure whose uncertainty interval lies wholly within it; a non-significant difference alone does not establish equivalence",
+        "States that the studied Score framing lacks the Choice NA abstention option",
+        "Requires explicit decoding and tie-rounding rules",
+        "Limits cost and time claims to the studied batching and call protocol, and states the production timing boundary with cold and warm operation separated",
+        "Notes that the study tests one typed classifier rather than every System One model",
+        "Requires recording actual model identity rather than relying solely on an undated alias",
+        "Uses the customer account or task as the paired/resampling unit rather than treating repeated calls as independent cases",
+        "Reports repeated-input stability separately from correctness and between-model uncertainty",
+        "Predeclares how comparisons across multiple models, metrics, and slices are handled"
+      ]
+    },
+    {
+      "id": "clm-model-selection",
+      "prompt": "We need to score 200 reusable candidate tool actions against changing text states. We can host an 8B encoder, already use Jev, and have a smaller Laya option. Should we choose CLM, and what would establish that choice?",
+      "expected_output": "Shortlists CLM for its state/action separation and candidate reuse, compares it with the incumbent and Laya on a frozen target set, and recommends adoption only after measured decision quality, calibration, total latency, resource cost, and workflow outcomes meet the contract.",
+      "assertions": [
+        "Identifies repeated candidate actions and adequate Qwen3-8B encoder capacity as reasons to shortlist CLM",
+        "States that CLM probabilities depend on the supplied candidate set and are not transferable thresholds",
+        "Compares zero-shot CLM, the current Jev path, Laya, and a simple baseline on the same independently labeled cases",
+        "Measures end-to-end latency with cold and warm cache conditions and encoder resource cost",
+        "Does not treat project-reported speed or verifier benchmark results as target-workload proof"
+      ]
+    },
+    {
+      "id": "clm-finetune-boundaries",
+      "prompt": "We want to fine-tune CLM for ticket routing and later use it to pick the best of four coding-agent solutions. Explain the two training paths and how to avoid a misleading result.",
+      "expected_output": "Separates typed Choice head training from trajectory verifier head training, preserves a matching frozen Qwen3-8B encoder and text recipe, and defines grouped validation, task-disjoint verifier holdout, baselines, and an untouched final test.",
+      "assertions": [
+        "Distinguishes the upstream choice task with typed-decision rows from the clm task with state/action transitions or embeddings",
+        "Explains that fine-tuning trains projection heads over a frozen matching Qwen3-8B encoder",
+        "Keeps related ticket rows together across training and evaluation splits",
+        "Requires whole-task holdout for coding-agent verifier evaluation instead of splitting steps from one task",
+        "Separately compares the reference head, fine-tuned head, incumbent, and simple baselines on the intended output metric",
+        "Does not attribute the published fine-tuned verifier scores to the zero-shot reference head"
+      ]
+    },
+    {
+      "id": "clm-private-operations",
+      "prompt": "Design a private CLM System One service. The API health endpoint says ok=true but the embedding server has failed, and we need safe promotion and rollback.",
+      "expected_output": "Pins the encoder/head pair and serving recipe, keeps the endpoint private and authenticated, adds application admission limits, requires embedder-aware readiness and a representative inference, and defines a matched rollback.",
+      "assertions": [
+        "Pins Qwen3-8B encoder and tokenizer, pooling recipe, projection checkpoint, runtime, and token limits together",
+        "Recognizes that ok=true in CLM health is insufficient when the embedder field is unhealthy",
+        "Keeps CLM and embedding ingress private and configures bearer authentication rather than relying on the server's defaults",
+        "Adds finite request, candidate, concurrency, queue, and deadline limits outside the basic upstream validation",
+        "Requires a representative typed inference and model-identity check before routing traffic",
+        "Records cache and resource use, failure fallback, and rollback of the encoder/head pair"
+      ]
+    },
+    {
+      "id": "comparison-track-separation",
+      "prompt": "Compare three typed-decision candidates. One accepts the same question unchanged, one needs a different prompt and answer mapping, and one cannot represent the required abstention. The team wants a single leaderboard. Design the comparison tracks and state what the result can establish.",
+      "expected_output": "Defines a fixed-contract track for the shared semantics and a separate model-adapted track with versioned per-candidate changes, equal development budgets, and an untouched common test; reports unsupported semantics explicitly and does not merge the rankings.",
+      "assertions": [
+        "Defines a fixed-contract track that holds decision semantics constant while recording model-native serialization",
+        "Defines a separate model-adapted track and identifies its estimand as model plus adapter/question mapping",
+        "Gives candidates the same bounded adaptation budget, limits selection to development/calibration data, and compares them on a common untouched test",
+        "Surfaces unsupported semantics as compatibility limits and keeps fixed-contract and model-adapted rankings separate"
+      ]
+    },
+    {
+      "id": "adapter-polarity-and-overflow",
+      "prompt": "A new adapter returns valid JSON and all required IDs. A paired example shows it maps 'urgent' to the low-priority label, and a 65-option request silently loses the final candidates. What should happen before a model quality comparison? Also address this extension: The DevDay recap says OpenAI Decisions API uses text or images and finite answers, in limited preview. Can we replace our Jev client now using the same endpoint schema and confidence threshold? Explain a scoped investigation. For experimental Strands Decider, qualify question-only negation counterfactuals and its default non-strict context truncation before scoring; a 255-option schema cap alone is not a token-budget guarantee.",
+      "expected_output": "Rejects adapter qualification, tests label polarity using counterbalanced evidence, verifies supported and rejected overflow behavior, and fixes or explicitly bounds the adapter before scoring model quality. Recognizes the preview candidate but requires current access and documentation, qualifies the actual adapter contract, and separates image evaluation from Jev text decisions. Tests native Strands question polarity and strict-window overflow rejection rather than assuming valid JSON or the schema option cap establishes preserved decision semantics.",
+      "assertions": [
+        "Requires polarity tests with expected answer reversals under counterbalanced decisive evidence and irrelevant lexical cues, including fixed-state question-only counterfactuals",
+        "Tests option-boundary behavior and verifies that overflow is rejected or handled by a documented, evaluated policy rather than silently truncating candidates",
+        "Aborts model scoring when adapter qualification fails",
+        "Does not treat the Decisions API preview announcement as evidence of general availability",
+        "Requires the actual Decisions API contract before assuming Jev adapter compatibility"
+      ]
+    },
+    {
+      "id": "semantic-lint-local-vs-scan",
+      "prompt": "Perch `scan` flags an authorization issue in `load_record`, then I edit that method but leave the change unstaged. I want a quick post-edit check and a defensible statement about whether the wider repository is clear. Which commands and evidence do I need?",
+      "expected_output": "Uses a targeted `perch check` to inspect the current on-disk edit and a separately scoped graph scan for repository/caller coverage; explains that a local pass neither closes the stored finding nor establishes a clean full-scope scan.",
+      "assertions": [
+        "Distinguishes `perch check` on current disk state from `perch scan` at its declared commit or scope",
+        "Does not treat a passing local check as proof that other callers or the whole repository are clear",
+        "States that a passing check does not close the stored scan issue and requires an appropriately scoped later scan for repository status"
+      ]
+    },
+    {
+      "id": "semantic-lint-rule-contract",
+      "prompt": "We want a semantic rule that each request handler checks the authenticated tenant before reading a record. The codebase has `src/api/`, test helpers, and one shared repository helper whose implementation is sometimes omitted from the scan context. Draft the rule contract and define how to handle the incomplete case.",
+      "expected_output": "Defines a narrow handler-level scope and context, a concrete source-backed invariant and counterexample, and an explicit unknown/review lane; leaves the new rule advisory while its labels and threshold are evaluated.",
+      "assertions": [
+        "Defines a narrow target selector and unit appropriate to individual request handlers, with the helper/caller context needed to judge the invariant",
+        "Rejects a handler that only checks tenant-ID presence but reads the record by an unscoped record ID",
+        "Routes an omitted helper or otherwise insufficient evidence to unknown/review instead of met or an inferred violation, and starts the rule advisory"
+      ]
+    },
+    {
+      "id": "semantic-lint-repair-loop",
+      "prompt": "A semantic review says `load_record` may skip a tenant check. I applied a local patch and want the shortest safe feedback loop. The finding came from a repository scan; tests cover same-tenant success and cross-tenant denial. What should the agent do next and when should it stop?",
+      "expected_output": "Reviews the scoped patch, runs the relevant deterministic tests, and performs a fresh targeted check against the current working-tree state; declares a finite repair-attempt limit (default two) and escalates when the limit is reached or evidence is unresolved.",
+      "assertions": [
+        "Declares a finite repair-attempt limit before further repair and states that reaching it stops or escalates the loop",
+        "Runs a fresh targeted check against current disk state after the applied patch",
+        "Runs deterministic same-tenant success and cross-tenant denial regression tests after the patch",
+        "Stops and escalates on a regression, no progress, unresolved evidence, or oscillating repairs instead of treating a passing model check as task completion"
+      ]
+    },
+    {
+      "id": "semantic-lint-cache-freshness",
+      "prompt": "Our semantic scan cached a pass. We then changed the method's caller, the exact rule wording, and a policy threshold, while the provider's mutable model alias still has the same text. Explain what can be reused and what must be re-evaluated before publishing a fresh result.",
+      "expected_output": "Invalidates readings when request-defining source/context/rule/model inputs change, records provider-returned model identity rather than treating an alias as immutable, and recomputes a changed deterministic threshold policy from eligible unchanged raw scores without claiming a new inference.",
+      "assertions": [
+        "Invalidates cached readings when source, graph-neighbor context, exact rule/question, endpoint, adapter, or model revision changes",
+        "Records provider-returned model identity or marks it unknown; a mutable alias alone is not immutable revision evidence",
+        "Recomputes a changed policy threshold from eligible unchanged raw scores and identifies the result as cache reuse rather than a fresh model call"
+      ]
+    },
+    {
+      "id": "semantic-lint-coverage",
+      "prompt": "A codebase-level `ensure_present` search selected 620 candidate units, queried 400 before its rule-search cap, partially read 12 long units, and had 3 provider failures; a path filter excluded other files. The report shows zero listed violations. What may we claim, and what must the report retain?",
+      "expected_output": "Reports selection separately from queried/completed/partial/failed/skipped and out-of-scope units, discloses caps and exclusions, and refuses to call zero listed findings a clean complete scan.",
+      "assertions": [
+        "Keeps selected, actually queried, completed, partial, failed, skipped, and out-of-scope unit counts distinct",
+        "Does not count capped, partial, failed, skipped, or unexamined units as clean passes",
+        "Limits the zero-violation claim to successfully examined scope and reports parser/graph/search limits that affect coverage"
+      ]
+    },
+    {
+      "id": "semantic-lint-chunk-aggregation",
+      "prompt": "A semantic rule multiplies marginal scores of .92 and .91, then takes the maximum across six chunks and reports .837 as calibrated document-level risk. What needs to be established before using that number as a gate?",
+      "expected_output": "Explains the assumptions needed for score multiplication, rejects an unvalidated maximum as document-level probability, and requires pass/chunk provenance plus independent document-level validation across varying chunk counts before calibrating or gating.",
+      "assertions": [
+        "Does not treat a product of marginal probabilities as a joint probability without conditional semantics or independent empirical validation",
+        "Explains that a maximum across chunks can change with the number of opportunities and is not document-level calibrated risk without validation",
+        "Retains pass/chunk metadata and validates document-level outcomes across varying chunk counts on independently labeled units"
+      ]
+    },
+    {
+      "id": "semantic-lint-heldout-task-cost",
+      "prompt": "We have 240 labeled code changes across 12 repositories, many near-duplicate fixes, and want to evaluate a semantic rule plus an agent that repairs findings. The rule's medium-confidence second-check tier is claimed to catch more bugs cheaply. Design a study that could justify or reject that claim without confusing finding accuracy with repair success.",
+      "expected_output": "Groups related changes by repository/change family before splitting, uses independent labels and an untouched grouped holdout, evaluates detection separately from patch correctness/regressions and end-task completion, measures full task latency/cost, and treats the medium tier as an unverified hypothesis until measured at an action-specific operating point.",
+      "assertions": [
+        "Keeps related repositories, changes, and near-duplicate fixes within grouped partitions and reserves untouched units for final evaluation",
+        "Measures detection errors and coverage on independently labeled held-out changes separately from repair success",
+        "Verifies repaired patches with deterministic tests, regression cases, and independent review rather than using the model's own feedback as truth",
+        "Measures end-task completion with declared end-to-end latency and total cost including retries, tests, and human review",
+        "Keeps a medium-confidence second-look lane advisory until representative held-out false-pass, false-block, abstention, and review-cost evidence supports an action-specific policy"
+      ]
+    },
+    {
+      "id": "devops-telemetry-economics",
+      "prompt": "We want to replace our log archive with a model filter. Its anomaly recall is 99.3%, but it skips only 0.84% of downstream analysis. Classification costs extra and the archive exporter only acknowledges HTTP receipt. Design a provider-neutral rollout and assess the savings claim.",
+      "expected_output": "Preserves a separate original archive, starts annotation/shadow routing, distinguishes delivery from durability, and evaluates complete economics and misses against exact severity rules.",
+      "assertions": [
+        "Preserves the original archive independently of filtering the expensive analysis branch",
+        "Routes missing, invalid, uncertain, and unavailable judgments conservatively to analysis",
+        "Distinguishes exporter acknowledgment from durable archive storage",
+        "Rejects anomaly recall alone as evidence of net savings",
+        "Includes classification and downstream analysis costs in the whole-policy comparison",
+        "Compares the proposed routing with an exact severity or existing deterministic baseline"
+      ]
+    },
+    {
+      "id": "devops-hypothesis-coverage",
+      "prompt": "Our incident agent proposes MongoDB and tracing faults, each with a test. The actual Service selector fault is absent. A System One model ranks the proposed tests with high confidence. Design the diagnostic loop and explain what this result proves.",
+      "expected_output": "Uses bounded read-only discriminating tests, recognizes missing candidate coverage, and refreshes hypotheses and evidence rather than claiming ranking discovers the omitted cause.",
+      "assertions": [
+        "Explains that ranking cannot recover a correct hypothesis absent from the candidate set",
+        "Associates proposed tests with competing hypotheses and distinguishing observations",
+        "Keeps probe authorization and read-only eligibility in deterministic control",
+        "Assigns test execution and interpretation to the executor rather than the ranking verdict",
+        "Includes a lane to expand hypotheses or gather missing evidence",
+        "Bounds investigation and refreshes observations before renewed judgment"
+      ]
+    },
+    {
+      "id": "devops-repair-invariants",
+      "prompt": "The agent restored three Ready replicas but left maxUnavailable at 100% and maxSurge at 0. A judge approves recovery. Separately, restoring an old database credential fixes requests after rotation. Design diagnosis and mitigation review before declaring either incident resolved.",
+      "expected_output": "Separates causal diagnosis, current functionality, and durable invariant verification with executable checks; does not accept current health or a model verdict as closure.",
+      "assertions": [
+        "Requires evidence of both a current observed failure and its causal mechanism for diagnosis",
+        "Distinguishes restored service from removal of the cause and durable repair correctness",
+        "Requires checking future rollout availability against the governing invariant",
+        "Requires verifying that old rotated credentials remain invalid",
+        "Assigns execution of postcondition checks to software or operators rather than inferring their success from judge prose",
+        "Retains unknown checks and a declared stability window in closure evidence"
+      ]
+    },
+    {
+      "id": "devops-selective-ci",
+      "prompt": "A model says only unit tests are relevant to a change. Security scans are mandatory and integration tests require a setup job. We want optional job selection that works with any qualified decision model. What controls and evidence are required?",
+      "expected_output": "Restricts judgment to optional allowlisted jobs, keeps required jobs and dependency closure deterministic, and evaluates omissions against full-suite evidence.",
+      "assertions": [
+        "Retains mandatory security and other required jobs regardless of model judgment",
+        "Restricts model-based selection to optional allowlisted jobs",
+        "Resolves prerequisite dependency closure in deterministic code",
+        "Runs the conservative full eligible set for invalid or unavailable judgments",
+        "Allows more than one optional job to be relevant instead of assuming an exclusive choice",
+        "Requires full-suite shadow or replay evidence of missed regressions before enforcement"
+      ]
+    },
+    {
+      "id": "devops-durable-response-loss",
+      "prompt": "Temporal stored an approved rollback decision. The approval waited 30 minutes and the deployment changed. An executor timed out after possibly completing the rollback. Can we replay the same command without another judgment? Give a reusable decision and execution record.",
+      "expected_output": "Separates judgment and effect attempts, binds authority to fresh state, reconciles unknown completion by operation ID, and does not infer exactly-once effects from durable history.",
+      "assertions": [
+        "Binds the decision to observation time or state version and an expiry rule",
+        "Rechecks current preconditions and authorization after the approval wait",
+        "Records a stable operation ID and execution attempts separately from judgment requests",
+        "Reconciles whether the rollback took effect before repeating an ambiguous command",
+        "Requires renewed observations and decision when state or action parameters change",
+        "States that durable workflow history alone does not establish exactly-once external effects"
+      ]
+    },
+    {
+      "id": "selective-judge-frozen-policy",
+      "prompt": "A paper reports a frozen Jev cascade accepting 53.7% of 510 pairs, accuracy 92.5% versus fallback 93.1%, and fee ratio 0.568. Someone calls this 99% correct and wants its 0.9 threshold for Laya incident review. Assess the claim and design qualification.",
+      "expected_output": "Distinguishes relative retention from absolute correctness, rejects threshold transfer, and requires separate selection and held-out tests plus absolute risk and live failure evidence.",
+      "assertions": [
+        "Explains that relative accuracy retention is not 99 percent absolute correctness",
+        "Rejects copying the paper threshold to another model or workload without local qualification",
+        "Fits threshold or calibration changes only on a selection split and freezes the policy before an untouched test",
+        "Preserves related source-question variants or incident cases within one independent split group",
+        "Requires an absolute accepted-case error limit alongside relative loss and coverage",
+        "Distinguishes offline cascade simulation from measured live cascade latency"
+      ]
+    },
+    {
+      "id": "selective-judge-confident-unsupported",
+      "prompt": "A reference-free prose judge has 52.5% accuracy, mean maximum probability 0.90, and error-detection AUROC 0.518. The team proposes a 0.9 acceptance gate and repeated voting for deployment review. Explain what evidence is missing and how to route these cases.",
+      "expected_output": "Recognizes weak error discrimination and confident unsupported judgments; obtains required evidence or reviews, and treats repeated voting as a separately evaluated policy.",
+      "assertions": [
+        "Explains why high mean confidence does not justify acceptance on the stated workload",
+        "Distinguishes probability calibration from error discrimination",
+        "Requires obtaining missing task evidence or routing to review regardless of confidence",
+        "Calls for risk-coverage and accepted-error evaluation against independent labels",
+        "Includes elaborate wrong answers or other confident-error challenges",
+        "Treats repeated voting as a separate policy requiring correlated-error and complete-cost evaluation"
+      ]
+    },
+    {
+      "id": "selective-judge-fallback-complementarity",
+      "prompt": "Our fallback has better pooled accuracy and agrees with the primary on 96% of its confident mistakes. We tuned the gate on the same cases used in the report; invalid calls were excluded and unpriced retries cost zero. Review the cascade and propose a valid comparison.",
+      "expected_output": "Rejects agreement as correctness and test-fitted claims, preserves invalid cases and unknown costs, and measures actual deferral-band rescue, regression, and shared errors.",
+      "assertions": [
+        "Rejects provider agreement as independent evidence of correctness",
+        "Measures fallback rescues, regressions, and shared errors within the actual deferral band",
+        "Requires a new untouched test after fitting the gate on the reported cases",
+        "Keeps invalid or unresolved final results in the all-attempted quality denominator",
+        "Records unpriced retries as unknown cost rather than zero",
+        "Compares with fallback alone and a matched-budget no-confidence control"
+      ]
+    },
+    {
+      "id": "selective-judge-order-and-evidence",
+      "prompt": "We averaged first-position probabilities from A/B and B/A to route a pairwise judge, then added a tie and unknown class. Our audit is one blinded author on disagreements, and the relative accuracy point estimate is inside tolerance but its confidence interval is not. Is this equivalent to a validated noninferior production gate?",
+      "expected_output": "Aligns distributions to response identity, preserves tie/unknown semantics, qualifies selected adjudication, and rejects unsupported noninferiority or production claims.",
+      "assertions": [
+        "Maps probabilities from both candidate orders to semantic response identity before aggregation",
+        "Preserves tie and unknown classes instead of applying a binary complement formula to the expanded option set",
+        "Counts both order requests in cascade cost",
+        "Distinguishes selected single-author disagreement adjudication from representative independent audit evidence",
+        "Requires the paired interval to satisfy the preregistered noninferiority margin rather than relying only on the point estimate",
+        "Rejects a production gate claim without qualified held-out and live failure-boundary evidence"
+      ]
+    },
+    {
+      "id": "question-id-semantics",
+      "prompt": "Our System One request uses IDs like `route` and `urgent`. The provider only sees instructions and criteria. Is it enough to make those IDs descriptive, and how should we keep the questions safe to reuse?",
+      "expected_output": "Explains that IDs correlate answers in application code but do not define the judgment. Each question carries its full trusted meaning, relevant evidence boundary, and answer criteria; ambiguous or unsafe cases have an explicit fallback.",
+      "assertions": [
+        "States that a question ID is an application correlation key and does not itself tell the model what judgment to make",
+        "Requires each question instruction to contain the judgment meaning needed for that question",
+        "Keeps trusted instructions and criteria outside user-controlled state",
+        "Defines how the application handles an answer that is ambiguous or unsupported by the supplied evidence"
+      ]
+    },
+    {
+      "id": "candidate-extraction-boundaries",
+      "prompt": "A message says \u201cBook the Portland venue if the date works,\u201d but our extractor returns only Seattle and Tacoma. We ask Choice to select one of those candidates and it chooses Seattle. Design the pipeline so we can tell whether extraction omitted the desired value or the selector chose poorly, handle a source with no candidate, and produce an output safely.",
+      "expected_output": "Evaluates candidate coverage against source-supported values separately from selection accuracy over the extracted set. It catches that Portland appears in the source but is missing from the extracted candidates, preserves source spans/provenance, distinguishes empty extraction from invalid selection, and has application code copy or normalize the selected source value rather than generate a new value.",
+      "assertions": [
+        "Measures candidate coverage against all source-supported values separately from selection accuracy over the extracted candidate set",
+        "Identifies Portland as a source-supported value omitted by extraction, even though the selector can only choose Seattle or Tacoma",
+        "Preserves source traceability for each extracted candidate",
+        "Does not treat a model-generated candidate as source-backed evidence",
+        "Distinguishes an empty candidate set from an invalid selection in a nonempty set",
+        "Defines a safe outcome when the source supports no candidates",
+        "Has application code copy or normalize the selected source-backed value instead of asking a model to generate the final value"
+      ]
+    },
+    {
+      "id": "noul-uncertainty-vs-intensity",
+      "prompt": "We use Noul for the proposition \u201cthe message contains a threat.\u201d Explain what its returned number means, what a value near 0.5 means, and whether we should also treat it as a confidence or emotional-intensity score. How should a consequential action handle an uncertain result?",
+      "expected_output": "Defines the Noul value as the probability of \u201cyes\u201d for the explicit proposition. A value near 0.5 reflects uncertainty between yes and no, not medium threat intensity, and does not provide a separate confidence measure. A consequential action uses a validated threshold or review/fallback policy; harmless emotional emphasis does not itself support the proposition.",
+      "assertions": [
+        "Defines Noul output as the probability of yes for the explicit binary proposition \u201cthe message contains a threat\u201d",
+        "Explains that a value near 0.5 represents uncertainty between yes and no",
+        "Does not interpret a value near 0.5 as medium intensity of the proposition",
+        "Does not claim Noul supplies a separate confidence value",
+        "Routes uncertain Noul results away from consequential automated action using an explicit threshold, review, or fallback policy",
+        "Does not treat harmless emphatic language as positive evidence for the threat proposition solely because it is intense"
+      ]
+    },
+    {
+      "id": "applicable-branch-evidence",
+      "prompt": "A policy has two branches: if the customer asks for a refund, check refund eligibility; if they ask for store hours, answer from the published schedule. The message is clearly about store hours. The refund branch cannot be evaluated because the order ID is absent. Should the whole decision be rejected as uncertain?",
+      "expected_output": "Applies the branch supported by the observed request and evaluates only its required evidence. The missing order ID makes the unused refund branch unresolved but does not invalidate the applicable store-hours branch; the schedule itself still must be verified.",
+      "assertions": [
+        "Selects the branch applicable to the observed store-hours request",
+        "Does not let missing evidence for an unused refund branch veto the applicable store-hours decision",
+        "Requires the schedule evidence needed by the applicable branch before answering with hours",
+        "Treats branch selection as grounded in the request rather than assuming every branch must be fully evaluated"
+      ]
+    },
+    {
+      "id": "hard-violation-not-averaged",
+      "prompt": "A release rubric scores privacy, correctness, and usability from 0 to 1. The candidate averages 0.9 overall, but the privacy criterion finds that it exposes a secret. Can the high average pass the release? Design the decision rule.",
+      "expected_output": "Keeps the hard privacy violation as an independent veto or deterministic release condition, reports the other scores separately, and does not allow a weighted or mean score to erase the violation.",
+      "assertions": [
+        "Identifies secret exposure as a hard release violation with an independent blocking condition",
+        "Does not allow a weighted or arithmetic average of other criteria to override the hard violation",
+        "Reports criterion-level evidence separately from any aggregate score",
+        "Defines a review or remediation path for the blocked release"
+      ]
+    },
+    {
+      "id": "live-docs-contract-fallback",
+      "prompt": "We need to update a System One integration, but the provider documentation site is unavailable and our local Jev reference is dated. What should the implementation agent do before changing the request contract?",
+      "expected_output": "Treats the local reference as a dated snapshot, avoids inventing current provider behavior, uses accessible authoritative package/API artifacts only for claims they support, and defers contract-dependent changes until current documentation can be checked or clearly labels a bounded, reversible proposal for review.",
+      "assertions": [
+        "Identifies the bundled Jev documentation as a dated snapshot rather than proof of the current contract",
+        "Does not invent or assert undocumented current endpoint, field, or response behavior",
+        "Uses an accessible authoritative source only for the specific behavior it documents",
+        "Defers contract-dependent implementation or clearly labels a reversible proposal and the evidence still needed"
+      ]
+    },
+    {
+      "id": "harmless-choice-spread",
+      "prompt": "A user asks which of three notification sounds to use: chime, bell, or soft click. All are safe and easy to change. The Choice probabilities are close, with chime slightly highest. Should we send the choice to review because the model is uncertain? Contrast this with a consequential decision such as which bank account receives a transfer.",
+      "expected_output": "Separates the Choice ranking from action policy. For a harmless, reversible preference among acceptable options, the application may use the top choice without treating a narrow probability spread as a reason for review. For a consequential transfer, it defines an independently justified confidence/threshold and fallback appropriate to the cost of error; the preference policy does not transfer.",
+      "assertions": [
+        "Recognizes chime as the top Choice option while acknowledging the close probabilities",
+        "Allows the application to use the top acceptable option for this harmless and reversible preference without mandatory review solely due to a narrow probability spread",
+        "Defines a more conservative threshold or review path for the consequential transfer decision",
+        "Explains that the preferred action policy depends on the consequence and reversibility rather than transferring one threshold across both decisions"
+      ]
+    },
+    {
+      "id": "skill-suggestion-no-fit-and-evidence",
+      "prompt": "Our roster has two similar deck skills and a posting-to-X skill, but no Mastodon support. We want TypeSafe cookbook-style suggestions for deck creation, posting to Mastodon, and explaining a monad. Design the route and interpret its 488-request results.",
+      "expected_output": "Uses separate need and candidate-fit checks, richer shortlisted evidence, rejection and advisory suggestions, and scopes the synthetic first-load results correctly.",
+      "assertions": [
+        "Separates whether any skill is needed from ranking the roster",
+        "Allows rejecting the entire richly described shortlist when none fits",
+        "Scopes the 488-request figures to synthetic first-response skill-load outcomes rather than completed-task success"
+      ]
+    },
+    {
+      "id": "harness-framework-boundary",
+      "prompt": "We want to add a typed System One ticket route to an existing Python agent built with LangGraph and PydanticAI. Explain who owns the decision contract versus graph placement, and sketch the integration boundary. Also place an equipment-loan decision where the typed model recommends six days but the approved business policy permits five: can confidence authorize the reservation, and who owns translating the clauses?",
+      "expected_output": "Separates harness workflow ownership from System One model ownership and framework implementation: the graph/application supplies authorized state, recovery, and deterministic action policy; a typed decision service owns question/model validation, calibration, unknown handling, and measured substitution. Framework-specific wiring is an implementation seam, not a replacement for the decision contract. Keeps the approved deterministic limit authoritative, separates eligibility from execution authority, and routes clause translation and independent fixtures to spec-driven-development.",
+      "assertions": [
+        "Routes workflow placement, state, authority, recovery, and whole-task evidence to harness engineering",
+        "Keeps typed question design, model response validation, calibration, abstention, and substitution in System One guidance",
+        "Treats PydanticAI or LangGraph as an implementation layer around an injectable typed decision service rather than assuming the decision model is a generative chat model",
+        "Keeps deterministic authorization and side effects outside model output and routes unknown or unavailable results explicitly"
+      ]
+    },
+    {
+      "id": "vega-small-footprint-screening",
+      "prompt": "A team proposes Vega (`vegaml` 0.6.1) as its preferred model for support routing and phishing decisions. A small synthetic screen suggested bounded support-routing potential but showed false phishing alarms and confident misses. Auto-loaded adapters were inactive. The integration contract has overflow, unknown-setting, and required uncertainty-field caveats. Should Vega be deployed as the default decision model?",
+      "expected_output": "Treats Vega as a candidate pending task-specific qualification, requires an explicit review or deterministic fallback and keeps counts, policy, and execution authority outside model judgment. It distinguishes inactive auto-loaded adapters from active-specialist or test-time-tuned evidence, and calls out the v0.6.1 contract caveats.",
+      "assertions": [
+        "Treats Vega as a candidate without unsupported ranking or production claims",
+        "Requires task-specific qualification and a fallback, with exact counts, policy, and execution authority kept outside model judgment",
+        "Distinguishes the inactive auto-loaded adapters from active-specialist or test-time-tuned evidence and identifies the v0.6.1 contract limits"
+      ]
+    },
+    {
+      "id": "pairwise-ranking-method-choice",
+      "prompt": "A Jev tip says to replace independent relevance Scores with pairwise Choice and Bradley–Terry. We rerank eight search passages and sometimes none answers the query. Design a fair experiment before adopting the advice.",
+      "expected_output": "Defines a strong Score control, a paired comparison on frozen independently labeled shortlists, separate quality and resource metrics, and an absolute-relevance rejection lane.",
+      "assertions": [
+        "Defines descriptive Score levels that each make sense independently as a strong control rubric",
+        "Compares the ranking systems on identical frozen candidate shortlists",
+        "Separates judgment count, token cost, and complete-ranking latency when comparing budgets",
+        "Requires a separate absolute-usability or review decision before accepting a pairwise winner",
+        "Uses relevance labels independent of the tested Jev predictions"
+      ]
+    },
+    {
+      "id": "pairwise-ranking-graph-boundaries",
+      "prompt": "We only compared A with B and C with D, but ridge regularization gives a finite Bradley–Terry ranking of all four. Later we give A ten easy opponents and B two hard ones. Can we sort raw wins? Our reversed-position test returned A both times and our judge has no cycles; is it correct?",
+      "expected_output": "Rejects unobserved cross-component comparability, handles unequal opponents, specifies fitting checks, fixes candidate identity interpretation under reversal, and separates consistency from ranking accuracy.",
+      "assertions": [
+        "Rejects observational comparability across disconnected graph components despite a finite regularized fit",
+        "Explains why raw win totals from unequal opponent schedules do not establish a fair ranking",
+        "Specifies an identifiable convention for the fitted candidate worths",
+        "Declares the regularization choice used for the fit",
+        "Requires validating convergence of the fitted model",
+        "Maps reversed passage positions back to original candidate identities before judging agreement",
+        "Requires independent final-ranking quality evidence rather than treating stability or absence of cycles as correctness"
+      ]
+    },
+    {
+      "id": "pairwise-ranking-evidence-readout",
+      "prompt": "Our frozen exploratory Jev comparison finds pairwise nDCG@5 worse than Score, at four times the input tokens. Bradley–Terry and win totals produce identical rankings. An earlier pilot stopped because an exact Score/probability equality check rejected rounded output; its amended successor used fresh cases. We added valid skill eval JSON. What should the skill now recommend, and what evidence do we actually have?",
+      "expected_output": "Retains the stronger cheaper control for this workload, records scoped negative findings and uncertainty, avoids unsupported aggregation attribution, preserves terminal study history, and distinguishes experiment evidence from unassessed skill behavior.",
+      "assertions": [
+        "Retains Score for the observed workload rather than adopting the losing costly pairwise method as default",
+        "Requires effect uncertainty and exploratory-design limitations before broader performance claims",
+        "Does not attribute a ranking benefit to Bradley–Terry when the win-total ablation produces the same ranking",
+        "Preserves the original failed pilot as terminal and keeps the fresh amended study distinct",
+        "Distinguishes schema-valid skill evals from measured behavioral benefit of the enrichment"
+      ]
+    },
+    {
+      "id": "jev-release-feature-selection",
+      "prompt": "On 2026-10-15 we want to try the new Jev release on door-camera photos and locate a parcel. Can our jev-latest text probe already do this? Explain alias selection, an image and Box request, absent objects, longer context, and what must be tested before automation. Do not call a live API.",
+      "expected_output": "Refreshes official documentation, distinguishes stable latest from preview/new release, describes explicit image and long-context gates and 1.14-only Box, and designs presence/localization validation without claiming text helper support or production readiness.",
+      "assertions": [
+        "Distinguishes the documented stable alias resolution from the newest preview release and requires rechecking current mapping",
+        "Uses an image asset reference in request content and the explicit images opt-in header",
+        "Requires a model supporting Box rather than assuming the stable alias already supports it",
+        "Describes normalized Box coordinates and validates edge ordering before cropping",
+        "Uses separate presence evidence because Box has no not-found output",
+        "Treats longer context as a separate opt-in with workload quality and latency validation",
+        "Does not claim the bundled text probe implements image transport or Box validation",
+        "Keeps experimental capabilities and vendor quality claims distinct from held-out production qualification"
+      ]
+    }
+  ]
+}
