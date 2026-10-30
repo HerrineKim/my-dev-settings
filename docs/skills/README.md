@@ -15,6 +15,7 @@
 | [diagram-design](diagram-design.md) | 1 | 아키텍처·플로차트·시퀀스·ERD 등 40여 종 다이어그램을 에디토리얼 스타일 SVG/HTML로 |
 | [ecc](ecc.md) | 314 | ECC 스킬 314개 (언어·프레임워크 패턴·테스트·보안·에이전트 하네스 등, 에이전트·훅은 제외). 전역에는 6개만 링크 |
 | [figma-artifact-import](figma-artifact-import.md) | 1 | HTML 프로토타입 화면을 Figma MCP로 대량 반영 |
+| [front-end-checklist](front-end-checklist.md) | 391 | Front-End Checklist 규칙 391개 스킬 + 통합 감사 스킬 + 원격 MCP. 전역에는 frontend-checklist-global만 링크 |
 | [frontend-design](frontend-design.md) | 1 | Anthropic frontend-design: 템플릿 같지 않은 UI 미학 가이드 |
 | [k-skill](k-skill.md) | 132 | 한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 132개) |
 | [karpathy-guidelines](karpathy-guidelines.md) | 1 | Karpathy식 코딩 행동 지침 (가정 드러내기·단순함·외과적 수정·검증 기준) |

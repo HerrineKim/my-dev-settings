@@ -16,7 +16,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴). `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크
 - `bin/`의 `skills-ls`, `apps-sync`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
-- MCP 서버 `code-review-graph`, `korean-law`를 user 스코프로 등록. `korean-law`가 `skills-exclude`에 있으면 등록하지 않고 이미 있으면 지움
+- MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
 필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
@@ -45,6 +45,7 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 | `/13-crypto-analysis` | 배포 환경 TLS 엔드포인트·암호화 코드 정기 점검 |
 | `/review-changes`·`/review-pr` (code-review-graph) | 큰 변경을 영향 범위 중심으로 리뷰. 프로젝트마다 `/build-graph` 먼저 |
 | `/web-design-guidelines` | UI 코드 변경 시 접근성·인터페이스 가이드라인 점검 |
+| `/frontend-checklist-global` | 출시 전 페이지·컴포넌트를 Front-End Checklist 규칙(접근성·성능·SEO·보안)으로 감사. 공개 URL은 `audit_url` |
 | `/antislop-code` | 커밋 전 생성·수정 코드의 뻔한 AI 주석만 정리(코드는 안 건드림) |
 | `/karpathy-guidelines` | LLM이 만든 코드의 가정·단순함·수정 범위·검증 기준 점검 |
 
@@ -72,6 +73,7 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 | `korean-law` | 법제처 Open API MCP로 법령·판례 조회와 인용 검증. 키 없이 공용 한도 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고 MCP는 공개 서버 `mcp.gomdori.app/law` |
 | `magnus-agent-skills` (182) | 개발·제품·운영·데이터·글쓰기 범용 스킬. 전역에는 `skills-exclude`의 `!` 줄에 적은 12개(frontend-engineering, react, web-accessibility, performance-optimization, playwright, supabase, systematic-debugging, api-design-and-evolution, technical-documentation, adr-authoring, agent-skills, harness-engineering)만 링크 | [magnus919/agent-skills](https://github.com/magnus919/agent-skills) (MIT) |
 | `ecc` (314) | ECC의 skills/만 받음(에이전트·훅·룰·커맨드는 oh-my-claudecode와 겹쳐 뺌). 전역에는 nextjs-turbopack, react-patterns, react-performance, react-testing, typescript-patterns, browser-qa 6개만 링크 | [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) |
+| `front-end-checklist` (391) | 접근성·성능·SEO·보안·HTML/CSS/JS 규칙 391개. 전역에는 통합 감사 `/frontend-checklist-global`만 링크하고, 규칙은 원격 MCP(`mcp.frontendchecklist.io`)로 찾음. 리뷰할 코드·URL이 외부 서버로 전송됨 | [thedaviddias/Front-End-Checklist](https://github.com/thedaviddias/Front-End-Checklist) (MIT) |
 | `cybersecurity` (22) | 증거 기반 보안 방법론: 정찰·취약점·웹/클라우드/모바일/OT 보안·악성코드·위협 헌팅·IR·SOC·로그·암호·공급망·레드/블루/퍼플팀·GRC. 정기 점검용은 위 '주기적으로 점검할 스킬' 참고 | [Masriyan/Claude-Code-CyberSecurity-Skill](https://github.com/Masriyan/Claude-Code-CyberSecurity-Skill) (MIT). 공격·침투 스킬(03·14·22)과 안전 민감 스킬(16·18)은 권한·범위 게이트가 있으니 허가받은 대상에만. 딸린 스크립트는 복사만 하고 실행 안 함 |
 
 ### 외부 스킬 업데이트·추가
@@ -88,7 +90,7 @@ skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 claude plugin marketplace add HerrineKim/my-dev-settings
 for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
   web-design-guidelines make-interfaces-feel-better ui-polish clone-website diagram-design antislop ai-slop-thresher \
-  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc; do
+  karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc front-end-checklist; do
   claude plugin install "$p@hyerin-skills"
 done
 ```

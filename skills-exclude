@@ -30,3 +30,6 @@ ecc
 !ecc/react-testing
 !ecc/typescript-patterns
 !ecc/browser-qa
+# 2026-10-30: Front-End-Checklist 규칙 스킬 391개는 이름이 일반적이라(review, quality, video 등) 레포에만 두고 통합 감사 스킬만 전역 링크.
+front-end-checklist
+!front-end-checklist/frontend-checklist-global

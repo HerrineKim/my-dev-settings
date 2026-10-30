@@ -32,7 +32,7 @@ for link in "$dest"/*; do
   case "$(readlink "$link")" in "$repo"/plugins/*) rm "$link"; echo "removed stale /$(basename "$link")";; esac
 done
 
-# MCP servers some vendored skills call (code-review-graph, korean-law), registered once at user scope.
+# MCP servers some vendored skills call (code-review-graph, korean-law, front-end-checklist), registered once at user scope.
 if command -v claude >/dev/null; then
   claude mcp get code-review-graph >/dev/null 2>&1 || {
     command -v uvx >/dev/null || echo "! code-review-graph MCP는 uv가 필요: brew install uv"
@@ -44,8 +44,20 @@ if command -v claude >/dev/null; then
     *) claude mcp get korean-law >/dev/null 2>&1 || {
       claude mcp add -s user --transport http korean-law https://mcp.gomdori.app/law >/dev/null && echo "added MCP korean-law (user)"; };;
   esac
+  # /frontend-checklist-global이 규칙을 이 원격 MCP로 찾는다. 그 스킬을 전역 링크할 때만 등록하고, 아니면 지움.
+  want_fec=yes
+  case "$excluded" in *" front-end-checklist "*)
+    case "$kept" in *" front-end-checklist/frontend-checklist-global "*) ;; *) want_fec=no;; esac;;
+  esac
+  if [ "$want_fec" = yes ]; then
+    claude mcp get front-end-checklist >/dev/null 2>&1 || {
+      claude mcp add -s user --transport http front-end-checklist https://mcp.frontendchecklist.io >/dev/null && echo "added MCP front-end-checklist (user)"; }
+  else
+    claude mcp get front-end-checklist >/dev/null 2>&1 && \
+      claude mcp remove -s user front-end-checklist >/dev/null && echo "removed MCP front-end-checklist (excluded)"
+  fi
 else
-  echo "! claude CLI 없음: code-review-graph·korean-law MCP 등록을 건너뜁니다."
+  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist MCP 등록을 건너뜁니다."
 fi
 
 # Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.

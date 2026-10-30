@@ -1,0 +1,7 @@
+{
+  "name": "front-end-checklist",
+  "version": "2.0.1",
+  "description": "thedaviddias/Front-End-Checklist 벤더링: 규칙 391개 스킬 + 통합 감사 스킬 + 원격 MCP(mcp.frontendchecklist.io)",
+  "author": { "name": "David Dias", "url": "https://thedaviddias.com" },
+  "license": "MIT"
+}

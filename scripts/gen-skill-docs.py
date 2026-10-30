@@ -33,6 +33,7 @@ SOURCES = {
     "android-reverse-engineering": ("SimoneAvogadro/android-reverse-engineering-skill",
                                     "plugins/android-reverse-engineering/skills/{s}"),
     "note": ("HerrineKim/riverlog", ".claude/skills/{s}"),
+    "front-end-checklist": ("thedaviddias/Front-End-Checklist", "skills/{s}"),
     "ecc": ("affaan-m/ECC", "skills/{s}"),
     "magnus-agent-skills": ("magnus919/agent-skills", "{s}"),
 }

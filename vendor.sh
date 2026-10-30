@@ -74,6 +74,16 @@ rm -rf "$tmp/src"
 echo "updated plugins/ecc"
 find "$repo/plugins" -name .DS_Store -delete
 
+# Front-End-Checklist: 391 rule skills plus the global audit skill; the plugin's .mcp.json points at the hosted MCP.
+git clone -q --depth 1 https://github.com/thedaviddias/Front-End-Checklist.git "$tmp/src"
+rm -rf "$repo/plugins/front-end-checklist/skills"
+mkdir -p "$repo/plugins/front-end-checklist"
+cp -R "$tmp/src/skills" "$repo/plugins/front-end-checklist/"
+cp "$tmp/src/LICENSE" "$tmp/src/plugins/front-end-checklist/.mcp.json" "$repo/plugins/front-end-checklist/"
+rm -rf "$tmp/src"
+echo "updated plugins/front-end-checklist"
+find "$repo/plugins" -name .DS_Store -delete
+
 # /note lives in the riverlog repo; vendor it and inject the "find the riverlog repo" preamble so it works from any project.
 git clone -q --depth 1 https://github.com/HerrineKim/riverlog.git "$tmp/riverlog"
 rm -rf "$repo/plugins/note/skills/note"
@@ -109,5 +119,6 @@ upstream_docs antislop miqdadbadjuber/anti-slop README.md
 upstream_docs ai-slop-thresher Burntgogi/ai-slop-thresher README.md
 upstream_docs magnus-agent-skills magnus919/agent-skills README.md LICENSE.md
 upstream_docs ecc affaan-m/ECC README.md COMMANDS-QUICK-REF.md TROUBLESHOOTING.md
+upstream_docs front-end-checklist thedaviddias/Front-End-Checklist README.md
 upstream_docs cybersecurity Masriyan/Claude-Code-CyberSecurity-Skill README.md USAGE.md INSTALL.md SECURITY.md docs/QUALITY.md
 python3 "$repo/scripts/gen-skill-docs.py"
