@@ -128,6 +128,11 @@
       "name": "notebooklm-wiki-pipeline",
       "source": "./plugins/notebooklm-wiki-pipeline",
       "description": "/pdf-to-wiki: Drive PDF를 NotebookLM MCP로 읽혀 Obsidian Wiki 노트로 저장(nlm CLI·MCP 별도 설치)"
+    },
+    {
+      "name": "jscpd",
+      "source": "./plugins/jscpd",
+      "description": "중복 코드 탐지 jscpd 사용법과 DRY 리팩터링·코드베이스 비교·마이그레이션·정리 스킬 5개(jscpd CLI 별도 설치)"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

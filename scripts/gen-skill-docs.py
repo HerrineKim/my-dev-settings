@@ -36,6 +36,7 @@ SOURCES = {
     "notebooklm-wiki-pipeline": ("capitalparser/notebooklm-wiki-pipeline", "commands/pdf-to-wiki.md"),
     "front-end-checklist": ("thedaviddias/Front-End-Checklist", "skills/{s}"),
     "ecc": ("affaan-m/ECC", "skills/{s}"),
+    "jscpd": ("kucherenko/jscpd", "skills/{s}"),
     "magnus-agent-skills": ("magnus919/agent-skills", "{s}"),
 }
 OWN = ("HerrineKim/my-dev-settings", "plugins/{p}/skills/{s}")
