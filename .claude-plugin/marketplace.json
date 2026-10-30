@@ -113,6 +113,11 @@
       "name": "magnus-agent-skills",
       "source": "./plugins/magnus-agent-skills",
       "description": "범용 스킬 묶음 182개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크"
+    },
+    {
+      "name": "ecc",
+      "source": "./plugins/ecc",
+      "description": "ECC 스킬 314개 (언어·프레임워크 패턴·테스트·보안·에이전트 하네스 등, 에이전트·훅은 제외). 전역에는 6개만 링크"
     }
   ],
   "description": "HerrineKim 개인 Claude Code 스킬"

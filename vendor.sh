@@ -64,6 +64,16 @@ rm -rf "$tmp/src"
 echo "updated plugins/cybersecurity"
 find "$repo/plugins" -name .DS_Store -delete
 
+# ECC is a whole harness (agents, hooks, rules, commands); we vendor only its skills/ so it does not clash with oh-my-claudecode.
+git clone -q --depth 1 https://github.com/affaan-m/ECC.git "$tmp/src"
+rm -rf "$repo/plugins/ecc/skills"
+mkdir -p "$repo/plugins/ecc"
+cp -R "$tmp/src/skills" "$repo/plugins/ecc/"
+cp "$tmp/src/LICENSE" "$repo/plugins/ecc/"
+rm -rf "$tmp/src"
+echo "updated plugins/ecc"
+find "$repo/plugins" -name .DS_Store -delete
+
 # /note lives in the riverlog repo; vendor it and inject the "find the riverlog repo" preamble so it works from any project.
 git clone -q --depth 1 https://github.com/HerrineKim/riverlog.git "$tmp/riverlog"
 rm -rf "$repo/plugins/note/skills/note"
@@ -98,5 +108,6 @@ upstream_docs ui-ux-pro-max nextlevelbuilder/ui-ux-pro-max-skill README.md
 upstream_docs antislop miqdadbadjuber/anti-slop README.md
 upstream_docs ai-slop-thresher Burntgogi/ai-slop-thresher README.md
 upstream_docs magnus-agent-skills magnus919/agent-skills README.md LICENSE.md
+upstream_docs ecc affaan-m/ECC README.md COMMANDS-QUICK-REF.md TROUBLESHOOTING.md
 upstream_docs cybersecurity Masriyan/Claude-Code-CyberSecurity-Skill README.md USAGE.md INSTALL.md SECURITY.md docs/QUALITY.md
 python3 "$repo/scripts/gen-skill-docs.py"

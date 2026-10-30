@@ -22,3 +22,11 @@ magnus-agent-skills
 !magnus-agent-skills/adr-authoring
 !magnus-agent-skills/agent-skills
 !magnus-agent-skills/harness-engineering
+# 2026-10-30: affaan-m/ECC 스킬 314개도 레포에만 두고, Next.js·React·TypeScript 작업용만 전역 링크.
+ecc
+!ecc/nextjs-turbopack
+!ecc/react-patterns
+!ecc/react-performance
+!ecc/react-testing
+!ecc/typescript-patterns
+!ecc/browser-qa

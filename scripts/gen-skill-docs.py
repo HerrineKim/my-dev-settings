@@ -33,6 +33,7 @@ SOURCES = {
     "android-reverse-engineering": ("SimoneAvogadro/android-reverse-engineering-skill",
                                     "plugins/android-reverse-engineering/skills/{s}"),
     "note": ("HerrineKim/riverlog", ".claude/skills/{s}"),
+    "ecc": ("affaan-m/ECC", "skills/{s}"),
     "magnus-agent-skills": ("magnus919/agent-skills", "{s}"),
 }
 OWN = ("HerrineKim/my-dev-settings", "plugins/{p}/skills/{s}")

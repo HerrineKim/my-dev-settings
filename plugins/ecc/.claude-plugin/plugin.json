@@ -1,0 +1,7 @@
+{
+  "name": "ecc",
+  "version": "2.2.3",
+  "description": "affaan-m/ECC의 skills/만 벤더링: 프론트엔드·백엔드·언어별 패턴·테스트·보안·에이전트 하네스 등 314개 (에이전트·훅·룰·커맨드는 제외)",
+  "author": { "name": "Affaan Mustafa" },
+  "license": "MIT"
+}
