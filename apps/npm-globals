@@ -4,3 +4,6 @@
 
 # User-Agent 파싱 CLI·라이브러리 (v2부터 AGPL-3.0, 프로젝트 의존성으로 넣을 때는 라이선스 확인)
 ua-parser-js@2.0.10
+
+# 이미지 배경 제거 라이브러리(로컬 ONNX 모델, CLI 없음). `rmbg` 명령(bin/rmbg)이 이걸 불러 쓴다. AGPL-3.0
+@imgly/background-removal-node@1.4.5

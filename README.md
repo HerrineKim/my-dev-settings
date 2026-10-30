@@ -14,7 +14,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 
 `install.sh`가 하는 일(여러 번 실행해도 안전)
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴). `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크
-- `bin/`의 `skills-ls`, `apps-sync`를 `~/.local/bin`에 링크
+- `bin/`의 `skills-ls`, `apps-sync`, `rmbg`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
 - MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
@@ -24,6 +24,14 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 ```bash
 skills-ls            # 전역 스킬 전체: ~/.claude/skills, claude.ai 동기화 스킬, user 플러그인 스킬
 skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
+```
+
+이미지 배경 제거는 `rmbg`(전역 npm `@imgly/background-removal-node`를 부름, 모델이 패키지에 들어 있어 오프라인 동작):
+
+```bash
+rmbg photo.jpg                          # photo-nobg.png 를 같은 폴더에
+rmbg *.jpg --out cut --format webp      # 여러 장을 cut/ 에 webp로
+rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠르게
 ```
 
 ## Claude Code 스킬

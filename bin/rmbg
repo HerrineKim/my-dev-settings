@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+// Remove image backgrounds locally with @imgly/background-removal-node (installed globally via apps/npm-globals).
+//
+// Usage: rmbg <image>... [--out DIR] [--model small|medium] [--type foreground|background|mask] [--format png|webp|jpeg]
+// Writes <name>-nobg.<format> next to each input (or into --out). Models ship inside the package, so it runs offline.
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const { createRequire } = require("module");
+
+const args = process.argv.slice(2);
+const opts = { out: null, model: "medium", type: "foreground", format: "png" };
+const inputs = [];
+for (let i = 0; i < args.length; i++) {
+  const a = args[i];
+  if (a === "-h" || a === "--help") { console.log(fs.readFileSync(__filename, "utf8").split("\n").slice(1, 5).join("\n").replace(/^\/\/ ?/gm, "")); process.exit(0); }
+  const key = a.startsWith("--") ? a.slice(2) : null;
+  if (key && key in opts) { opts[key] = args[++i]; continue; }
+  if (key) { console.error(`rmbg: unknown option ${a}`); process.exit(2); }
+  inputs.push(a);
+}
+if (!inputs.length) { console.error("usage: rmbg <image>... [--out DIR] [--model small|medium] [--type foreground|background|mask] [--format png|webp|jpeg]"); process.exit(2); }
+
+let lib, publicPath;
+try {
+  const root = execSync("npm root -g", { encoding: "utf8" }).trim();
+  lib = createRequire(path.join(root, "noop.js"))("@imgly/background-removal-node");
+  // The library looks for its models under ./node_modules of the cwd by default; point it at the global install.
+  publicPath = `file://${path.join(root, "@imgly/background-removal-node/dist")}/`;
+} catch {
+  console.error("rmbg: @imgly/background-removal-node가 없습니다. apps-sync 를 실행하세요.");
+  process.exit(1);
+}
+
+(async () => {
+  const mime = { png: "image/png", webp: "image/webp", jpeg: "image/jpeg", jpg: "image/jpeg" }[opts.format];
+  if (!mime) { console.error(`rmbg: unsupported format ${opts.format}`); process.exit(2); }
+  let failed = 0;
+  for (const input of inputs) {
+    try {
+      const abs = path.resolve(input);
+      const blob = await lib.removeBackground(`file://${abs}`, { publicPath, model: opts.model, output: { format: mime, type: opts.type } });
+      const ext = opts.format === "jpg" ? "jpeg" : opts.format;
+      const suffix = opts.type === "foreground" ? "nobg" : opts.type;
+      const dir = opts.out ? path.resolve(opts.out) : path.dirname(abs);
+      fs.mkdirSync(dir, { recursive: true });
+      const dest = path.join(dir, `${path.parse(abs).name}-${suffix}.${ext}`);
+      fs.writeFileSync(dest, Buffer.from(await blob.arrayBuffer()));
+      console.log(dest);
+    } catch (err) {
+      failed++;
+      console.error(`rmbg: ${input}: ${err.message || err}`);
+    }
+  }
+  process.exit(failed ? 1 : 0);
+})();
