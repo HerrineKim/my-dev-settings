@@ -36,9 +36,10 @@ Copy and text skill for antislop. Use when writing or editing prose: headlines, 
 
 ### `/antislop-human`
 
-Human and accessibility skill for antislop. Contrast, keyboard, focus, and states for real people. Includes the contrast checker.
+Human and accessibility skill for antislop. Contrast, keyboard, focus, states, and interaction affordances for real people. Includes the contrast checker.
 
 - 호출: `/antislop-human` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `references/`
 - 원조 GitHub: [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop/tree/HEAD/skills/antislop-human)
 - 이 레포 사본: [`plugins/antislop/skills/antislop-human/SKILL.md`](../../plugins/antislop/skills/antislop-human/SKILL.md)
 
@@ -52,8 +53,9 @@ Mobile layout skill for antislop. Use for layouts that reflow across screen size
 
 ### `/antislop-ui`
 
-UI and visual skill for antislop. Use when building or editing any interface: color, layout, components, motion. Load with the core.
+UI and visual skill for antislop. Use when building or editing any interface: color, layout, components, motion, and page performance. Load with the core.
 
 - 호출: `/antislop-ui` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `references/`
 - 원조 GitHub: [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop/tree/HEAD/skills/antislop-ui)
 - 이 레포 사본: [`plugins/antislop/skills/antislop-ui/SKILL.md`](../../plugins/antislop/skills/antislop-ui/SKILL.md)

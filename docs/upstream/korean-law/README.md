@@ -35,7 +35,7 @@ VS Code·Cursor는 버튼 한 번으로 연결됩니다(키 없이 공용 한도
 
 | Claude에 연결하기 | ChatGPT에 연결하기 |
 |:---:|:---:|
-| [![Claude에 법령MCP 연결하기](./docs/video-claude.jpg)](https://youtu.be/KaUKLOH7290) | [![GPT에 법령MCP 연결하기](./docs/video-gpt.jpg)](https://youtu.be/RzoU_6v9sgo) |
+| [![Claude에 법령MCP 연결하기](./docs/video-claude.jpg)](https://youtu.be/KaUKLOH7290) | [![GPT에 법령MCP 연결하기](./docs/video-gpt.jpg)](https://youtu.be/-qMk-ajW-GQ) |
 
 ---
 
@@ -459,7 +459,7 @@ reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /
 ## 자주 묻는 질문
 
 **Q. Claude·ChatGPT에서 한국 법령·판례를 검색하려면?**
-이 MCP 서버를 연결합니다. Claude.ai는 커넥터 주소 `https://mcp.gomdori.app/law?oc=본인키` 하나면 되고, Claude Desktop·Cursor·Windsurf·Zed는 [설치 및 사용법](#설치-및-사용법), ChatGPT는 [연결 영상](https://youtu.be/RzoU_6v9sgo)을 따르세요.
+이 MCP 서버를 연결합니다. Claude.ai는 커넥터 주소 `https://mcp.gomdori.app/law?oc=본인키` 하나면 되고, Claude Desktop·Cursor·Windsurf·Zed는 [설치 및 사용법](#설치-및-사용법), ChatGPT는 [연결 영상](https://youtu.be/-qMk-ajW-GQ)을 따르세요.
 
 **Q. 무료인가요?**
 MIT 라이선스 오픈소스입니다. 필요한 법제처 Open API 인증키도 무료로 발급됩니다([0단계](#0단계-api-키-발급-무료-1분)).
