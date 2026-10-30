@@ -64,8 +64,26 @@ if command -v claude >/dev/null; then
   else
     echo "! nlm 없음: brew install uv 후 install.sh 다시 실행 (/pdf-to-wiki용)"
   fi
+  # financial-datasets: 미국 주식 재무제표·주가·뉴스·크립토 MCP(mcp/financial-datasets, 원본 financial-datasets/mcp-server).
+  # API 키는 레포 밖 ~/.config/financial-datasets/.env 에 직접 넣는다(없으면 빈 파일을 만들어 둠).
+  fd_env="$HOME/.config/financial-datasets/.env"
+  [ -f "$fd_env" ] || { mkdir -p "$(dirname "$fd_env")"; printf '# https://financialdatasets.ai 에서 받은 키\nFINANCIAL_DATASETS_API_KEY=\n' > "$fd_env"; chmod 600 "$fd_env"; }
+  claude mcp get financial-datasets >/dev/null 2>&1 || {
+    claude mcp add -s user financial-datasets -- uv --directory "$repo/mcp/financial-datasets" run --env-file "$fd_env" server.py >/dev/null \
+      && echo "added MCP financial-datasets (user)"; }
+  grep -q '^FINANCIAL_DATASETS_API_KEY=..' "$fd_env" || echo "! financial-datasets API 키 필요: $fd_env 에 FINANCIAL_DATASETS_API_KEY=… 입력"
+  # figma-bridge: Figma 데스크톱 플러그인이 보내는 문서 데이터를 받는 MCP(REST API 한도 없음). 버전 고정, 플러그인은 Figma에서 직접 import.
+  fmb_ver=0.0.25
+  fmb_dir="$HOME/.local/share/figma-mcp-bridge/v$fmb_ver"
+  claude mcp get figma-bridge >/dev/null 2>&1 || {
+    claude mcp add -s user figma-bridge -- npx -y "@gethopp/figma-mcp-bridge@$fmb_ver" >/dev/null && echo "added MCP figma-bridge (user)"; }
+  if [ ! -f "$fmb_dir/plugin/manifest.json" ] && command -v gh >/dev/null; then
+    mkdir -p "$fmb_dir" && gh release download "v$fmb_ver" -R gethopp/figma-mcp-bridge -p '*.zip' -O "$fmb_dir/plugin.zip" --clobber \
+      && unzip -oq "$fmb_dir/plugin.zip" -d "$fmb_dir" && rm "$fmb_dir/plugin.zip" \
+      && echo "! Figma 데스크톱 > Plugins > Development > Import plugin from manifest: $fmb_dir/plugin/manifest.json"
+  fi
 else
-  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp MCP 등록을 건너뜁니다."
+  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp·financial-datasets·figma-bridge MCP 등록을 건너뜁니다."
 fi
 
 # Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.

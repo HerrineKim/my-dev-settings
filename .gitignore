@@ -1,3 +1,5 @@
 .omc/
 .DS_Store
 __pycache__/
+mcp/*/.venv/
+mcp/*/.env

@@ -126,6 +126,12 @@ PY
 rm -rf "$tmp/src"
 echo "updated plugins/notebooklm-wiki-pipeline/skills/pdf-to-wiki"
 
+# financial-datasets MCP server (single-file FastMCP app). install.sh runs it with `uv --directory mcp/financial-datasets`.
+git clone -q --depth 1 https://github.com/financial-datasets/mcp-server.git "$tmp/src"
+for f in server.py pyproject.toml uv.lock .python-version LICENSE .env.example; do cp "$tmp/src/$f" "$repo/mcp/financial-datasets/"; done
+rm -rf "$tmp/src"
+echo "updated mcp/financial-datasets"
+
 # Upstream usage docs, copied verbatim into docs/upstream/<plugin>/ (linked from docs/skills/<plugin>.md).
 upstream_docs() { # <plugin> <github-repo> <path>...
   local plugin="$1" src="$2"; shift 2
