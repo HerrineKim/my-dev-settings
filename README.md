@@ -1,6 +1,6 @@
 # my-dev-settings
 
-맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`).
+맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`), 전역 npm 패키지(`apps/npm-globals`).
 
 ## 설치와 업데이트
 
@@ -104,7 +104,7 @@ done
 
 ## 앱 맞추기
 
-설치할 앱은 `apps/Brewfile` 한 곳에 적습니다(Homebrew 앱·CLI, App Store 앱은 `mas`). 어느 쪽으로도 설치할 수 없는 앱은 `apps/manual.md`에 적습니다.
+설치할 앱은 `apps/Brewfile` 한 곳에 적습니다(Homebrew 앱·CLI, App Store 앱은 `mas`). 어느 쪽으로도 설치할 수 없는 앱은 `apps/manual.md`에 적습니다. 전역 npm 패키지는 `apps/npm-globals`에 `이름@버전`으로 적으면 `apps-sync`가 없는 것만 `npm i -g`로 설치합니다(버전 고정).
 
 ```bash
 apps-sync          # 이 맥에 없는 앱 설치. dmg로 직접 깔아 둔 앱은 지우지 않고 Homebrew 관리로 넘김(--adopt)
