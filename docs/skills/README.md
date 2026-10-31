@@ -25,7 +25,7 @@
 | [korean-law](korean-law.md) | 1 | 법제처 Open API MCP로 법령·판례·행정규칙·자치법규 조회와 인용 검증 |
 | [magnus-agent-skills](magnus-agent-skills.md) | 182 | 범용 스킬 묶음 182개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크 |
 | [make-interfaces-feel-better](make-interfaces-feel-better.md) | 1 | UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙 |
-| [marketingskills](marketingskills.md) | 52 | 마케팅 스킬 묶음 (CRO·카피라이팅·SEO·광고·분석·그로스 등 52개) |
+| [marketingskills](marketingskills.md) | 53 | 마케팅 스킬 묶음 (CRO·카피라이팅·SEO·광고·분석·그로스 등 53개) |
 | [note](note.md) | 1 | 어느 프로젝트에서든 riverlog 지식 창고에 노트 추가·보강 |
 | [notebooklm-wiki-pipeline](notebooklm-wiki-pipeline.md) | 1 | /pdf-to-wiki: Drive PDF를 NotebookLM MCP로 읽혀 Obsidian Wiki 노트로 저장(nlm CLI·MCP 별도 설치) |
 | [riverlog-knowledge](riverlog-knowledge.md) | 1 | 새 작업 전에 riverlog 지식 창고에서 관련 노트 참고 |

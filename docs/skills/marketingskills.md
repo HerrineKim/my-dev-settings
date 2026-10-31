@@ -1,6 +1,6 @@
 # marketingskills
 
-CRO·카피라이팅·SEO·광고·분석·가격·런칭·이메일 등 마케팅 스킬 52개. 출처: [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT). 원문 README: [`../upstream/marketingskills/README.md`](../upstream/marketingskills/README.md)
+CRO·카피라이팅·SEO·광고·분석·가격·런칭·이메일 등 마케팅 스킬 53개. 출처: [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT). 원문 README: [`../upstream/marketingskills/README.md`](../upstream/marketingskills/README.md)
 
 ## 준비
 - 먼저 `/product-marketing`으로 `.agents/product-marketing.md`(제품·고객·포지셔닝)를 만들어 두면 다른 스킬이 그걸 읽고 시작한다
@@ -12,7 +12,7 @@ CRO·카피라이팅·SEO·광고·분석·가격·런칭·이메일 등 마케�
 
 <!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든다. 위쪽만 손으로 고친다. -->
 
-## 스킬 목록 (52개)
+## 스킬 목록 (53개)
 
 ### `/ab-testing`
 
@@ -115,7 +115,7 @@ Build and leverage online communities to drive product growth and brand loyalty.
 
 ### `/competitor-profiling`
 
-When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement. For researching accounts you're selling to, see prospecting.
+When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this competitor,' 'analyze competitor,' 'competitive intelligence,' 'competitor deep dive,' 'who are my competitors,' 'competitor landscape,' 'competitor dossier,' 'competitive audit,' or 'research these competitors.' Input is a list of competitor URLs. Output is structured competitor profile markdown files. For creating comparison/alternative pages from profiles, see competitors. For sales-specific battle cards, see sales-enablement. For researching accounts you're selling to, see prospecting. For how a competitor grew over time and what to copy, see reverse-engineer-marketing.
 
 - 호출: `/competitor-profiling` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`
@@ -400,6 +400,15 @@ When the user wants to create, optimize, or analyze a referral program, affiliat
 - 딸린 폴더: `evals/`, `references/`
 - 원조 GitHub: [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills/tree/HEAD/skills/referrals)
 - 이 레포 사본: [`plugins/marketingskills/skills/referrals/SKILL.md`](../../plugins/marketingskills/skills/referrals/SKILL.md)
+
+### `/reverse-engineer-marketing`
+
+When the user wants to reverse engineer how another company grew and copy what worked. Also use when the user mentions 'reverse engineer,' 'how did X grow,' 'how does X get customers,' 'growth teardown,' 'marketing teardown,' 'GTM teardown,' 'growth blueprint,' 'what is X doing for marketing,' 'what made X take off,' 'copy X's playbook,' 'X's distribution strategy,' 'what content works for X,' 'funnel hack,' 'map their funnel,' or 'watch what X is doing.' Builds a dated log of a company's moves against its traffic curve from public data, sign-ups and demos, team interviews, and hidden signals (DNS, certificate logs, archives, sponsorships), compares it with the user's own data, and turns what lined up with growth into plays routed to the skill that runs each one. For a snapshot profile of a competitor's positioning, pricing, and features, see competitor-profiling. For comparison pages, see competitors. For why a single post went viral, see social.
+
+- 호출: `/reverse-engineer-marketing` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `evals/`, `references/`, `scripts/`
+- 원조 GitHub: [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills/tree/HEAD/skills/reverse-engineer-marketing)
+- 이 레포 사본: [`plugins/marketingskills/skills/reverse-engineer-marketing/SKILL.md`](../../plugins/marketingskills/skills/reverse-engineer-marketing/SKILL.md)
 
 ### `/revops`
 
