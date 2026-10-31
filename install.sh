@@ -82,8 +82,19 @@ if command -v claude >/dev/null; then
       && unzip -oq "$fmb_dir/plugin.zip" -d "$fmb_dir" && rm "$fmb_dir/plugin.zip" \
       && echo "! Figma 데스크톱 > Plugins > Development > Import plugin from manifest: $fmb_dir/plugin/manifest.json"
   fi
+  # 벤더링하지 않고 원래 마켓플레이스에서 user 스코프로 설치하는 플러그인(자체 훅·Node 패키지·CLAUDE_PLUGIN_ROOT가 필요한 것).
+  # 한 줄에 "마켓플레이스 GitHub 레포  플러그인@마켓플레이스". 업데이트는 claude plugin marketplace update 또는 앱의 Sync automatically.
+  while read -r mp_repo plugin_id; do
+    [ -n "$mp_repo" ] || continue
+    claude plugin marketplace list 2>/dev/null | grep -q "($mp_repo)" || {
+      claude plugin marketplace add "$mp_repo" >/dev/null && echo "added marketplace $mp_repo"; }
+    claude plugin list 2>/dev/null | grep -q "❯ $plugin_id\$" || {
+      claude plugin install "$plugin_id" >/dev/null && echo "installed plugin $plugin_id (user)"; }
+  done <<'EOF'
+career-ops-hq/career-ops career-ops@career-ops
+EOF
 else
-  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp·financial-datasets·figma-bridge MCP 등록을 건너뜁니다."
+  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp·financial-datasets·figma-bridge MCP 등록과 career-ops 플러그인 설치를 건너뜁니다."
 fi
 
 # Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.

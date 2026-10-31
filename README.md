@@ -17,6 +17,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - `bin/`의 `skills-ls`, `apps-sync`, `rmbg`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
 - MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
+- 외부 마켓플레이스 플러그인 `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
 필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
@@ -115,6 +116,16 @@ done
 |---|---|---|---|
 | `financial-datasets` | 미국 주식 손익계산서·재무상태표·현금흐름표, 현재·과거 주가, 회사 뉴스, 크립토 시세 | [financialdatasets.ai](https://financialdatasets.ai)에서 API 키를 받아 `~/.config/financial-datasets/.env`의 `FINANCIAL_DATASETS_API_KEY=` 뒤에 넣기(키 없으면 402). 유료 API라 호출량 주의 | [financial-datasets/mcp-server](https://github.com/financial-datasets/mcp-server) (MIT). `mcp/financial-datasets/`에 벤더링하고 `uv --directory … run --env-file …`로 실행 |
 | `figma-bridge` | Figma 데스크톱 플러그인이 열린 파일의 노드·스타일·변수·스크린샷을 보내 주는 MCP(REST API 한도 없음). 쓰기 도구도 있음. `run_script`는 꺼 둠 | Figma 데스크톱 > Plugins > Development > Import plugin from manifest에서 `~/.local/share/figma-mcp-bridge/v<버전>/plugin/manifest.json`을 고르고, 파일마다 플러그인 실행 | [gethopp/figma-mcp-bridge](https://github.com/gethopp/figma-mcp-bridge) (MIT). `npx @gethopp/figma-mcp-bridge@0.0.25`로 버전 고정, 플러그인은 같은 버전 릴리스에서 받음. 올릴 때는 `install.sh`의 `fmb_ver`를 고치고 `claude mcp remove -s user figma-bridge` 후 다시 실행 |
+
+## 마켓플레이스 플러그인
+
+자체 훅·Node 패키지·`${CLAUDE_PLUGIN_ROOT}`가 필요해 벤더링하지 않고, 원래 마켓플레이스에서 그대로 설치하는 플러그인입니다. `install.sh` 안 `while read` 블록의 목록에 `마켓플레이스 레포 플러그인@마켓플레이스` 한 줄을 더하면 늘릴 수 있습니다. 이미 설치돼 있으면 건너뜁니다.
+
+| 플러그인 | 내용 | 직접 할 일 | 출처 |
+|---|---|---|---|
+| `career-ops` | 채용 공고 수집, 이력서 대비 1~5점 평가, ATS용 이력서·커버레터 맞춤, 면접 준비, 지원 현황 관리. 제출은 직접. `/career-ops:career-ops`로 부르거나 공고 URL을 붙여 넣음 | 처음 쓸 때 대화로 이력서·프로필 설정. 데이터는 `~/career-ops-data`(`CAREER_OPS_ROOT`로 변경). PDF 생성에는 Playwright Chromium이 필요할 수 있음. Gmail·Notion 등 연동은 기본 꺼짐. 데스크톱 앱 Code 탭과 Claude Code에서만 동작 | [career-ops-hq/career-ops](https://github.com/career-ops-hq/career-ops) (MIT) |
+
+업데이트는 `claude plugin marketplace update career-ops` 뒤 `claude plugin update career-ops@career-ops`, 또는 데스크톱 앱에서 마켓플레이스의 **Sync automatically**를 켭니다.
 
 ## daily-log
 
