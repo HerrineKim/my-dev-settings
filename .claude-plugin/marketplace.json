@@ -82,7 +82,7 @@
     {
       "name": "k-skill",
       "source": "./plugins/k-skill",
-      "description": "한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 132개)"
+      "description": "한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 134개)"
     },
     {
       "name": "android-reverse-engineering",

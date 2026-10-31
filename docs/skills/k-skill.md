@@ -1,6 +1,6 @@
 # k-skill
 
-한국 생활·업무 자동화 스킬 132개(교통·날씨·쇼핑·부동산·공공데이터·법령·주식·한글 문서 등). 출처: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT)
+한국 생활·업무 자동화 스킬 134개(교통·날씨·쇼핑·부동산·공공데이터·법령·주식·한글 문서 등). 출처: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT)
 
 원문 문서: [전체 목록](../upstream/k-skill/k-skills-list.md) · [공통 설정](../upstream/k-skill/setup.md) · [설치](../upstream/k-skill/install.md) · [보안·시크릿](../upstream/k-skill/security-and-secrets.md)
 
@@ -20,7 +20,7 @@
 
 <!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든다. 위쪽만 손으로 고친다. -->
 
-## 스킬 목록 (132개)
+## 스킬 목록 (134개)
 
 ### `/animal-pharmacy-search`
 
@@ -56,6 +56,14 @@
 - 딸린 폴더: `scripts/`
 - 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/biz-health-check)
 - 이 레포 사본: [`plugins/k-skill/skills/biz-health-check/SKILL.md`](../../plugins/k-skill/skills/biz-health-check/SKILL.md)
+
+### `/boim-business-search`
+
+보임(BOIM, boim.io)의 무인증 공개 검색 주소로 한국 전국 전 업종 업체(지역×업종·상호), 공공 조달 실적이 있는 업체(품명·업종), 공공기관 진행 중 입찰 공고(나라장터·국방전자조달·LH·한국수자원공사·누리장터)를 한 번에 찾는다. '세종 보람동 미용실', '교통안전표지 납품 실적 업체', '학교 안전 입찰 공고'처럼 물을 때 사용한다. 결과는 관련도 순(평가·순위 아님)이고 출처 한 줄과 전체 목록 주소를 함께 준다. Use when the user wants to find businesses in Korea by region and industry, vendors with Korean public-procurement records, or open Korean public tenders.
+
+- 호출: `/boim-business-search` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/boim-business-search)
+- 이 레포 사본: [`plugins/k-skill/skills/boim-business-search/SKILL.md`](../../plugins/k-skill/skills/boim-business-search/SKILL.md)
 
 ### `/bok-ecos-stats`
 
@@ -421,6 +429,15 @@ Korean apartment and individual-house official price lookup through the public r
 - 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/housing-official-price)
 - 이 레포 사본: [`plugins/k-skill/skills/housing-official-price/SKILL.md`](../../plugins/k-skill/skills/housing-official-price/SKILL.md)
 
+### `/housing-subscription-reference`
+
+민영주택 일반공급 청약가점(무주택기간·부양가족수·청약통장 가입기간 합계 84점)과 지역·전용면적별 청약 예치금 기준을 「주택공급에 관한 규칙」 별표 1·별표 2 값으로 조회한다. 청약가점, 청약 예치금, 민영주택, 무주택기간, 부양가족 질문에 사용한다.
+
+- 호출: `/housing-subscription-reference` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `references/`
+- 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/housing-subscription-reference)
+- 이 레포 사본: [`plugins/k-skill/skills/housing-subscription-reference/SKILL.md`](../../plugins/k-skill/skills/housing-subscription-reference/SKILL.md)
+
 ### `/hwp`
 
 Use kordoc for agent-native HWP/HWPX document parsing, JSON extraction, diffing, form-field extraction, and Markdown→HWPX reverse conversion (read/convert only — for binary editing use rhwp-edit).
@@ -600,7 +617,7 @@ KOPIS 공연 목록·상세·시설을 조회한다. 조회 전용.
 
 ### `/korea-weather`
 
-한국 날씨를 기상청 단기예보 조회서비스와 프록시 경유로 조회해 요약한다.
+한국 날씨를 기상청 단기예보 조회서비스(초단기예보·초단기실황 포함)와 프록시 경유로 조회해 요약한다.
 
 - 호출: `/korea-weather` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/korea-weather)
