@@ -1,6 +1,6 @@
 # my-dev-settings
 
-맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`), 전역 npm 패키지(`apps/npm-globals`).
+맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬·MCP·마켓플레이스 플러그인, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`), 전역 npm 패키지(`apps/npm-globals`).
 
 ## 설치와 업데이트
 
@@ -20,7 +20,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - 외부 마켓플레이스 플러그인 `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
-필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
+필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(career-ops 플러그인용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv·Node.js와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
 
 ```bash
 skills-ls            # 전역 스킬 전체: ~/.claude/skills, claude.ai 동기화 스킬, user 플러그인 스킬
