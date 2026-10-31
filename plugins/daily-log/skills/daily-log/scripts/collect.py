@@ -168,7 +168,7 @@ def evicted_files(root):
     return out
 
 
-def wait_for_icloud(evicted, seconds=5):
+def wait_for_icloud(evicted, seconds):
     """Ask iCloud to download evicted mirror files and wait briefly; return those still not local."""
     for f in evicted:
         run(["brctl", "download", str(f)])
@@ -198,7 +198,8 @@ def collect_all_machines(day_start, end, since, local):
     sessions, machines, warnings, seen = [], [], [], set()
     for name, root in roots.items():
         start = since.get(name) or since.get(None) or day_start
-        pending = wait_for_icloud(evicted_files(root)) if name != local else []
+        # A batch of mirror files can take ~40s to come down; config.icloud_wait_seconds overrides the default.
+        pending = wait_for_icloud(evicted_files(root), CFG.get("icloud_wait_seconds", 60)) if name != local else []
         if pending:
             warnings.append(f"{name}: {len(pending)} transcript(s) still in iCloud only (not downloaded yet)")
         # A renamed machine leaves its old mirror folder behind; drop sessions already collected under another name.

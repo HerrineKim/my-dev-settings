@@ -92,10 +92,23 @@ class MultiMachineCollect(unittest.TestCase):
         self.assertEqual([s["machine"] for s in data["claude_sessions"]], ["local-mac"])
 
     def test_shouldReportICloudPlaceholdersAsWarnings(self):
+        self.config.write_text(json.dumps({"machine_name": "local-mac", "shared_dir": str(self.shared),
+                                           "icloud_wait_seconds": 1}))
         d = self.shared / "other-mac" / "projects" / "-Users-x-Projects-demo"
         d.mkdir(parents=True)
         (d / ".s-evicted.jsonl.icloud").write_bytes(b"")
         data = self.run_collect()
+        self.assertTrue(any("other-mac" in w for w in data["sync_warnings"]))
+
+    def test_shouldWaitForICloudOnlyAsLongAsConfigured(self):
+        self.config.write_text(json.dumps({"machine_name": "local-mac", "shared_dir": str(self.shared),
+                                           "icloud_wait_seconds": 0}))
+        d = self.shared / "other-mac" / "projects" / "-Users-x-Projects-demo"
+        d.mkdir(parents=True)
+        (d / ".s-evicted.jsonl.icloud").write_bytes(b"")
+        started = datetime.now()
+        data = self.run_collect()
+        self.assertLess((datetime.now() - started).total_seconds(), 3, "icloud_wait_seconds: 0 should not wait")
         self.assertTrue(any("other-mac" in w for w in data["sync_warnings"]))
 
 
