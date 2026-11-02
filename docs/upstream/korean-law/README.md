@@ -41,10 +41,16 @@ VS Code·Cursor는 버튼 한 번으로 연결됩니다(키 없이 공용 한도
 
 ## 최근 업데이트
 
-현재 버전 **v4.15.15**. 수치는 모두 [CHANGELOG](CHANGELOG.md)의 실측 기록에서 옮김.
+현재 버전 **v4.15.21**. 수치는 모두 [CHANGELOG](CHANGELOG.md)의 실측 기록에서 옮김.
 
 | 버전 | 주요 변경 | 변화 |
 |------|-----------|------|
+| 4.15.21 | 대비표: 쉼표 붙은 후단 삭제 `<후단 삭제>` · 번호만 밀린 호·목 "(현행 제2호와 같음)" · 현행보다 긴 "(현행과 같음)" 범위는 현행 끝까지로(#181) | 재현 테스트 3건 |
+| 4.15.20 | 대비표 개정안 칸: 개정 부분이 마침표 바로 앞에서 끝나고 단서·후단이 신설되면 마침표가 「-」로 바뀌던 것(#180) | 건축법 제79조⑤ 재현 테스트 |
+| 4.15.19 | 대비표 한글(.hwpx) 본문 왼쪽 정렬 — 줄표가 넘어간 짧은 줄이 벌어지던 것 | 한글 화면 확인 |
+| 4.15.18 | `legal_analysis` 설명·제목에 「신구조문대비표」 낱말(claude.ai 도구 검색 0건 수정) | 검색 낱말 게이트 테스트 |
+| 4.15.17 | 대비표를 노출 도구 `legal_analysis(mode="amendment_table")`로(시연에서 숨은 도구를 안 찾음), 채팅 표 밑줄은 굵은 글씨 | 노출 도구 10개 유지 |
+| 4.15.16 | 신·구조문대비표 작성 `amendment_table`(execute_tool): 개정 조문 → 현행 자동 대조, 밑줄·`----`·`(생  략)`·`<신  설>`, 로컬 실행은 한글(.hwpx) 저장 | 처음 보는 100개 법령 433조문, 공식 대비표와 완전 일치 **67.7%**(구조 불일치 3.9%) |
 | 4.15.15 | 별표 파서 kordoc 4.24.25(PDF 표 행·단위 표기 줄 수정 등), `@hono/node-server` 2.1.5 | `npm audit` 1건 → **0건**, 실제 별표 3건 출력 동일 |
 | 4.15.14 | 보안: 의존성 취약점 정리 — 하위 kordoc 4.24.8(zod 4), zod 4.6.7, 개발 도구·하위 의존성 수정판 | `npm audit` 10건 → **0건** |
 | 4.15.13 | Claude Code 플러그인이 로컬 npx 대신 공개 서버(`mcp.gomdori.app/law`)에 연결, 키는 선택 | 설치 없음 |
@@ -372,6 +378,7 @@ reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /
 | 판례명·본문검색 병행 | `search_decisions(domain="precedent", options={search:"both"})` |
 | 긴 행정규칙의 일부만 | `get_admin_rule`의 `jo:"제9-5조"`·`chapter:"제9장"`·`keyword:"해외직접투자"`·`page:2` |
 | 법령 여러 건 변경 감시 | `execute_tool(tool_name="search_law_bulk")`: 법령명 배열 + `previous={법령ID: 직전 MST}`이면 MST가 바뀐 법령만 반환 |
+| 개정안 신·구조문대비표 | `legal_analysis(mode="amendment_table")`: 법령명 + 개정 조문 전문 → 현행 자동 대조(바뀐 곳 밑줄, 같은 부분 `----`, `(생  략)`·`<신  설>`). 조례는 `currentText`, 로컬 실행은 `outputPath`로 한글(.hwpx) 저장 |
 | 판례 전문(축약 해제) | `get_decision_text(..., full=true)` |
 
 ---

@@ -8,6 +8,32 @@ The project is also where I codify practical patterns for making agents more cap
 
 [Install the full catalog](#installation) · [Keep skills up to date](#updating-and-refreshing)
 
+## Find a workflow
+
+Start with the decision or job you have. These are links to existing skills, not
+new skill names or runtime aliases. For authority, evidence, and stop conditions,
+use the [agent-trust routes](references/agent-trust-routes.md).
+
+| What you want to do | Start with | Boundary |
+|---|---|---|
+| Take an issue through implementation and a verified PR | [neckbeard](neckbeard/SKILL.md) | Coordinates the software delivery lifecycle; specialists retain their methods |
+| Plan implementation of an approved spec | [implementation-planning](implementation-planning/SKILL.md) | Plans dependencies and verification; does not approve the requirement or implement it |
+| Fix an unreliable agent or build its runtime | [harness-engineering](harness-engineering/SKILL.md) | Instructions, tools, state, recovery and bounded loops; production operation has a separate owner |
+| Review this patch or pull request | [code-review](code-review/SKILL.md) | Evidence-backed change review; does not implement the fix |
+| Finish an authorized change through merge and verify it | [verified-delivery](verified-delivery/SKILL.md) | Carries existing delivery authority; never grants merge or deployment permission |
+| Find the cause of a failing test or incident | [systematic-debugging](systematic-debugging/SKILL.md) | Diagnosis before a repair; incident management and runtime containment retain their owners |
+| Is this customer problem worth further investment? | [product-discovery](product-discovery/SKILL.md) | External problem evidence before requirements; enthusiasm is not validation |
+| Set product direction or choose the next product decision | [product-strategy](product-strategy/SKILL.md) / [product-methodology](product-methodology/SKILL.md) | Strategy versus tactical scope and priorities |
+| Support founder operations or an executive operating rhythm | [chief-of-staff-methodology](chief-of-staff-methodology/SKILL.md) | Prepare and coordinate decisions; the accountable human decides |
+| Design repeatable business operations and handoffs | [operational-design](operational-design/SKILL.md) | Business process design; software delivery and financial models keep separate owners |
+| May this agent act? | [ai-governance](ai-governance/SKILL.md) | Scoped earned-autonomy decision, then runtime enforcement |
+| May this capability enter our environment? | [ai-governance](ai-governance/SKILL.md) | Capability admission is separate from an agent's runtime authority |
+| Should we scale this AI pilot? | [ai-operating-economics](ai-operating-economics/SKILL.md) | Outcomes, full intervention costs, uncertainty and governance; adoption can be constrained or stopped |
+| Grill this specification or proposal | [product-discovery](product-discovery/SKILL.md) | Read the draft, ask one consequential question, preserve unresolved evidence |
+| Why did this agent fail, and may it resume? | [agent-trust routes](references/agent-trust-routes.md#failure-and-resumption) | Diagnosis, containment, incident evidence and renewed authority are separate decisions |
+| Can the agent weaken its own controls? | [agent-trust routes](references/agent-trust-routes.md#protected-controls) | Protect supervisory assets and independently verify current control state |
+| Can humans supervise this volume of agent work? | [agent-trust routes](references/agent-trust-routes.md#supervisory-capacity) | Assess workload, review capacity and reserved decisions; no validated new bundle is implied |
+
 ## Skills
 
 ### [actuarial-risk-modeling](actuarial-risk-modeling/SKILL.md)
@@ -101,7 +127,7 @@ Model technical capacity, unit cost, and budget constraints connected to demand,
 
 ### [chief-of-staff-methodology](chief-of-staff-methodology/SKILL.md)
 
-Prepare executive decisions, information triage, organizational sensing, institutional memory, and calendar choices with accountable human authority, transparent data use, and reviewable trade-offs.
+Support chief of staff (CoS), executive operations, and founder operations: decision support, operating rhythm, strategic attention, briefing, information triage, and institutional memory for solo operators or organizations. Preserve accountable human authority and route meetings, org design, business processes, and authorized task changes to their owners.
 
 ### [cli-builder](cli-builder/SKILL.md)
 
@@ -110,6 +136,10 @@ Build and refactor CLI tools for AI agent consumption. 10 universal patterns (no
 ### [cncf-landscape](cncf-landscape/SKILL.md)
 
 Discover and compare cloud-native technologies from the live CNCF Landscape API, then turn the evidence into a constraint-aware shortlist with trade-offs, unknowns, and a bounded validation plan. Ships a stdlib-only query CLI, API caveats, a decision framework, an output template, and six evals.
+
+### [code-review](code-review/SKILL.md)
+
+Review a change for correctness, security, maintainability, and test adequacy, and reach a verdict the evidence supports. Covers scoping and attention budgets, risk tiers, a 13-class defect taxonomy, severity-labeled comments, verdict and residual-risk records, AI-authored and AI-reviewed changes, and review metrics that resist gaming. Grounded in Google's engineering practices, the Microsoft and Google review studies, and recent AI-review deployments. Ships a read-only diff-scope tool with test mapping and risk flags, a review-record checker, five fillable templates, and eleven evals.
 
 ### [color-management](color-management/SKILL.md)
 
@@ -748,9 +778,19 @@ Design truthful, compelling YouTube thumbnails with video-grounded concepts, tit
 
 ## Installation
 
+Choose an installation method by how your harness discovers skills. Shared `SKILL.md` syntax does not imply shared search paths, tools, or update behavior.
+
+| Installation method | Use it for | Maintenance |
+|---------------------|------------|-------------|
+| [`skills` CLI](#skills-cli-cross-harness) | Supported harnesses, including OpenClaw | Update installed skills, or rerun `add` to include new catalog entries |
+| [Local checkout or skill directory](docs/harness-installation.md#local-checkout-or-skill-directory) | Harnesses that scan configured directories | Refresh the checkout, synchronize copies if used, then verify discovery |
+| [Harness-managed installation](docs/harness-installation.md#harness-managed-installation) | Native plugins, Moltis imports, ZeroClaw bundles | Use that harness's refresh and activation procedure |
+
+See the [harness installation and maintenance guide](docs/harness-installation.md) for OpenClaw, Moltis, PicoClaw, NullClaw, ZeroClaw, NanoClaw, Grok Bot, and Meta Muse, including known compatibility limits.
+
 ### `skills` CLI (cross-harness)
 
-Install the **full catalog** for your harness with the open [`skills` CLI](https://github.com/vercel-labs/skills) (requires Node.js/npm and Git). Choose your harness's command below; these install globally for use across projects.
+Install the **full catalog** for your harness with the open [`skills` CLI](https://github.com/vercel-labs/skills) (requires Node.js 22.20+ with npm, and Git). Choose your harness's command below; these install globally for use across projects.
 
 | Harness | Install the full catalog |
 |---------|-------------------------|
@@ -760,6 +800,7 @@ Install the **full catalog** for your harness with the open [`skills` CLI](https
 | GitHub Copilot | `npx skills add magnus919/agent-skills --skill '*' --agent github-copilot --global --yes` |
 | Cursor | `npx skills add magnus919/agent-skills --skill '*' --agent cursor --global --yes` |
 | Gemini CLI | `npx skills add magnus919/agent-skills --skill '*' --agent gemini-cli --global --yes` |
+| OpenClaw | `npx skills add magnus919/agent-skills --skill '*' --agent openclaw --global --yes` |
 | Hermes Agent | `npx skills add magnus919/agent-skills --skill '*' --agent hermes-agent --global --yes` |
 
 Keep the quotes around `'*'` so your shell passes the wildcard to the CLI. For a project-only install, omit `--global` and run from the project directory. For Hermes, keep `--global`: its project-scoped `.hermes/skills/` target is not auto-discovered by Hermes.
@@ -775,7 +816,7 @@ npx skills add magnus919/agent-skills --skill systematic-debugging --agent codex
 
 ### Updating and refreshing
 
-**Once a week, or whenever you want the latest catalog, rerun your harness's full-catalog install command above.** This refreshes the selection from this repository and includes newly added skills. Keep the same harness and global/project scope as your original install. Start a new agent session afterward to load the refreshed skills.
+**Once a week, or whenever you want the latest catalog, rerun your harness's full-catalog install command above.** This refreshes the selection from this repository and includes newly added skills. Keep the same harness and global/project scope as your original install. Start a new agent session afterward unless your harness documents automatic refresh; verify that the refreshed skill is available.
 
 To update only skills you have already installed through the CLI, including those from other repositories:
 
@@ -787,9 +828,11 @@ npx skills update --global
 npx skills update --project
 ```
 
-The [CLI update command](https://github.com/vercel-labs/skills#skills-update) updates installed skills; rerun the full-catalog `add` command to pick up new catalog entries. Refreshes can replace installed files, so keep personal edits in a separate skill or fork.
+The [CLI update command](https://github.com/vercel-labs/skills/blob/main/docs/commands.md#skills-update) updates installed skills; rerun the full-catalog `add` command to pick up new catalog entries. Refreshes can replace installed files, so keep personal edits in a separate skill or fork.
 
-For native plugin installs or a mounted checkout, use the matching refresh instructions below. Choose one installation method per harness to avoid duplicate skills.
+Updates do not necessarily remove skills deleted or renamed upstream. Review obsolete entries separately, and use your installer's removal command for copies you no longer want.
+
+For native plugin installs or a mounted checkout, use the matching refresh instructions below or in the [maintenance guide](docs/harness-installation.md). Choose one installation method per harness to avoid duplicate skills.
 
 The [skills.sh catalog page](https://skills.sh/magnus919/agent-skills) is populated from installation telemetry rather than a separately submitted registry manifest.
 
@@ -816,7 +859,7 @@ The eval manifest contract is checked with `python3 scripts/validate-evals.py`; 
 
 ### Harness-native installation
 
-Skills don't require installation in the traditional sense. They are loaded by your AI agent when triggered. Each agent framework documents its own skill directory path and loading mechanism — follow the links below for the authoritative setup guide for your harness.
+Each harness controls skill discovery, activation, and execution. Follow its setup guide for directory paths, scope, and enablement; installing the files alone may not activate them.
 
 | Harness | Setup Guide |
 |---------|-------------|
@@ -827,6 +870,7 @@ Skills don't require installation in the traditional sense. They are loaded by y
 | **Cursor** | [cursor.com/docs/context/skills](https://cursor.com/docs/context/skills) |
 | **Gemini CLI** | [geminicli.com/docs/cli/skills](https://geminicli.com/docs/cli/skills) |
 | **Hermes Agent** | See below |
+| **OpenClaw and other personal-agent harnesses** | [Installation and maintenance guide](docs/harness-installation.md) |
 
 ### Claude Code
 
@@ -925,7 +969,7 @@ Codex scans `.agents/skills/` in every directory from cwd up to the repo root.
 
 ### Generic / Other Frameworks
 
-The [agentskills.io clients page](https://agentskills.io/clients) maintains an up-to-date list of every agent framework that supports the Agent Skills format, with links to each one's setup instructions. Any framework listed there can load these skills — follow that framework's specific documentation for the correct directory path and loading mechanism.
+The [agentskills.io clients page](https://agentskills.io/clients) maintains an up-to-date list of every agent framework that supports the Agent Skills format, with links to each one's setup instructions. Format support is a starting point: follow the framework's documentation for discovery and activation, and check each skill's tool, dependency, and environment requirements. See our [harness matrix](docs/harness-installation.md#harness-compatibility) for documented routes and unverified integrations.
 
 For another harness supported by the `skills` CLI, use its [agent identifier](https://github.com/vercel-labs/skills#supported-agents) in the full-catalog command above and rerun it periodically.
 
