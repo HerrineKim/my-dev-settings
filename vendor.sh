@@ -27,7 +27,6 @@ fetch_built() { # <plugin> <github-repo> — copy skills from the repo's prebuil
   rm -rf "$tmp/src"
 }
 fetch ui-ux-pro-max        nextlevelbuilder/ui-ux-pro-max-skill '*'
-fetch frontend-design       anthropics/skills frontend-design
 fetch web-design-guidelines vercel-labs/agent-skills web-design-guidelines
 fetch clone-website         julianromli/ai-skills clone-website
 fetch_built ai-slop-thresher Burntgogi/ai-slop-thresher

@@ -24,7 +24,7 @@ argument-hint: [파일·폴더·컴포넌트·페이지] [--review] [--quick]
 | `--review` | 리뷰만 원할 때 | 1~5단계를 점검만 하고 수정하지 않음 |
 | `--quick` | 작은 컴포넌트·빠른 손질 | 2, 3, 4단계만 |
 
-## 1. 방향 잡기: `frontend-design`
+## 1. 방향 잡기: `frontend-design:frontend-design`(공식 플러그인)
 
 - 새 화면이거나 큰 개편일 때만 쓴다. 기존 화면을 다듬는 작업이면 건너뛰고, 현재 디자인 방향을 그대로 기준으로 삼는다.
 - 결과로 타이포·색·레이아웃 방향을 2~3줄로 적어 두고 이후 단계의 기준으로 쓴다.
@@ -70,4 +70,4 @@ argument-hint: [파일·폴더·컴포넌트·페이지] [--review] [--quick]
 
 ## 필요한 스킬
 
-`frontend-design`, `antislop`, `antislop-ui`, `antislop-copywriting`, `make-interfaces-feel-better`, `antislop-human`, `antislop-layoutmobile`, `web-design-guidelines`, `riverlog-knowledge`. 하나가 설치되어 있지 않으면 그 단계를 건너뛰고 결과 보고에 적는다.
+`frontend-design:frontend-design`, `antislop`, `antislop-ui`, `antislop-copywriting`, `make-interfaces-feel-better`, `antislop-human`, `antislop-layoutmobile`, `web-design-guidelines`, `riverlog-knowledge`. 하나가 설치되어 있지 않으면 그 단계를 건너뛰고 결과 보고에 적는다.
