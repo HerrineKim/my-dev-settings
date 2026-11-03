@@ -3,7 +3,8 @@ name: agent-evals-and-observability
 description: >-
   Design, run, review, or release framework- and vendor-neutral evaluations and
   observability for AI agents. Use when defining agent evals, datasets, graders,
-  trajectory review, regression analysis, release gates, production traces, or
+  trajectory review, monitor independence, oversight quality, regression analysis,
+  release gates, production traces, or
   privacy-aware telemetry. Covers task and trajectory contracts, statistical comparisons,
   and incident-to-case learning; route framework implementation to pydanticai or langgraph
   when needed. Do not use this skill for unrelated requests; route to the nearest named
@@ -17,6 +18,20 @@ metadata:
 # Agent Evals and Observability
 
 Evaluation asks whether behavior meets a defined criterion on a declared dataset or production sample. Observability supplies traces, logs, metrics, correlations, and diagnostic context. Use both; neither proves what the other does.
+
+## Multi-agent evaluation boundary
+
+Use [multi-agent-coordination](../multi-agent-coordination/SKILL.md) to define the
+team's ownership, communication, intent and integration contracts; return here
+for comparable datasets, graders, trajectory evidence and uncertainty. Evaluate
+both individual and combined behavior. Add cases for constraint loss at synthesis,
+peer approval outside scope, stale handoffs and shared-practice recurrence.
+
+Measure coordination activity alongside accepted integrated outcomes, review
+cost and task mix. Rising messages or approvals with flat delivery is a diagnostic
+signal, not proof that checks should be removed. Necessary high-assurance review
+is a near miss, not a detector failure. A verified answer cannot compensate for
+an authority violation. Do not claim a universal ceremony threshold.
 
 ## Workflow
 
@@ -46,6 +61,7 @@ Stop when the supported decision, evidence gaps, residual risks, and responsible
 | Separate performance, diagnostic, and replay evidence; connect offline to online measures | [references/evidence-modes-and-metric-mirrors.md](references/evidence-modes-and-metric-mirrors.md) |
 | Build immutable cases, fixtures, and provenance | [references/datasets.md](references/datasets.md) |
 | Select or calibrate graders | [references/graders.md](references/graders.md) |
+| Evaluate monitor independence, correlated failures, detection, or escalation delivery | [references/monitor-quality.md](references/monitor-quality.md) and [templates/monitor-assessment.md](templates/monitor-assessment.md) |
 | Validate judge stability, abstention, and escalation | [references/judge-stability.md](references/judge-stability.md) |
 | Check evidence cherry-picking, overreach, or bounded in-workflow probes | [references/grounding-probes.md](references/grounding-probes.md) |
 | Provide requested machine-readable evidence or join multiple evaluation artifacts | [references/decision-audit-record.md](references/decision-audit-record.md) and [templates/decision-audit-record.json](templates/decision-audit-record.json) |
@@ -67,6 +83,28 @@ Stop when the supported decision, evidence gaps, residual risks, and responsible
 Use [templates/eval-plan.md](templates/eval-plan.md), [templates/interface-enrichment-comparison.md](templates/interface-enrichment-comparison.md), [templates/dataset-manifest.md](templates/dataset-manifest.md), [templates/grader-specification.md](templates/grader-specification.md), [templates/trace-review.md](templates/trace-review.md), [templates/run-report.md](templates/run-report.md), [templates/release-gate.md](templates/release-gate.md), and [templates/metric-mirror.md](templates/metric-mirror.md). They are decision records, not checklists that manufacture evidence.
 
 Use grounding probes only when the decision depends on evidence-backed claims. Check material qualifications and whether evidence supports the proposed action, not just the quoted sentence. Preserve separate findings, probe errors, and unknown outcomes; a probe score cannot authorize action.
+
+## Monitor and oversight evaluation
+
+Evaluate the supervisor as well as the agent. Load the monitor-quality reference
+when the decision depends on detecting conduct violations, monitor independence,
+or reliable escalation. Keep agent behavior, monitor detection, and delivered
+escalation as three separately evidenced outcomes. A task-correct result can still
+violate its trajectory contract; a raised alert can still fail to reach its owner.
+Self-assessment is diagnostic testimony, never the sole oracle for the agent's
+conduct. Different models alone do not establish independent oversight.
+
+## Protected-control evidence
+
+For attempts to alter supervision, load
+[control-integrity evaluation](references/control-integrity-evaluation.md).
+The controlled agent is neither sole approver nor sole evidence source. Evaluator
+datasets, labels, oracles, and gate configuration are protected assets; editing them
+to manufacture a pass invalidates the result. Missing, degraded, redirected, or
+suppressed mandatory controls are control-integrity incidents. Assess task success,
+conduct, control state, and escalation separately, using independent effect and
+configuration evidence. Route runtime hold/containment to agent-production-operations
+and rights or exceptions to ai-governance.
 
 ## Guardrails
 

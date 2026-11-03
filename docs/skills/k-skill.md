@@ -1,6 +1,6 @@
 # k-skill
 
-한국 생활·업무 자동화 스킬 134개(교통·날씨·쇼핑·부동산·공공데이터·법령·주식·한글 문서 등). 출처: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT)
+한국 생활·업무 자동화 스킬 135개(교통·날씨·쇼핑·부동산·공공데이터·법령·주식·한글 문서 등). 출처: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT)
 
 원문 문서: [전체 목록](../upstream/k-skill/k-skills-list.md) · [공통 설정](../upstream/k-skill/setup.md) · [설치](../upstream/k-skill/install.md) · [보안·시크릿](../upstream/k-skill/security-and-secrets.md)
 
@@ -20,7 +20,7 @@
 
 <!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든다. 위쪽만 손으로 고친다. -->
 
-## 스킬 목록 (134개)
+## 스킬 목록 (135개)
 
 ### `/animal-pharmacy-search`
 
@@ -687,9 +687,10 @@ kimlawtech/korean-jangbu-for (Apache-2.0) 업스트림을 중심으로 한국 �
 
 ### `/korean-law-search`
 
-Search Korean statutes, articles, precedents, interpretations, and local ordinances via k-skill-proxy. Use when the user asks for Korean law/article/precedent lookups.
+Search Korean statutes, articles, precedents, interpretations, and local ordinances via k-skill-proxy, and draft 신･구조문대비표 (old/new article comparison tables, optional HWPX). Use when the user asks for Korean law/article/precedent lookups or an amendment comparison table.
 
 - 호출: `/korean-law-search` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `scripts/`
 - 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/korean-law-search)
 - 이 레포 사본: [`plugins/k-skill/skills/korean-law-search/SKILL.md`](../../plugins/k-skill/skills/korean-law-search/SKILL.md)
 
@@ -781,6 +782,15 @@ Korean door-to-door public transit routing (subway + bus + walking) via ODsay LI
 - 딸린 폴더: `references/`, `scripts/`, `tests/`
 - 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/kosis-stats)
 - 이 레포 사본: [`plugins/k-skill/skills/kosis-stats/SKILL.md`](../../plugins/k-skill/skills/kosis-stats/SKILL.md)
+
+### `/kpic-drug-search`
+
+약학정보원(KPIC) 공개 정보에서 의약품 이름을 검색하고 약품 코드로 효능, 용법, 주의사항 등 상세 원문을 조회하는 읽기 전용 스킬입니다.
+
+- 호출: `/kpic-drug-search` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `references/`, `scripts/`
+- 원조 GitHub: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill/tree/HEAD/kpic-drug-search)
+- 이 레포 사본: [`plugins/k-skill/skills/kpic-drug-search/SKILL.md`](../../plugins/k-skill/skills/kpic-drug-search/SKILL.md)
 
 ### `/kr-whois-lookup`
 

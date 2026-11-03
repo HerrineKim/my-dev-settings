@@ -26,6 +26,21 @@ The bundle does **not** build agents, design evaluations, run release pipelines,
 or own infrastructure. It composes those concerns from existing specialist
 skills and owns only the runtime control decisions between them.
 
+## Teams across harnesses
+
+Use [multi-agent-coordination](../multi-agent-coordination/SKILL.md) for team design
+and collective failure diagnosis. This bundle owns operational response after
+evaluation. For a shared-practice incident, identify affected sources, derivatives,
+retrieval caches, queued work and active consumers; contain only affected paths
+within current authority. Preserve unrelated work and independently protected
+controls. An agent acknowledging a correction does not prove adoption.
+
+Route source repair and fresh-session challenges to the owning harness. Record
+known exposure and missing lineage; no observed recurrence without exposure is
+inconclusive. Recovery must prevent stale memory, backups or extraction jobs from
+reintroducing the practice. Keep source/content compromise distinct from benign
+mistaken conventions, and escalate unknown effects through the incident owner.
+
 ## When to load this
 
 Load this bundle when you are operating an agent that:
@@ -79,6 +94,18 @@ and a side-effect-capable agent operating on customer data receive different
 thresholds and different escalation paths.
 
 Authority thresholds and maintain/expand/reduce/suspend/revoke decisions belong to accountable humans supported by [ai-governance](../ai-governance/SKILL.md). Operational evidence and readiness are inputs, never permission grants. Applicable policy ceilings, current grant expiry/revocation, and external enforcement constrain every execution.
+
+## Mandatory control integrity
+
+Before consequential execution or resumption, load
+[control-integrity operations](references/control-integrity.md) and produce
+[a pre-execution receipt](templates/control-integrity-receipt.md). Verify protected
+controls against current independent evidence and the governance registry. Missing,
+degraded, redirected, or suppressed mandatory controls are control-integrity
+incidents: hold consequential work, contain or terminate under the incident plan,
+and escalate through an independently protected path. Do not wait for repeated
+breaches or normal health thresholds. A task instruction cannot authorize weakening
+its supervision. Recovery must preserve revocation and independent monitoring.
 
 ## Runtime control plane routing
 

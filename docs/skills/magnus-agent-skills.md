@@ -1,6 +1,6 @@
 # magnus-agent-skills
 
-[magnus919/agent-skills](https://github.com/magnus919/agent-skills)(MIT)의 스킬 182개를 그대로 받아 둔 묶음. 프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서·글쓰기까지 범위가 넓다.
+[magnus919/agent-skills](https://github.com/magnus919/agent-skills)(MIT)의 스킬 185개를 그대로 받아 둔 묶음. 프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서·글쓰기까지 범위가 넓다.
 
 ## 전역 링크
 스킬 목록이 매 세션 컨텍스트를 차지하므로 플러그인 전체는 `skills-exclude`로 빼고, `!magnus-agent-skills/<스킬>` 줄에 적은 것만 `~/.claude/skills`에 링크한다.
@@ -26,7 +26,7 @@
 
 <!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든다. 위쪽만 손으로 고친다. -->
 
-## 스킬 목록 (182개)
+## 스킬 목록 (185개)
 
 ### `/actuarial-risk-modeling`
 
@@ -57,7 +57,7 @@ Run a structured multi-agent debate by spawning a panel of expert agents on any 
 
 ### `/agent-evals-and-observability`
 
-Design, run, review, or release framework- and vendor-neutral evaluations and observability for AI agents. Use when defining agent evals, datasets, graders, trajectory review, regression analysis, release gates, production traces, or privacy-aware telemetry. Covers task and trajectory contracts, statistical comparisons, and incident-to-case learning; route framework implementation to pydanticai or langgraph when needed. Do not use this skill for unrelated requests; route to the nearest named specialist.
+Design, run, review, or release framework- and vendor-neutral evaluations and observability for AI agents. Use when defining agent evals, datasets, graders, trajectory review, monitor independence, oversight quality, regression analysis, release gates, production traces, or privacy-aware telemetry. Covers task and trajectory contracts, statistical comparisons, and incident-to-case learning; route framework implementation to pydanticai or langgraph when needed. Do not use this skill for unrelated requests; route to the nearest named specialist.
 
 - 호출: `/agent-evals-and-observability` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`, `templates/`
@@ -228,7 +228,7 @@ Model technical capacity, unit cost, and budget constraints connected to demand,
 
 ### `/chief-of-staff-methodology`
 
-Prepare accountable executive decisions, information triage, briefing, calendar choices, organizational sensing, and institutional memory without assuming authority or monitoring people. Use when a chief of staff or CoS, executive office, gatekeeping, decision memo, executive briefing, board materials, organizational sensing, team health, institutional memory, calendar triage, meeting audit, strategic time, or attention allocation is requested. Do not use this skill for unrelated requests; route to the nearest named specialist.
+Prepare accountable executive decisions, decision support, briefings, information triage, calendar choices, and institutional memory. Use for chief of staff or CoS, executive operations, founder operations, operating rhythm, strategic attention, executive office, board materials, organizational sensing, team health, leadership transitions, gatekeeping, decision memos, executive briefing, strategic time, attention allocation, calendar triage, or meeting audits for a solo operator or organization. Do not use for generic personal assistance, employee surveillance, inferred commitments, automatic task mutation, meeting facilitation, org structure design, or business operating-process design; route to the owning specialist.
 
 - 호출: `/chief-of-staff-methodology` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`
@@ -252,6 +252,15 @@ Use this skill when discovering and comparing cloud-native technologies from the
 - 딸린 폴더: `evals/`, `references/`, `scripts/`, `tests/`
 - 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/cncf-landscape)
 - 이 레포 사본: [`plugins/magnus-agent-skills/skills/cncf-landscape/SKILL.md`](../../plugins/magnus-agent-skills/skills/cncf-landscape/SKILL.md)
+
+### `/code-review`
+
+Review a code change for correctness, security, maintainability, and test adequacy, and reach a defensible verdict. Use when reviewing a pull request, diff, patch, or AI-generated change; when scoping an oversized review into reviewable units; when writing or triaging review comments; when assigning reviewers or setting review policy; or when investigating why a defect escaped review. Covers change sizing and attention budgets, risk-tiered checklists, severity-labeled comments, verdict and residual-risk records, review metrics that resist gaming, and the measured limits of checklists and AI reviewers. Do not use for implementing the requested change, root-cause debugging of a failing test or incident (use systematic-debugging), security assessment of a whole system (use security-audit-methodology), designing new code securely (use secure-software-engineering), architecture review across systems (use software-architecture), or reverse-engineering an unfamiliar codebase (use software-architecture-analysis).
+
+- 호출: `/code-review` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`
+- 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/code-review)
+- 이 레포 사본: [`plugins/magnus-agent-skills/skills/code-review/SKILL.md`](../../plugins/magnus-agent-skills/skills/code-review/SKILL.md)
 
 ### `/color-management`
 
@@ -633,7 +642,7 @@ Search, download, and extract public-domain books from Project Gutenberg. Look u
 
 ### `/harness-engineering`
 
-Design, build, diagnose, and evolve agent harnesses: instructions, tools, execution environments, durable state, context management, verification, recovery, and bounded autonomous loops. Use for unreliable coding agents, cross-session drift, premature completion, harness audits, or changes to the runtime around a model, including bounded typed-decision routing. Do not use for prompt rewriting alone, model training, general application architecture, or operating an already evaluated agent in production; route those concerns to their specialist skills.
+Design, build, diagnose, and evolve agent harnesses: instructions, tools, execution environments, durable state, context management, verification, recovery, bounded autonomous loops, and software factories that repeatedly turn incoming work into accepted deliverables. Use for director/worker production systems, factory steering, unreliable coding agents, cross-session drift, premature completion, harness audits, or changes to the runtime around a model, including bounded typed-decision routing. Do not use for prompt rewriting alone, model training, general application architecture, or operating an already evaluated agent in production; route those concerns to their specialist skills.
 
 - 호출: `/harness-engineering` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`
@@ -865,6 +874,15 @@ Build, test, sign, and ship mobile apps across iOS, Android, Flutter, and React 
 - 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/mobile-development)
 - 이 레포 사본: [`plugins/magnus-agent-skills/skills/mobile-development/SKILL.md`](../../plugins/magnus-agent-skills/skills/mobile-development/SKILL.md)
 
+### `/multi-agent-coordination`
+
+Design, diagnose, and evaluate coordination across multiple AI agents and heterogeneous harnesses: decomposition, topology, ownership, communication, distributed context, shared memory, integration, recovery, and collective failure patterns. Use for persistent agent teams, fleets, swarms, agent handoffs, coordination loops, or extracting portable lessons from OpenRig, HERDR and Block/Buzz. Do not use for a single agent's runtime, a named tool's installation or command manual, debate alone, or operating an evaluated production agent; route those to harness-engineering, the tool's documentation, agent-council, or agent-production-operations.
+
+- 호출: `/multi-agent-coordination` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`
+- 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/multi-agent-coordination)
+- 이 레포 사본: [`plugins/magnus-agent-skills/skills/multi-agent-coordination/SKILL.md`](../../plugins/magnus-agent-skills/skills/multi-agent-coordination/SKILL.md)
+
 ### `/multi-tenant-saas-architecture`
 
 Design and review end-to-end multi-tenant SaaS architectures: tenant and subscription semantics, control and application planes, pooled or isolated tenancy, onboarding, entitlements, metering, billing handoffs, lifecycle, partitioning, and tenant-aware operations. Use when a subscription product needs a coherent tenant model and architecture decision across these seams. Do not use for threat modeling or isolation controls, API contract semantics, data-platform design, backend implementation, migration execution, privacy compliance artifacts, capacity evidence, financial modeling, or infrastructure operations; route those to the named specialist owners.
@@ -1038,7 +1056,7 @@ Define user-facing product behavior from validated evidence and approved scope. 
 
 ### `/product-discovery`
 
-Discover product requirements from human stakeholders — map who to talk to, ask questions that surface hidden assumptions, detect gaps in real time, resolve conflicts, and translate conversations into structured SDD specs. Phase 0 upstream of Spec-Driven Development. Also grill a PRD, interrogate a proposal, poke holes in a spec, or interview its author about an existing draft, one consequential question at a time. Do not use for personal-life discovery (daily-life-discovery), general research without product requirements (research-methodology), or implementation planning.
+Discover external customer problems and product requirements from human stakeholders. Assess customer evidence before investing, or map who to talk to, ask questions that surface hidden assumptions, detect gaps in real time, resolve conflicts, and translate conversations into structured SDD specs. Phase 0 upstream of Spec-Driven Development. Also grill a PRD, interrogate a proposal, poke holes in a spec, or interview its author about an existing draft, one consequential question at a time. Do not use for personal-life discovery (daily-life-discovery), general research without product requirements (research-methodology), or implementation planning.
 
 - 호출: `/product-discovery` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`, `templates/`
@@ -1323,6 +1341,15 @@ Create, explore, critique, and practice solarpunk across visual art and image pr
 - 딸린 폴더: `evals/`, `references/`, `templates/`
 - 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/solarpunk)
 - 이 레포 사본: [`plugins/magnus-agent-skills/skills/solarpunk/SKILL.md`](../../plugins/magnus-agent-skills/skills/solarpunk/SKILL.md)
+
+### `/solo-startup`
+
+Use this skill when a solopreneur or solo startup founder needs to choose, validate, or operate a business within one person's cash, time, and support capacity, including bootstrapped services, products, and AI-assisted businesses. Translate customer evidence into a bounded offer and a sustainable operating decision. Do not use for an isolated customer interview, financial calculation, growth analysis, or calendar triage; route those to the corresponding specialist.
+
+- 호출: `/solo-startup` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `assets/`, `evals/`, `references/`
+- 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/solo-startup)
+- 이 레포 사본: [`plugins/magnus-agent-skills/skills/solo-startup/SKILL.md`](../../plugins/magnus-agent-skills/skills/solo-startup/SKILL.md)
 
 ### `/spec-driven-development`
 
