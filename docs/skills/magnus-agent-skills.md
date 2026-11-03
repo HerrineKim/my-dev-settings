@@ -1,6 +1,6 @@
 # magnus-agent-skills
 
-[magnus919/agent-skills](https://github.com/magnus919/agent-skills)(MIT)의 스킬 182개를 그대로 받아 둔 묶음. 프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서·글쓰기까지 범위가 넓다.
+[magnus919/agent-skills](https://github.com/magnus919/agent-skills)(MIT)의 스킬 185개를 그대로 받아 둔 묶음. 프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서·글쓰기까지 범위가 넓다.
 
 ## 전역 링크
 스킬 목록이 매 세션 컨텍스트를 차지하므로 플러그인 전체는 `skills-exclude`로 빼고, `!magnus-agent-skills/<스킬>` 줄에 적은 것만 `~/.claude/skills`에 링크한다.
@@ -26,7 +26,7 @@
 
 <!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든다. 위쪽만 손으로 고친다. -->
 
-## 스킬 목록 (183개)
+## 스킬 목록 (185개)
 
 ### `/actuarial-risk-modeling`
 
@@ -874,6 +874,15 @@ Build, test, sign, and ship mobile apps across iOS, Android, Flutter, and React 
 - 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/mobile-development)
 - 이 레포 사본: [`plugins/magnus-agent-skills/skills/mobile-development/SKILL.md`](../../plugins/magnus-agent-skills/skills/mobile-development/SKILL.md)
 
+### `/multi-agent-coordination`
+
+Design, diagnose, and evaluate coordination across multiple AI agents and heterogeneous harnesses: decomposition, topology, ownership, communication, distributed context, shared memory, integration, recovery, and collective failure patterns. Use for persistent agent teams, fleets, swarms, agent handoffs, coordination loops, or extracting portable lessons from OpenRig, HERDR and Block/Buzz. Do not use for a single agent's runtime, a named tool's installation or command manual, debate alone, or operating an evaluated production agent; route those to harness-engineering, the tool's documentation, agent-council, or agent-production-operations.
+
+- 호출: `/multi-agent-coordination` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`
+- 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/multi-agent-coordination)
+- 이 레포 사본: [`plugins/magnus-agent-skills/skills/multi-agent-coordination/SKILL.md`](../../plugins/magnus-agent-skills/skills/multi-agent-coordination/SKILL.md)
+
 ### `/multi-tenant-saas-architecture`
 
 Design and review end-to-end multi-tenant SaaS architectures: tenant and subscription semantics, control and application planes, pooled or isolated tenancy, onboarding, entitlements, metering, billing handoffs, lifecycle, partitioning, and tenant-aware operations. Use when a subscription product needs a coherent tenant model and architecture decision across these seams. Do not use for threat modeling or isolation controls, API contract semantics, data-platform design, backend implementation, migration execution, privacy compliance artifacts, capacity evidence, financial modeling, or infrastructure operations; route those to the named specialist owners.
@@ -1332,6 +1341,15 @@ Create, explore, critique, and practice solarpunk across visual art and image pr
 - 딸린 폴더: `evals/`, `references/`, `templates/`
 - 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/solarpunk)
 - 이 레포 사본: [`plugins/magnus-agent-skills/skills/solarpunk/SKILL.md`](../../plugins/magnus-agent-skills/skills/solarpunk/SKILL.md)
+
+### `/solo-startup`
+
+Use this skill when a solopreneur or solo startup founder needs to choose, validate, or operate a business within one person's cash, time, and support capacity, including bootstrapped services, products, and AI-assisted businesses. Translate customer evidence into a bounded offer and a sustainable operating decision. Do not use for an isolated customer interview, financial calculation, growth analysis, or calendar triage; route those to the corresponding specialist.
+
+- 호출: `/solo-startup` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 딸린 폴더: `assets/`, `evals/`, `references/`
+- 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/solo-startup)
+- 이 레포 사본: [`plugins/magnus-agent-skills/skills/solo-startup/SKILL.md`](../../plugins/magnus-agent-skills/skills/solo-startup/SKILL.md)
 
 ### `/spec-driven-development`
 

@@ -17,7 +17,6 @@ MARKER = "<!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든�
 # Plugins not listed here were written in this repo. Keep in sync with vendor.sh.
 SOURCES = {
     "ui-ux-pro-max": ("nextlevelbuilder/ui-ux-pro-max-skill", ".claude/skills/{s}"),
-    "frontend-design": ("anthropics/skills", "skills/{s}"),
     "web-design-guidelines": ("vercel-labs/agent-skills", "skills/{s}"),
     "clone-website": ("julianromli/ai-skills", "skills/{s}"),
     "make-interfaces-feel-better": ("jakubkrehel/make-interfaces-feel-better", "skills/{s}"),

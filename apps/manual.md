@@ -8,6 +8,7 @@ Homebrew와 App Store에 없어서 `apps-sync`가 설치하지 못하는 앱이�
 | Adobe Illustrator 2026 | Creative Cloud 앱 | `adobe-creative-cloud` 설치 후 |
 | Photon Studio (`com.tenzen.photon`) | 배포처에서 받은 dmg | |
 | Battery Guru (`io.macdaddy.batteryguru`) | 배포처에서 받은 dmg | App Store의 같은 이름 앱과 다른 앱 |
+| Grok Bot (`com.anysphere.sand`) | 배포처에서 받은 dmg | |
 
 ## 목록에 넣지 않는 것
 
@@ -19,4 +20,4 @@ Homebrew와 App Store에 없어서 `apps-sync`가 설치하지 못하는 앱이�
 
 회사 VPN(Cisco AnyConnect)은 회사가 배포하는 설치 파일로 깐다.
 
-은행·공공 사이트가 필요할 때 알아서 설치하는 보안 프로그램(AhnLab ASTx, Delfino, Veraport, TouchEn nxKey, INISAFE CrossWeb, SoftForum)은 맥마다 맞출 필요가 없어서 뺀다.
+은행·공공 사이트가 필요할 때 알아서 설치하는 보안 프로그램(AhnLab ASTx, Delfino, Veraport, TouchEn nxKey, INISAFE CrossWeb, SoftForum, IPinside)은 맥마다 맞출 필요가 없어서 뺀다.

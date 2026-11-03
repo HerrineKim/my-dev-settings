@@ -17,10 +17,10 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - `bin/`의 `skills-ls`, `apps-sync`, `rmbg`를 `~/.local/bin`에 링크
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
 - MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
-- 외부 마켓플레이스 플러그인 `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
+- 외부 마켓플레이스 플러그인 `oh-my-claudecode`, `vercel`, `figma`, `frontend-design`, `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
-필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(career-ops 플러그인용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv·Node.js와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
+필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(oh-my-claudecode·career-ops 플러그인용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv·Node.js와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
 
 ```bash
 skills-ls            # 전역 스킬 전체: ~/.claude/skills, claude.ai 동기화 스킬, user 플러그인 스킬
@@ -64,10 +64,9 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 | `tdd-tidy-first` | Kent Beck식 TDD + Tidy First(plan.md "go" 워크플로) | 직접 만듦 |
 | `riverlog-knowledge` | 새 작업(개발·디자인·리뷰·문서·글쓰기·조사) 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고 노트 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받음 | 직접 만듦 |
 | `figma-artifact-import` | HTML 프로토타입 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김 | 직접 만듦 |
-| `ui-polish` | 설치된 UI 스킬(frontend-design·antislop·make-interfaces-feel-better·web-design-guidelines)을 순서대로 불러 UI 개선을 한 번에. `--review`·`--quick` 모드 | 직접 만듦 |
+| `ui-polish` | 설치된 UI 스킬(공식 플러그인 frontend-design·antislop·make-interfaces-feel-better·web-design-guidelines)을 순서대로 불러 UI 개선을 한 번에. `--review`·`--quick` 모드 | 직접 만듦 |
 | `note` | 자료(글·URL·파일)를 riverlog 노트로 재구성해 넣고 인덱스·링크 갱신. `~/Projects/riverlog`(또는 `$RIVERLOG_DIR`) | [HerrineKim/riverlog](https://github.com/HerrineKim/riverlog/tree/main/.claude/skills/note). 벤더링 때 `plugins/note/global-preamble.md`(레포 위치 찾기)를 앞에 끼워 넣음 |
 | `ui-ux-pro-max` (7) | UI/UX 판단 데이터와 `/ui-styling`, `/design`, `/design-system`, `/brand`, `/banner-design`, `/slides` | [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) |
-| `frontend-design` | 템플릿 같지 않은 UI 미학·타이포 방향 | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/frontend-design) |
 | `web-design-guidelines` | Vercel Web Interface Guidelines로 UI 코드 리뷰 | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) |
 | `make-interfaces-feel-better` | 애니메이션·그림자·타이포·아이콘 등 UI 디테일 원칙 | [jakubkrehel/make-interfaces-feel-better](https://github.com/jakubkrehel/make-interfaces-feel-better) (MIT) |
 | `clone-website` | URL을 Next.js + shadcn/ui + Tailwind로 픽셀 단위 복제. 브라우저 MCP 필요 | [julianromli/ai-skills](https://github.com/julianromli/ai-skills/tree/main/skills/clone-website) |
@@ -78,13 +77,13 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 | `code-review-graph` (7) | 코드 그래프(MCP)로 변경 영향 범위만 읽는 리뷰·디버깅. 프로젝트마다 `/build-graph` 먼저 | [tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph) (MIT). 스킬만 받고 MCP는 `uvx code-review-graph serve` |
 | `android-reverse-engineering` | APK·JAR·AAR 디컴파일(jadx), 호출 흐름 추적, API 추출 | [SimoneAvogadro/android-reverse-engineering-skill](https://github.com/SimoneAvogadro/android-reverse-engineering-skill) (Apache-2.0). `/decompile` 커맨드는 `${CLAUDE_PLUGIN_ROOT}`를 써서 플러그인 설치 때만 동작 |
 | `marketingskills` (53) | CRO·카피·SEO·광고·분석·가격·런칭·이메일 등. `/product-marketing`으로 만든 `.agents/product-marketing.md`를 다른 스킬이 먼저 읽음 | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) |
-| `k-skill` (134) | 한국 생활·업무(교통·날씨·쇼핑·공공데이터·한글 문서 등). 키가 필요한 스킬은 `/k-skill-setup` 먼저 | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
+| `k-skill` (135) | 한국 생활·업무(교통·날씨·쇼핑·공공데이터·한글 문서 등). 키가 필요한 스킬은 `/k-skill-setup` 먼저 | [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT) |
 | `notebooklm-wiki-pipeline` | `/pdf-to-wiki <Drive URL> [제목] [--topic id]`: Drive PDF를 NotebookLM이 읽게 하고 결과만 받아 Obsidian 노트로 저장(토큰 절감). 처음 한 번 `nlm login`. 저장 위치 `~/Documents/Obsidian Vault/AI_Generated`(`$PDF_TO_WIKI_OUTPUT_DIR`), 주제 registry `~/.config/pdf-to-wiki/notebooks.json`(`$PDF_TO_WIKI_REGISTRY`) | [capitalparser/notebooklm-wiki-pipeline](https://github.com/capitalparser/notebooklm-wiki-pipeline) (MIT). 커맨드를 스킬로 바꾸고 `plugins/notebooklm-wiki-pipeline/global-preamble.md`(전역 경로·도구 이름)를 끼워 넣음. MCP는 비공식 NotebookLM API 기반 |
 | `jscpd` (5) | 중복 코드 탐지 [jscpd](https://jscpd.dev) 사용법(`/jscpd`)과 `/dry-refactoring`, `/codebase-refactoring`(`--health` 기준 중복·죽은 코드·복잡도 정리), `/compare-codebases`, `/code-migration`. CLI는 Brewfile의 `jscpd`. MCP는 프로젝트마다 `claude mcp add -s project jscpd -- jscpd --mcp .`(전역 등록하면 세션마다 스캔해서 뺌) | [kucherenko/jscpd](https://github.com/kucherenko/jscpd) (MIT) |
 | `es-toolkit` (3) | lodash 대체 유틸 [es-toolkit](https://es-toolkit.dev) 공식 스킬: `/es-toolkit-guide`(설치·import), `/es-toolkit-recommend`(함수 추천), `/es-toolkit-migrate`(lodash 마이그레이션, strict·compat). 라이브러리 자체는 프로젝트마다 설치 | [toss/es-toolkit](https://github.com/toss/es-toolkit/tree/main/es-toolkit-plugin) (MIT). 원래 이름 guide·migrate·recommend가 너무 일반적이라 벤더링 때 `es-toolkit-` 접두어를 붙임 |
 | `es-hangul` | 한글 처리(조사·받침·초성 검색·자모·숫자/금액 한글화·수사·로마자·발음·한영 키보드)를 직접 짜지 않고 [es-hangul](https://es-hangul.slash.page) 함수로. 라이브러리는 프로젝트마다 설치 | 직접 만듦. `references/api.md`는 [toss/es-hangul](https://github.com/toss/es-hangul) (MIT) 한국어 API 문서를 `vendor.sh`가 모은 것 |
 | `korean-law` | 법제처 Open API MCP로 법령·판례 조회와 인용 검증. 키 없이 공용 한도 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) (MIT). 스킬만 받고 MCP는 공개 서버 `mcp.gomdori.app/law` |
-| `magnus-agent-skills` (182) | 개발·제품·운영·데이터·글쓰기 범용 스킬. 전역에는 `skills-exclude`의 `!` 줄에 적은 12개(frontend-engineering, react, web-accessibility, performance-optimization, playwright, supabase, systematic-debugging, api-design-and-evolution, technical-documentation, adr-authoring, agent-skills, harness-engineering)만 링크 | [magnus919/agent-skills](https://github.com/magnus919/agent-skills) (MIT) |
+| `magnus-agent-skills` (185) | 개발·제품·운영·데이터·글쓰기 범용 스킬. 전역에는 `skills-exclude`의 `!` 줄에 적은 12개(frontend-engineering, react, web-accessibility, performance-optimization, playwright, supabase, systematic-debugging, api-design-and-evolution, technical-documentation, adr-authoring, agent-skills, harness-engineering)만 링크 | [magnus919/agent-skills](https://github.com/magnus919/agent-skills) (MIT) |
 | `ecc` (314) | ECC의 skills/만 받음(에이전트·훅·룰·커맨드는 oh-my-claudecode와 겹쳐 뺌). 전역에는 nextjs-turbopack, react-patterns, react-performance, react-testing, typescript-patterns, browser-qa 6개만 링크 | [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) |
 | `front-end-checklist` (391) | 접근성·성능·SEO·보안·HTML/CSS/JS 규칙 391개. 전역에는 통합 감사 `/frontend-checklist-global`만 링크하고, 규칙은 원격 MCP(`mcp.frontendchecklist.io`)로 찾음. 리뷰할 코드·URL이 외부 서버로 전송됨 | [thedaviddias/Front-End-Checklist](https://github.com/thedaviddias/Front-End-Checklist) (MIT) |
 | `cybersecurity` (22) | 증거 기반 보안 방법론: 정찰·취약점·웹/클라우드/모바일/OT 보안·악성코드·위협 헌팅·IR·SOC·로그·암호·공급망·레드/블루/퍼플팀·GRC. 정기 점검용은 위 '주기적으로 점검할 스킬' 참고 | [Masriyan/Claude-Code-CyberSecurity-Skill](https://github.com/Masriyan/Claude-Code-CyberSecurity-Skill) (MIT). 공격·침투 스킬(03·14·22)과 안전 민감 스킬(16·18)은 권한·범위 게이트가 있으니 허가받은 대상에만. 딸린 스크립트는 복사만 하고 실행 안 함 |
@@ -101,7 +100,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 
 ```bash
 claude plugin marketplace add HerrineKim/my-dev-settings
-for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max frontend-design \
+for p in daily-log tdd-tidy-first riverlog-knowledge figma-artifact-import note ui-ux-pro-max \
   web-design-guidelines make-interfaces-feel-better ui-polish clone-website diagram-design antislop ai-slop-thresher \
   karpathy-guidelines code-review-graph android-reverse-engineering marketingskills k-skill korean-law cybersecurity magnus-agent-skills ecc front-end-checklist notebooklm-wiki-pipeline jscpd es-toolkit es-hangul; do
   claude plugin install "$p@hyerin-skills"
@@ -123,9 +122,13 @@ done
 
 | 플러그인 | 내용 | 직접 할 일 | 출처 |
 |---|---|---|---|
+| `oh-my-claudecode` | 멀티 에이전트 오케스트레이션(plan→execute→review→verify, autopilot·ralph·team 등)과 훅·HUD | 설치 뒤 한 번 `/oh-my-claudecode:omc-setup`(또는 "setup omc"). `~/.claude/CLAUDE.md` 앞쪽에 `OMC:START`~`OMC:END` 블록을 써 넣고, 이 레포의 `global-claude.md` import 블록은 그 뒤에 그대로 둠 | [Yeachan-Heo/oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) (MIT) |
+| `vercel` | Vercel 배포·환경 변수·도메인 MCP와 Next.js·AI SDK 등 스킬 | 처음 MCP를 쓸 때 브라우저로 Vercel 로그인 | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
+| `figma` | Figma 공식 MCP(디자인 읽기·쓰기, Code Connect)와 `figma-use` 등 스킬 | 처음 MCP를 쓸 때 브라우저로 Figma 로그인 | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
+| `frontend-design` | 템플릿 같지 않은 UI 미학·타이포 방향(`/frontend-design:frontend-design`). `/ui-polish` 1단계가 부름 | 없음 | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `career-ops` | 채용 공고 수집, 이력서 대비 1~5점 평가, ATS용 이력서·커버레터 맞춤, 면접 준비, 지원 현황 관리. 제출은 직접. `/career-ops:career-ops`로 부르거나 공고 URL을 붙여 넣음 | 처음 쓸 때 대화로 이력서·프로필 설정. 데이터는 `~/career-ops-data`(`CAREER_OPS_ROOT`로 변경). PDF 생성에는 Playwright Chromium이 필요할 수 있음. Gmail·Notion 등 연동은 기본 꺼짐. 데스크톱 앱 Code 탭과 Claude Code에서만 동작 | [career-ops-hq/career-ops](https://github.com/career-ops-hq/career-ops) (MIT) |
 
-업데이트는 `claude plugin marketplace update career-ops` 뒤 `claude plugin update career-ops@career-ops`, 또는 데스크톱 앱에서 마켓플레이스의 **Sync automatically**를 켭니다.
+업데이트는 `claude plugin marketplace update <마켓플레이스>` 뒤 `claude plugin update <플러그인@마켓플레이스>`(예: `career-ops`, `career-ops@career-ops`), 또는 데스크톱 앱에서 마켓플레이스의 **Sync automatically**를 켭니다.
 
 ## daily-log
 
@@ -150,7 +153,7 @@ apps-sync diff     # 이 맥에는 있는데 Brewfile에 없는 brew·App Store 
 
 ## 전역 CLAUDE.md
 
-모든 프로젝트에 적용할 공통 지시는 `global-claude.md`에 있습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 수정은 `git pull`만으로 반영됩니다.
+모든 프로젝트에 적용할 공통 지시(riverlog 확인, em dash 금지, Mermaid 다이어그램, TDD & Tidy First)는 `global-claude.md`에 있습니다. `~/.claude/CLAUDE.md`에는 oh-my-claudecode가 관리하는 블록과 이 import 블록만 두고, 직접 쓰는 지시는 이 파일에 적습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 수정은 `git pull`만으로 반영됩니다.
 
 ## 이름 변경 후 옮기기
 

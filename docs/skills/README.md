@@ -18,12 +18,11 @@
 | [es-toolkit](es-toolkit.md) | 3 | 토스 es-toolkit 공식 스킬: 설치·import 가이드, 함수 추천, lodash 마이그레이션(이름에 es-toolkit- 접두어) |
 | [figma-artifact-import](figma-artifact-import.md) | 1 | HTML 프로토타입 화면을 Figma MCP로 대량 반영 |
 | [front-end-checklist](front-end-checklist.md) | 391 | Front-End Checklist 규칙 391개 스킬 + 통합 감사 스킬 + 원격 MCP. 전역에는 frontend-checklist-global만 링크 |
-| [frontend-design](frontend-design.md) | 1 | Anthropic frontend-design: 템플릿 같지 않은 UI 미학 가이드 |
 | [jscpd](jscpd.md) | 5 | 중복 코드 탐지 jscpd 사용법과 DRY 리팩터링·코드베이스 비교·마이그레이션·정리 스킬 5개(jscpd CLI 별도 설치) |
-| [k-skill](k-skill.md) | 135 | 한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 134개) |
+| [k-skill](k-skill.md) | 135 | 한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 135개) |
 | [karpathy-guidelines](karpathy-guidelines.md) | 1 | Karpathy식 코딩 행동 지침 (가정 드러내기·단순함·외과적 수정·검증 기준) |
 | [korean-law](korean-law.md) | 1 | 법제처 Open API MCP로 법령·판례·행정규칙·자치법규 조회와 인용 검증 |
-| [magnus-agent-skills](magnus-agent-skills.md) | 183 | 범용 스킬 묶음 182개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크 |
+| [magnus-agent-skills](magnus-agent-skills.md) | 185 | 범용 스킬 묶음 185개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크 |
 | [make-interfaces-feel-better](make-interfaces-feel-better.md) | 1 | UI 디테일(애니메이션·그림자·타이포·아이콘) 다듬기 원칙 |
 | [marketingskills](marketingskills.md) | 53 | 마케팅 스킬 묶음 (CRO·카피라이팅·SEO·광고·분석·그로스 등 53개) |
 | [note](note.md) | 1 | 어느 프로젝트에서든 riverlog 지식 창고에 노트 추가·보강 |

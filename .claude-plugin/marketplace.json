@@ -20,11 +20,6 @@
       "description": "UI/UX 디자인 스킬 묶음 (ui-ux-pro-max, ui-styling, design, design-system, brand, banner-design, slides)"
     },
     {
-      "name": "frontend-design",
-      "source": "./plugins/frontend-design",
-      "description": "Anthropic frontend-design: 템플릿 같지 않은 UI 미학 가이드"
-    },
-    {
       "name": "web-design-guidelines",
       "source": "./plugins/web-design-guidelines",
       "description": "Vercel Web Interface Guidelines 기준으로 UI 코드 리뷰"
@@ -82,7 +77,7 @@
     {
       "name": "k-skill",
       "source": "./plugins/k-skill",
-      "description": "한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 134개)"
+      "description": "한국 생활·업무 스킬 묶음 (교통·날씨·쇼핑·공공데이터·법령·주식 등 135개)"
     },
     {
       "name": "android-reverse-engineering",
@@ -112,7 +107,7 @@
     {
       "name": "magnus-agent-skills",
       "source": "./plugins/magnus-agent-skills",
-      "description": "범용 스킬 묶음 182개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크"
+      "description": "범용 스킬 묶음 185개 (프론트엔드·백엔드·디버깅·아키텍처·제품·운영·데이터·문서 등). 전역에는 12개만 링크"
     },
     {
       "name": "ecc",

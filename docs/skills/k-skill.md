@@ -1,6 +1,6 @@
 # k-skill
 
-한국 생활·업무 자동화 스킬 134개(교통·날씨·쇼핑·부동산·공공데이터·법령·주식·한글 문서 등). 출처: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT)
+한국 생활·업무 자동화 스킬 135개(교통·날씨·쇼핑·부동산·공공데이터·법령·주식·한글 문서 등). 출처: [NomaDamas/k-skill](https://github.com/NomaDamas/k-skill) (MIT)
 
 원문 문서: [전체 목록](../upstream/k-skill/k-skills-list.md) · [공통 설정](../upstream/k-skill/setup.md) · [설치](../upstream/k-skill/install.md) · [보안·시크릿](../upstream/k-skill/security-and-secrets.md)
 
