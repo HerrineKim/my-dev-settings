@@ -14,7 +14,8 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 
 `install.sh`가 하는 일(여러 번 실행해도 안전)
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴). `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크
-- `bin/`의 `skills-ls`, `apps-sync`, `rmbg`를 `~/.local/bin`에 링크
+- `bin/`의 `skills-ls`, `apps-sync`, `rmbg`, `dev-settings-sync`를 `~/.local/bin`에 링크
+- 로그인할 때마다 `dev-settings-sync`를 한 번 실행하는 LaunchAgent 등록(아래 '외부 스킬 업데이트·추가')
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
 - MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
 - 외부 마켓플레이스 플러그인 `oh-my-claudecode`, `vercel`, `figma`, `frontend-design`, `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
@@ -91,6 +92,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 ### 외부 스킬 업데이트·추가
 
 - 최신으로 다시 받기: `./vendor.sh` 실행 → `git diff` 확인 → 커밋. 스킬과 함께 `docs/upstream/`을 다시 복사하고 `docs/skills/`도 다시 만듭니다.
+- 자동: 로그인할 때마다 LaunchAgent가 `dev-settings-sync --boot`를 실행합니다. 네트워크를 기다린 뒤 `brew update && brew upgrade`, 레포가 깨끗한 `main`이면 `git pull` 후 `vendor.sh`를 돌려 바뀐 게 있으면 로컬 `chore/vendor-update-<날짜>` 브랜치에 커밋합니다(push는 안 함, 확인 후 직접 PR). Brewfile에 없는 설치 앱도 알려 주고, 결과는 macOS 알림과 `~/Library/Logs/my-dev-settings/`에 남습니다. 손으로 돌릴 때는 `dev-settings-sync`, 끄려면 `launchctl bootout gui/$(id -u)/com.herrinekim.my-dev-settings.sync`.
 - 새 외부 스킬을 들일 때: `vendor.sh`에 받는 줄을, `scripts/gen-skill-docs.py`의 `SOURCES`에 레포와 경로를 추가합니다(원조 링크용).
 - 스킬을 직접 추가·수정했을 때: `python3 scripts/gen-skill-docs.py`만 실행. 각 문서의 GENERATED 표시 위쪽은 손으로 쓴 부분이라 그대로 둡니다.
 

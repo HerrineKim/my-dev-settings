@@ -168,6 +168,34 @@ else
   echo "! iCloud Drive 폴더가 없어 기기 간 기록 공유를 건너뜁니다. config.json의 shared_dir를 다른 공유 폴더로 바꾸고 다시 실행하세요."
 fi
 
+# dev-settings-sync: run brew upgrade + vendor.sh once at each login (LaunchAgent, RunAtLoad). Log: ~/Library/Logs/my-dev-settings.
+agent_id="com.herrinekim.my-dev-settings.sync"
+agent="$HOME/Library/LaunchAgents/$agent_id.plist"
+mkdir -p "$(dirname "$agent")"
+cat > "$agent.tmp" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>$agent_id</string>
+  <key>ProgramArguments</key><array><string>$repo/bin/dev-settings-sync</string><string>--boot</string></array>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>$HOME/Library/Logs/my-dev-settings/launchd.log</string>
+  <key>StandardErrorPath</key><string>$HOME/Library/Logs/my-dev-settings/launchd.log</string>
+</dict>
+</plist>
+PLIST
+mkdir -p "$HOME/Library/Logs/my-dev-settings"
+if ! cmp -s "$agent.tmp" "$agent"; then
+  mv "$agent.tmp" "$agent"
+  launchctl bootout "gui/$(id -u)/$agent_id" 2>/dev/null || true
+  # bootstrap runs it right away (RunAtLoad), so registering it here also does a first sync.
+  launchctl bootstrap "gui/$(id -u)" "$agent" && echo "registered LaunchAgent $agent_id (runs dev-settings-sync at login)"
+else
+  rm "$agent.tmp"
+fi
+
 command -v gh >/dev/null || echo "! GitHub CLI 없음: brew install gh && gh auth login"
 gh auth status >/dev/null 2>&1 || echo "! gh 로그인 필요: gh auth login"
 echo "노션은 claude.ai 계정의 Notion 커넥터를 쓰므로 같은 계정으로 로그인하면 추가 설정이 없습니다."
