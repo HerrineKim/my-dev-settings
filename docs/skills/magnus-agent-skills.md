@@ -858,7 +858,7 @@ Plan and execute safe cross-system migrations, including service extraction from
 
 ### `/ml-engineering`
 
-Plan and execute production ML engineering work — classifier versus generative model selection, zero-shot baselines, coding specialization, model training and fine-tuning (LoRA/QLoRA), evaluation and eval-set design, quantization decisions, inference deployment, lineage, feature parity, drift response, and regression triage, grounded in practical engineering patterns for production ML systems. Do not use for statistical modeling and experimental design (that's the data scientist) or for operating a specific inference engine (that's a tool skill such as llama-cpp or vllm).
+Plan and execute production ML engineering work — classifier versus generative model selection, zero-shot baselines, coding specialization, model training and fine-tuning (LoRA/QLoRA), evaluation and eval-set design, quantization decisions, inference deployment, lineage, feature parity, drift response, and regression triage, experimental weight inspection and targeted editing, grounded in practical engineering patterns for production ML systems. Do not use for statistical modeling and experimental design (that's the data scientist) or for operating a specific inference engine (that's a tool skill such as llama-cpp or vllm).
 
 - 호출: `/ml-engineering` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`

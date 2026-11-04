@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Bring this Mac and the repo up to date: brew upgrade, then re-fetch the vendored skills (vendor.sh).
+# install.sh registers it as a LaunchAgent that runs once at each login; it can also be run by hand.
+# Skill changes land as a commit on a local chore/vendor-update-<date> branch (never pushed), for review and a PR.
+#
+# Usage: dev-settings-sync          # brew update/upgrade + vendor.sh
+#        dev-settings-sync --boot   # same, but first wait for the network (used by the LaunchAgent)
+set -uo pipefail
+repo="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+log_dir="$HOME/Library/Logs/my-dev-settings"; mkdir -p "$log_dir"
+log="$log_dir/sync-$(date +%F).log"
+exec > >(tee -a "$log") 2>&1
+echo "== $(date '+%F %T') dev-settings-sync"
+
+notify() { osascript -e "display notification \"$1\" with title \"my-dev-settings\"" >/dev/null 2>&1 || true; }
+
+if [ "${1:-}" = --boot ]; then
+  for _ in $(seq 60); do curl -fsS -m 5 -o /dev/null https://github.com && break; sleep 5; done
+fi
+
+summary=()
+if command -v brew >/dev/null; then
+  if brew update && brew upgrade; then summary+=("brew 업그레이드 완료"); else summary+=("brew 업그레이드 실패"); fi
+fi
+
+# Only touch the repo when it is clean and on main, so a half-done branch is never disturbed.
+branch="$(git -C "$repo" symbolic-ref --short HEAD 2>/dev/null)"
+if [ "$branch" != main ] || [ -n "$(git -C "$repo" status --porcelain)" ]; then
+  summary+=("레포가 main이 아니거나 변경이 있어 스킬 갱신 건너뜀")
+elif ! git -C "$repo" pull -q --ff-only; then
+  summary+=("git pull 실패로 스킬 갱신 건너뜀")
+elif ! "$repo/vendor.sh"; then
+  git -C "$repo" checkout -q -- . && git -C "$repo" clean -qfd -- plugins docs
+  summary+=("vendor.sh 실패, 변경 되돌림")
+elif [ -z "$(git -C "$repo" status --porcelain)" ]; then
+  summary+=("외부 스킬 변경 없음")
+else
+  new="chore/vendor-update-$(date +%F)"
+  git -C "$repo" checkout -q -B "$new" && git -C "$repo" add -A \
+    && git -C "$repo" commit -q -m "chore: 외부 스킬을 원본 최신으로 다시 받는다" -m "dev-settings-sync가 부팅 때 vendor.sh를 실행한 결과." \
+    && git -C "$repo" checkout -q main
+  summary+=("외부 스킬 변경을 $new 브랜치에 커밋(push 안 함)")
+fi
+
+# Report apps this Mac has that the Brewfile does not list, so the list can be updated by hand.
+if command -v brew >/dev/null; then
+  extra="$(comm -13 <(grep -oE '^(brew|cask) "[^"]+"' "$repo/apps/Brewfile" | sed -E 's/.*"(.*)"/\1/; s#.*/##' | sort -u) \
+                    <( (brew leaves --installed-on-request | sed 's#.*/##'; brew list --cask) | sort -u) | xargs)"
+  [ -n "$extra" ] && summary+=("Brewfile에 없는 설치 앱: $extra")
+fi
+
+printf '%s\n' "${summary[@]}"
+notify "$(IFS='; '; echo "${summary[*]}")"
