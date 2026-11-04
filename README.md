@@ -2,6 +2,23 @@
 
 맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬·MCP·마켓플레이스 플러그인, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`), 전역 npm 패키지(`apps/npm-globals`).
 
+## 목차
+
+- [설치와 업데이트](#설치와-업데이트)
+- [명령어](#명령어)
+- [자동 동기화](#자동-동기화)
+- [Claude Code 스킬](#claude-code-스킬)
+  - [주기적으로 점검할 스킬](#주기적으로-점검할-스킬)
+  - [플러그인 목록](#플러그인-목록)
+  - [외부 스킬 업데이트·추가](#외부-스킬-업데이트추가)
+  - [플러그인으로 설치하는 방법(대안)](#플러그인으로-설치하는-방법대안)
+- [MCP 서버](#mcp-서버)
+- [마켓플레이스 플러그인](#마켓플레이스-플러그인)
+- [daily-log](#daily-log)
+- [앱 맞추기](#앱-맞추기)
+- [전역 CLAUDE.md](#전역-claudemd)
+- [이름 변경 후 옮기기](#이름-변경-후-옮기기)
+
 ## 설치와 업데이트
 
 ```bash
@@ -10,30 +27,49 @@ git clone https://github.com/HerrineKim/my-dev-settings.git ~/Projects/my-dev-se
 apps-sync                               # 앱 설치(아래 '앱 맞추기')
 ```
 
-업데이트는 `git -C ~/Projects/my-dev-settings pull`. 스킬은 심볼릭 링크라 바로 반영됩니다.
+업데이트는 `git -C ~/Projects/my-dev-settings pull`. 스킬은 심볼릭 링크라 바로 반영됩니다. 로그인할 때마다 brew와 외부 스킬도 자동으로 갱신합니다(아래 '자동 동기화').
 
 `install.sh`가 하는 일(여러 번 실행해도 안전)
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴). `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크
 - `bin/`의 `skills-ls`, `apps-sync`, `rmbg`, `dev-settings-sync`를 `~/.local/bin`에 링크
-- 로그인할 때마다 `dev-settings-sync`를 한 번 실행하는 LaunchAgent 등록(아래 '외부 스킬 업데이트·추가')
+- 로그인할 때마다 `dev-settings-sync`를 한 번 실행하는 LaunchAgent 등록(아래 '자동 동기화')
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
-- MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`가 `skills-exclude`에 있으면, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않으면 등록하지 않고 이미 있으면 지움
+- MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`는 `skills-exclude`에 있을 때, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않을 때 등록하지 않고, 이미 등록돼 있으면 지움
 - 외부 마켓플레이스 플러그인 `oh-my-claudecode`, `vercel`, `figma`, `frontend-design`, `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
 
-필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(oh-my-claudecode·career-ops 플러그인용), android-reverse-engineering을 쓰려면 Java·jadx 등. uv·Node.js와 Java·jadx 등은 Brewfile에 있어 `apps-sync`로 설치됩니다.
+필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(oh-my-claudecode·career-ops 플러그인용). android-reverse-engineering에는 Java·jadx 등이 더 필요합니다. 모두 Brewfile에 있어 `apps-sync`로 설치됩니다(Java는 jadx 의존성으로 함께 들어옴).
+
+## 명령어
+
+`install.sh`가 `bin/`의 명령을 `~/.local/bin`에 링크합니다. `apps-sync`는 아래 '앱 맞추기', `dev-settings-sync`는 '자동 동기화'에 있습니다.
 
 ```bash
 skills-ls            # 전역 스킬 전체: ~/.claude/skills, claude.ai 동기화 스킬, user 플러그인 스킬
 skills-ls supabase   # 이름·설명에 키워드가 들어간 것만
 ```
 
-이미지 배경 제거는 `rmbg`(전역 npm `@imgly/background-removal-node`를 부름, 모델이 패키지에 들어 있어 오프라인 동작):
+`rmbg`는 이미지 배경을 지웁니다. 전역 npm `@imgly/background-removal-node`를 부르고, 모델이 패키지에 들어 있어 오프라인에서도 동작합니다.
 
 ```bash
 rmbg photo.jpg                          # photo-nobg.png 를 같은 폴더에
 rmbg *.jpg --out cut --format webp      # 여러 장을 cut/ 에 webp로
 rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠르게
+```
+
+## 자동 동기화
+
+`install.sh`가 LaunchAgent(`com.herrinekim.my-dev-settings.sync`)를 등록해, 로그인할 때마다 `dev-settings-sync --boot`가 한 번 돕니다.
+
+1. 네트워크가 잡힐 때까지 기다린 뒤 `brew update && brew upgrade`
+2. 레포가 변경 없는 `main`이면 `git pull --ff-only` 후 `vendor.sh`. 바뀐 게 있으면 로컬 `chore/vendor-update-<날짜>` 브랜치에 커밋하고 `main`으로 돌아옴. push는 하지 않으니 브랜치를 확인하고 직접 PR을 올림
+3. Brewfile에 없는 설치 앱이 있으면 알려 줌
+
+레포가 다른 브랜치에 있거나 커밋하지 않은 변경이 있으면 2번은 건너뜁니다. 결과는 macOS 알림과 `~/Library/Logs/my-dev-settings/`에 남습니다.
+
+```bash
+dev-settings-sync                                                     # 지금 한 번 실행
+launchctl bootout gui/$(id -u)/com.herrinekim.my-dev-settings.sync    # 자동 실행 끄기(install.sh를 다시 돌리면 켜짐)
 ```
 
 ## Claude Code 스킬
@@ -58,6 +94,10 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 | `/frontend-checklist-global` | 출시 전 페이지·컴포넌트를 Front-End Checklist 규칙(접근성·성능·SEO·보안)으로 감사. 공개 URL은 `audit_url` |
 | `/antislop-code` | 커밋 전 생성·수정 코드의 뻔한 AI 주석만 정리(코드는 안 건드림) |
 | `/karpathy-guidelines` | LLM이 만든 코드의 가정·단순함·수정 범위·검증 기준 점검 |
+
+### 플러그인 목록
+
+괄호 안 숫자는 플러그인에 든 스킬 수입니다.
 
 | 플러그인 | 내용 | 출처 |
 |---|---|---|
@@ -92,7 +132,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 ### 외부 스킬 업데이트·추가
 
 - 최신으로 다시 받기: `./vendor.sh` 실행 → `git diff` 확인 → 커밋. 스킬과 함께 `docs/upstream/`을 다시 복사하고 `docs/skills/`도 다시 만듭니다.
-- 자동: 로그인할 때마다 LaunchAgent가 `dev-settings-sync --boot`를 실행합니다. 네트워크를 기다린 뒤 `brew update && brew upgrade`, 레포가 깨끗한 `main`이면 `git pull` 후 `vendor.sh`를 돌려 바뀐 게 있으면 로컬 `chore/vendor-update-<날짜>` 브랜치에 커밋합니다(push는 안 함, 확인 후 직접 PR). Brewfile에 없는 설치 앱도 알려 주고, 결과는 macOS 알림과 `~/Library/Logs/my-dev-settings/`에 남습니다. 손으로 돌릴 때는 `dev-settings-sync`, 끄려면 `launchctl bootout gui/$(id -u)/com.herrinekim.my-dev-settings.sync`.
+- 로그인할 때마다 자동으로도 돕니다(아래 '자동 동기화').
 - 새 외부 스킬을 들일 때: `vendor.sh`에 받는 줄을, `scripts/gen-skill-docs.py`의 `SOURCES`에 레포와 경로를 추가합니다(원조 링크용).
 - 스킬을 직접 추가·수정했을 때: `python3 scripts/gen-skill-docs.py`만 실행. 각 문서의 GENERATED 표시 위쪽은 손으로 쓴 부분이라 그대로 둡니다.
 
@@ -111,7 +151,7 @@ done
 
 ## MCP 서버
 
-스킬 없이 MCP만 쓰는 것들입니다. `install.sh`가 user 스코프로 등록하고, 키·플러그인처럼 손이 가는 일은 아래처럼 직접 합니다.
+스킬 없이 MCP만 쓰는 서버입니다. `install.sh`가 user 스코프로 등록하고, API 키나 Figma 플러그인처럼 손이 가는 일은 직접 합니다.
 
 | MCP | 내용 | 직접 할 일 | 출처 |
 |---|---|---|---|
