@@ -11,7 +11,7 @@
 | [clone-website](clone-website.md) | 1 | 웹사이트 픽셀 단위 복제 (Next.js + shadcn/ui + Tailwind) |
 | [code-review-graph](code-review-graph.md) | 7 | 코드 지식 그래프(MCP)로 변경 영향 범위만 읽는 리뷰·디버깅·리팩터링 (스킬 7개 + MCP 서버) |
 | [cybersecurity](cybersecurity.md) | 22 | 증거 기반 보안 스킬 묶음 22개 (정찰·취약점·웹/클라우드/모바일 보안·악성코드·위협 헌팅·IR·SOC·로그·암호·공급망·레드/블루/퍼플팀·GRC 등) |
-| [daily-log](daily-log.md) | 1 | 오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록 |
+| [daily-log](daily-log.md) | 2 | 오늘 Claude·GitHub 작업 내역을 노션 업무노트에 기록 |
 | [diagram-design](diagram-design.md) | 1 | 아키텍처·플로차트·시퀀스·ERD 등 40여 종 다이어그램을 에디토리얼 스타일 SVG/HTML로 |
 | [ecc](ecc.md) | 314 | ECC 스킬 314개 (언어·프레임워크 패턴·테스트·보안·에이전트 하네스 등, 에이전트·훅은 제외). 전역에는 6개만 링크 |
 | [es-hangul](es-hangul.md) | 1 | 토스 es-hangul로 조사·초성·자모·숫자 한글화·로마자·키보드 변환을 처리하게 하는 스킬과 API 문서 |

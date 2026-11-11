@@ -192,7 +192,7 @@ Use this skill to run BMad (Breakthrough Method of Agile AI-Driven Development) 
 
 ### `/brand-designer`
 
-Create comprehensive brand identity documentation for any brand. Guides you through documenting strategy, visual identity (logo, color, typography, imagery), voice and tone, application guidelines, governance, and asset inventory. Produces markdown specs, compiled brand books, and brand-compliant images via reference-image-aware generation. Use when you need to capture a brand's identity in structured, durable form — for vault storage, agency handoff, or press kit distribution. Do not use this skill for unrelated requests; route to the nearest named specialist.
+Create comprehensive brand identity documentation for any brand. Guides you through documenting strategy, visual identity (logo, color, typography, imagery), voice and tone, customer-centered messaging handoffs, application guidelines, governance, and asset inventory. Produces markdown specs, compiled brand books, and brand-compliant images via reference-image-aware generation. Use when you need to capture a brand's identity in structured, durable form — for vault storage, agency handoff, or press kit distribution. Do not use for market positioning decisions or conversion experiments; use go-to-market. Route interaction behavior to product-design-and-ux.
 
 - 호출: `/brand-designer` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`
@@ -507,7 +507,7 @@ Use this skill for local FFmpeg/FFprobe media inspection, remuxing, transcoding,
 
 ### `/financial-modeling`
 
-Build and review assumptions-led financial models, unit economics, pricing, fundraising scenarios, and SaaS operating metrics. Use when calculating CAC, LTV, payback, runway, ARR, churn, NDR, Rule of 40, or sales efficiency; when modeling revenue, costs, cash flow, pricing, cap tables, or financing. Do not use this skill for unrelated requests; route to the nearest named specialist.
+Build and review assumptions-led financial models, unit economics, pricing, fundraising scenarios, and SaaS operating metrics. Use when calculating CAC, LTV, payback, runway, ARR, churn, NDR, Rule of 40, or sales efficiency; when modeling revenue, costs, cash flow, outcome-linked partnerships, revenue-share fees, pricing, cap tables, or financing. Do not use this skill for unrelated requests; route to the nearest named specialist.
 
 - 호출: `/financial-modeling` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `evals/`, `references/`, `scripts/`, `templates/`
@@ -615,10 +615,10 @@ Deploy, manage, and troubleshoot self-hosted GitHub Actions runners. Covers syst
 
 ### `/go-to-market`
 
-Plan and evaluate go-to-market strategy using positioning, acquisition, growth economics, market-entry, competitive-response, and governed agent-assisted acquisition experiments. Use for ICP, messaging, channel, CAC/LTV, beachhead, or automated-GTM strategy decisions. Do not use for campaign execution, CRM mutations, legal interpretation, product strategy, or visual brand design.
+Plan and evaluate go-to-market strategy using positioning, acquisition, growth economics, market-entry, competitive-response, and governed agent-assisted acquisition experiments. Use for ICP, customer-centered messaging, website narrative, outcome-linked operating partnerships, channel, CAC/LTV, beachhead, or automated-GTM strategy decisions. Do not use for campaign execution, CRM mutations, legal interpretation, product strategy, or visual brand design.
 
 - 호출: `/go-to-market` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
-- 딸린 폴더: `evals/`, `references/`
+- 딸린 폴더: `evals/`, `references/`, `templates/`
 - 원조 GitHub: [magnus919/agent-skills](https://github.com/magnus919/agent-skills/tree/HEAD/go-to-market)
 - 이 레포 사본: [`plugins/magnus-agent-skills/skills/go-to-market/SKILL.md`](../../plugins/magnus-agent-skills/skills/go-to-market/SKILL.md)
 
@@ -1290,7 +1290,7 @@ Model and analyze Semantic Spacetime (SST) graphs, distances, trajectories, drif
 
 ### `/seo`
 
-Audit and improve website discoverability across traditional search, answer engines, and generative search. Use for technical SEO, on-page content, structured data, question and entity architecture, AI citations, crawler controls, agent-readable content, and reproducible visibility measurement. Do not use for only copy-editing, writing, CMS operations, or generic AI marketing claims without a defined search surface and verification plan.
+Audit and improve website discoverability across traditional search, answer engines, and generative search. Use for technical SEO, on-page content, structured data, question and entity architecture, AI citations, crawler controls, agent-readable content, local/national site portfolios, scaled-content quality, and reproducible visibility measurement. Do not use for only copy-editing, writing, CMS operations, or generic AI marketing claims without a defined search surface and verification plan.
 
 - 호출: `/seo` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 딸린 폴더: `assets/`, `evals/`, `references/`, `scripts/`, `templates/`
