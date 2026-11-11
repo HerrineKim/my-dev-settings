@@ -31,11 +31,11 @@
 
 ## Before and after
 
-The same brief, run more than once, so the difference is visible side by side.
+Each pair below is one brief, run twice, so the difference is visible side by side.
 
 ### UI
 
-antislop alone is not the after. It removes the slop and stops there; direction comes from `DESIGN.md`. For UI work you intend to ship, that file is mandatory: without it the result is labelled a draft without direction. The pair below is the result.
+With /antislop-ui. antislop alone is not the after. It removes the slop and stops there; direction comes from `DESIGN.md`. For UI work you intend to ship, that file is mandatory: without it the result is labelled a draft without direction. The pair below is the result.
 
 | **Before: without antislop** | **After: antislop + `DESIGN.md`** |
 |:--|:--|
@@ -49,21 +49,29 @@ The two partial states are worth seeing, because each one shows why the other ha
 | <a href="assets/compare/ui/w-antislop.webp"><img src="assets/compare/ui/w-antislop.webp" alt="Partial result: antislop with no design direction, a plain dark layout with the invented numbers removed" width="100%"></a> | <a href="assets/compare/ui/w-design.webp"><img src="assets/compare/ui/w-design.webp" alt="Partial result: DESIGN.md with no filter, a photographic hero with stat cards still reading 10,000% ROI Synergy Multiplier" width="100%"></a> |
 | The slop is gone, but so is the direction. That is why antislop needs a `DESIGN.md`. | The direction is there, but honestly it is still far from good: the slop still shows. |
 
-### Copy
+### Copywriting
 
-One prompt, run twice.
+With /antislop-copywriting. One prompt, run twice.
 
-| Before | After |
-|:--|:--|
-| <a href="assets/compare/text/before.webp"><img src="assets/compare/text/before.webp" alt="An AI written Discord launch post: emoji bullet points, NEW DROP in capitals, and hype in every line" width="100%"></a> | <a href="assets/compare/text/after.webp"><img src="assets/compare/text/after.webp" alt="The same launch post written with antislop-copywriting: plain sentences, no emoji bullets, and a note to cut any line with nothing real to say" width="100%"></a> |
+<a href="assets/compare/copywriting/before-after.png"><img src="assets/compare/copywriting/before-after.png" alt="Side by side: before, an AI written Discord launch post with NEW DROP in capitals, emoji bullets, and hype in every line; after, the same post in plain sentences, with a note to cut any line that has nothing real to say" width="100%"></a>
+
+### Accessibility
+
+With /antislop-human. One sign-in form, run twice.
+
+<a href="assets/compare/human/before-after.png"><img src="assets/compare/human/before-after.png" alt="Side by side: before, a sign-in form with pale grey labels, a radio button, and blue body links; after, the same form with darker labels, a checkbox, underlined links, and a solid black button" width="100%"></a>
+
+### Mobile layout
+
+With /antislop-layoutmobile. One dashboard on a phone, run twice.
+
+<a href="assets/compare/layoutmobile/before-after.png"><img src="assets/compare/layoutmobile/before-after.png" alt="Side by side: before, a desktop finance dashboard squeezed onto a phone with a clipped headline and a wide table; after, the same screen with a donut chart, stacked allocation bars, and one readable column" width="100%"></a>
 
 ### Code
 
-One file, run twice.
+With /antislop-code. One file, run twice.
 
-| Before | After |
-|:--|:--|
-| <a href="assets/compare/code/before.webp"><img src="assets/compare/code/before.webp" alt="Python with box-drawing section banners, emoji, and a comment on every constant that restates the constant" width="100%"></a> | <a href="assets/compare/code/after.webp"><img src="assets/compare/code/after.webp" alt="The same Python with the banners and emoji gone, one comment left that says what the module does, and the code itself untouched" width="100%"></a> |
+<a href="assets/compare/code/before-after.png"><img src="assets/compare/code/before-after.png" alt="Side by side: before, Python with box-drawing section banners, emoji, and a comment restating every constant; after, the same code with the banners and emoji gone and one comment left where it says something" width="100%"></a>
 
 Every image here opens full size if you click it.
 
@@ -119,6 +127,20 @@ Then open **Customize**, find **antislop**, and select **Install**.
 
 ```text
 /plugins install https://github.com/miqdadbadjuber/anti-slop
+```
+
+### DeepSeek Harness - Plugin
+
+Open **Plugins**, choose **Add plugin**, paste this package name, and select **Install**:
+
+```text
+antislop-ai
+```
+
+That is the desktop route. From a terminal instead, name the profile you use:
+
+```bash
+dsh plugin --profile desktop add antislop-ai
 ```
 
 ### Cline - Plugin
@@ -205,18 +227,18 @@ A plugin keeps its own copy under the agent that installed it, so it updates thr
 No, a filter. It rejects technique without purpose and requires liveliness. Direction is yours.
 
 **Which agents does it work with?**
-Claude Code, Codex, Antigravity, OpenCode, Cursor, Cline, Amp, Gemini CLI, Hermes, GitHub Copilot, Kimi Code, Pi, and Oh My Pi. The installer covers twelve of them and detects which ones you have, and the plugin doors install from this same repository. [GUIDE.md](GUIDE.md) lists the folder each agent reads.
+Claude Code, Codex, Antigravity, OpenCode, Cursor, Cline, Amp, Gemini CLI, Hermes, GitHub Copilot, Kimi Code, DeepSeek Harness, Pi, and Oh My Pi. The installer covers thirteen of them and detects which ones you have, and the plugin doors install from this same repository. [GUIDE.md](GUIDE.md) lists the folder each agent reads.
 
 **What is a skill?**
 A folder that goes deeper into one concern, holding a `SKILL.md` with its rules. Skills reference the core rules by number and never duplicate them, so adding one does not change the core.
 
 ## Roadmap
 
-**v3.2.26** adds three copywriting patterns to `antislop-copywriting`, from community PR #57:
+**v3.2.28** adds DeepSeek Harness as the eighth plugin door:
 
-- **Temporal runway clichés.** Openings like "in today's fast-paced digital landscape" that set a broad scene before saying an ordinary thing.
-- **Theatrical takeaways.** "Read that again." and "Let that sink in." telling the reader how to react instead of letting the claim stand.
-- **Title case in list elements.** Bullets and feature cards that capitalize every word. Proper nouns and real titles keep their capitals.
+- **One package, two jobs.** `antislop-ai` now also declares a DSH bundle, so Plugins, Add plugin, and `antislop-ai` loads all six skills without copying files.
+- **Bundled rank.** The skills load at the bundled rank, so a folder install of the same skill still wins when both exist.
+- **Installer target.** DeepSeek Harness joins the agent list and reads the shared `.agents/skills` folder.
 
 Every earlier release, and what comes next, is in [ROADMAP.md](ROADMAP.md).
 
@@ -230,7 +252,7 @@ Thanks to everyone who helps make antislop better.
 
 <p align="center">
   <a href="https://github.com/miqdadbadjuber/anti-slop/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=miqdadbadjuber/anti-slop&v=3.2.26" alt="antislop contributors" />
+    <img src="https://contrib.rocks/image?repo=miqdadbadjuber/anti-slop&v=3.2.28" alt="antislop contributors" />
   </a>
 </p>
 
@@ -248,7 +270,7 @@ A beautiful UI is <code>DESIGN.md</code>'s job, and yours.”</em></p>
 
 Get antislop from [miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop), [antislop.ai.id](https://antislop.ai.id), or the [antislop-ai npm package](https://www.npmjs.com/package/antislop-ai). The npm name `antislop` belongs to a different package, so `npx antislop` does not install this project.
 
-There is no antislop coin, token, or fundraise. Any crypto coin, token, NFT, or fundraising that uses the antislop name was not created by this project and is a scam. antislop takes no donations, and nobody is authorized to collect money on its behalf.
+There is no antislop coin, token, or fundraising. Any crypto coin, token, NFT, or fundraising that uses the antislop name was not created by this project and is a scam. antislop accepts donations only through the Sponsor button on this repository and [Saweria](https://saweria.co/antislop); anyone collecting money in its name anywhere else is not authorized.
 
 ## License
 

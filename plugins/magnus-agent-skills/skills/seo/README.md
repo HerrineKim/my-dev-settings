@@ -6,17 +6,23 @@ One umbrella skill for technical SEO, on-page optimization, Answer Engine Optimi
 
 Search visibility now spans ranked results, direct answers, AI Overviews, conversational search, and generated answers. This skill consolidates the former SEO audit and AEO workflows so an agent can inspect the technical foundation, improve human-useful content, implement supported controls, and measure citations and referrals with explicit evidence boundaries.
 
+It also turns business GEO advice into practical identity audits, revenue-aligned topic and proof maps, careful content maintenance, and ethical earned-distribution plans. Video anecdotes and citation statistics retain their limits instead of becoming ranking promises.
+
+It also helps evaluate local, national and multi-site portfolios: whether another site should exist, what makes each page useful, how to verify local business claims, and when a measured pilot justifies expanding. It keeps generated content separate from proven rankings, qualified leads and profit.
+
 ## What You Get
 
 | Path | Purpose |
 |---|---|
 | `SKILL.md` | Umbrella routing, terminology, workflow, evidence rules, and completion boundary |
-| `references/` | Technical SEO, on-page SEO, schema, content strategy, AEO/GEO implementation, provider guidance, agent-readable content, and measurement |
-| `templates/` | Implementation plan, question cluster, citation observation, optional `llms.txt`, and crawler-policy templates |
+| `references/` | Technical SEO, on-page SEO, schema, content strategy, AEO/GEO implementation, provider guidance, agent-readable content, measurement, local/national strategy, portfolio economics, scaled-content quality, business identity, original evidence, content retirement and earned distribution |
+| `templates/` | Implementation plan, question cluster, citation observation, optional `llms.txt`, crawler-policy, site-portfolio, location-evidence, intent-map, rollout-review, identity-audit, topic-proof and content-disposition templates |
 | `scripts/aeo_audit.py` | Read-only structural audit of local HTML or a URL |
 | `scripts/build_prompt_matrix.py` | Deterministic prompt-set generation |
 | `scripts/test_aeo_scripts.py` | Offline regression tests for the scripts |
 | `evals/evals.json` | Output-quality evaluation cases |
+
+Domain architecture decisions, renewal-first economics and search-portfolio collection boundaries are covered in the conditional references and domain decision template.
 
 ## Quick Start
 
@@ -37,6 +43,9 @@ The scripts are read-only and use Python's standard library. They do not call an
 - Assess AI crawler controls, preview controls, sitemaps, freshness, `llms.txt`, Markdown delivery, or content negotiation
 - Design frozen prompt sets, citation logs, share-of-voice checks, or bounded AI-search experiments
 - Complete Ghost metadata, social cards, or schema injection in support of search visibility
+
+- Plan truthful local-service, regional, national or multi-site search portfolios
+- Review programmatic content, lead-generation readiness and evidence-based expansion
 
 ## Requirements
 

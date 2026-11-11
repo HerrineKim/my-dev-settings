@@ -15,7 +15,7 @@
 
 <!-- GENERATED: scripts/gen-skill-docs.py 가 아래를 다시 만든다. 위쪽만 손으로 고친다. -->
 
-## 스킬 목록 (1개)
+## 스킬 목록 (2개)
 
 ### `/daily-log`
 
@@ -25,3 +25,11 @@
 - 딸린 폴더: `scripts/`, `tests/`
 - 원조 GitHub: [HerrineKim/my-dev-settings](https://github.com/HerrineKim/my-dev-settings/tree/HEAD/plugins/daily-log/skills/daily-log) (이 레포에서 만듦)
 - 이 레포 사본: [`plugins/daily-log/skills/daily-log/SKILL.md`](../../plugins/daily-log/skills/daily-log/SKILL.md)
+
+### `/erp-clock-out`
+
+ERP MCP(erp 서버)로 퇴근을 찍고 오늘 업무일지를 함께 남긴다. 오늘 한 업무를 하나씩 제목으로 두고 그 아래 상세 내역을 불릿으로 적으며, 관련 GitHub PR·커밋 링크와 ERP 업무·스토리(티켓) 링크를 빠짐없이 붙인다. "퇴근", "퇴근할게", "퇴근 찍어 줘", "업무일지 쓰고 퇴근", "erp-clock-out" 요청 시 사용. 노션 데일리 회고 기록(daily-log)이나 출근·자리 비움만 바꾸는 요청에는 쓰지 않는다.
+
+- 호출: `/erp-clock-out [일지에 꼭 넣을 내용이나 중심 주제] (생략 가능)` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
+- 원조 GitHub: [HerrineKim/my-dev-settings](https://github.com/HerrineKim/my-dev-settings/tree/HEAD/plugins/daily-log/skills/erp-clock-out) (이 레포에서 만듦)
+- 이 레포 사본: [`plugins/daily-log/skills/erp-clock-out/SKILL.md`](../../plugins/daily-log/skills/erp-clock-out/SKILL.md)
