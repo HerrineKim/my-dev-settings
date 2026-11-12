@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""Pack the global skills (~/.claude/skills links into this repo) as zips for the Claude desktop app.
+
+claude.ai has no public API for personal skills, so the upload itself is done in the browser
+(claude.ai/customize/skills > Skill 추가 > Skill 업로드). This command decides what to upload and
+remembers what was uploaded, so each sync only re-uploads skills whose files changed.
+
+Usage: skills-desktop pack            # zip changed skills into the outbox, print their paths
+       skills-desktop pack --all      # zip every global skill
+       skills-desktop mark NAME...    # record NAME(s) as uploaded (current content hash)
+       skills-desktop status          # pending / uploaded / gone counts and names
+Outbox: ~/Library/Caches/my-dev-settings/desktop-skills/   State: ~/.config/my-dev-settings/desktop-skills.json
+"""
+import hashlib, json, os, re, sys, zipfile
+from pathlib import Path
+
+repo = Path(__file__).resolve().parent.parent
+home = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude"))
+outbox = Path.home() / "Library/Caches/my-dev-settings/desktop-skills"
+state_file = Path.home() / ".config/my-dev-settings/desktop-skills.json"
+skip = {".DS_Store", "__pycache__", ".git", "node_modules"}
+reserved = ("claude", "anthropic")
+
+
+def global_skills():
+    """name -> source dir, for ~/.claude/skills links that point into this repo."""
+    out = {}
+    for link in sorted((home / "skills").iterdir()):
+        target = link.resolve()
+        if link.is_symlink() and target.is_relative_to(repo) and (target / "SKILL.md").is_file():
+            out[link.name] = target
+    return out
+
+
+def files_of(src):
+    for p in sorted(src.rglob("*")):
+        if p.is_file() and not skip.intersection(p.relative_to(src).parts):
+            yield p
+
+
+def digest(src):
+    h = hashlib.sha256()
+    for p in files_of(src):
+        h.update(str(p.relative_to(src)).encode() + b"\0" + p.read_bytes() + b"\0")
+    return h.hexdigest()[:16]
+
+
+desc_re = re.compile(r"^(description:)(.*?)(?=^[\w-]+:|^---)", re.S | re.M)
+
+
+def desktop_skill_md(text):
+    """claude.ai rejects any <...> in the description (e.g. "/note <주제>"), so the uploaded copy uses [...]."""
+    return desc_re.sub(lambda m: m.group(1) + re.sub(r"<([^<>\n]*)>", r"[\1]", m.group(2)), text, count=1)
+
+
+def problems(name, src):
+    """claude.ai upload rules: lowercase/digits/hyphens, <=64 chars, no reserved words, description <=1024 chars."""
+    errs = []
+    if not re.fullmatch(r"[a-z0-9-]{1,64}", name):
+        errs.append("이름은 소문자·숫자·하이픈, 64자 이내")
+    if any(w in name for w in reserved):
+        errs.append("이름에 claude/anthropic 금지")
+    m = desc_re.search((src / "SKILL.md").read_text(encoding="utf-8"))
+    desc = " ".join(m.group(2).split()).strip("\"'>|- ") if m else ""
+    if not desc:
+        errs.append("description 없음")
+    elif len(desc) > 1024:
+        errs.append(f"description {len(desc)}자(1024 초과)")
+    return errs
+
+
+def pack(name, src):
+    outbox.mkdir(parents=True, exist_ok=True)
+    dest = outbox / f"{name}.zip"
+    with zipfile.ZipFile(dest, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in files_of(src):
+            arc = f"{name}/{p.relative_to(src)}"
+            if p == src / "SKILL.md":
+                z.writestr(arc, desktop_skill_md(p.read_text(encoding="utf-8")))
+            else:
+                z.write(p, arc)
+    return dest
+
+
+def load_state():
+    try:
+        return json.loads(state_file.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def save_state(state):
+    state_file.parent.mkdir(parents=True, exist_ok=True)
+    state_file.write_text(json.dumps(dict(sorted(state.items())), indent=2) + "\n")
+
+
+def main(argv):
+    cmd, args = (argv[0], argv[1:]) if argv else ("status", [])
+    skills, state = global_skills(), load_state()
+    if cmd == "pack":
+        for old in outbox.glob("*.zip"):
+            old.unlink()
+        bad = 0
+        for name, src in skills.items():
+            if "--all" not in args and state.get(name) == digest(src):
+                continue
+            errs = problems(name, src)
+            if errs:
+                bad += 1
+                print(f"! {name}: {', '.join(errs)}", file=sys.stderr)
+                continue
+            print(pack(name, src))
+        return 1 if bad else 0
+    if cmd == "mark":
+        unknown = [n for n in args if n not in skills]
+        if unknown:
+            print(f"! 전역 스킬이 아님: {' '.join(unknown)}", file=sys.stderr)
+            return 1
+        for n in args:
+            state[n] = digest(skills[n])
+        save_state(state)
+        print(f"uploaded로 기록: {len(args)}개")
+        return 0
+    if cmd == "status":
+        pending = [n for n, s in skills.items() if state.get(n) != digest(s)]
+        gone = sorted(set(state) - set(skills))
+        print(f"전역 {len(skills)}개 · 업로드 필요 {len(pending)}개 · 전역에서 빠짐 {len(gone)}개")
+        if pending:
+            print("업로드 필요:", " ".join(pending))
+        if gone:
+            print("claude.ai에서 지울 후보(skills-desktop forget NAME으로 기록 삭제):", " ".join(gone))
+        return 0
+    if cmd == "forget":
+        for n in args:
+            state.pop(n, None)
+        save_state(state)
+        return 0
+    print(__doc__, file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

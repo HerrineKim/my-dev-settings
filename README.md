@@ -16,6 +16,7 @@
 - [마켓플레이스 플러그인](#마켓플레이스-플러그인)
 - [daily-log](#daily-log)
 - [앱 맞추기](#앱-맞추기)
+- [Claude 데스크톱 업로드](#claude-데스크톱-업로드)
 - [전역 CLAUDE.md](#전역-claudemd)
 - [이름 변경 후 옮기기](#이름-변경-후-옮기기)
 
@@ -31,7 +32,7 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 
 `install.sh`가 하는 일(여러 번 실행해도 안전)
 - `plugins/*/skills/*`를 `~/.claude/skills`에 링크(`/<스킬 이름>`으로 호출). 레포에서 빠진 스킬의 끊어진 링크는 지움. `skills-exclude`에 적은 플러그인은 링크하지 않고 이미 걸린 링크도 뺌(레포에는 그대로 있어 줄을 지우면 돌아옴). `!플러그인/스킬` 줄은 뺀 플러그인 안에서 그 스킬만 링크
-- `bin/`의 `skills-ls`, `apps-sync`, `rmbg`, `dev-settings-sync`를 `~/.local/bin`에 링크
+- `bin/`의 `skills-ls`, `skills-desktop`, `apps-sync`, `rmbg`, `dev-settings-sync`를 `~/.local/bin`에 링크
 - 로그인할 때마다 `dev-settings-sync`를 한 번 실행하는 LaunchAgent 등록(아래 '자동 동기화')
 - `~/.claude/CLAUDE.md` 끝에 `global-claude.md`를 불러오는 블록 추가(아래 '전역 CLAUDE.md')
 - MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`는 `skills-exclude`에 있을 때, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않을 때 등록하지 않고, 이미 등록돼 있으면 지움
@@ -193,9 +194,26 @@ apps-sync diff     # 이 맥에는 있는데 Brewfile에 없는 brew·App Store 
 
 새 앱을 깔았으면 `apps-sync diff`로 나온 줄을 Brewfile에 옮기고 커밋·푸시합니다. 다른 맥에서는 `git pull` 후 `apps-sync`. App Store 앱은 App Store에 로그인돼 있어야 설치됩니다. 은행·공공 사이트 보안 프로그램은 사이트가 알아서 설치하므로 목록에서 뺐습니다.
 
+## Claude 데스크톱 업로드
+
+전역 스킬(`~/.claude/skills`에서 이 레포를 가리키는 링크)을 Claude 데스크톱·claude.ai의 개인 스킬(사용자 지정 > Skills > 내 Skills)에도 똑같이 올립니다. claude.ai에는 개인 스킬용 공개 API가 없어 업로드는 브라우저로 하고, `skills-desktop`이 무엇을 올릴지와 무엇을 올렸는지를 관리합니다. 전역 CLAUDE.md 규칙에 따라 스킬을 맞추는 작업마다 Claude가 이 절차를 함께 돌립니다.
+
+```bash
+skills-desktop status        # 전역 스킬 수, 업로드가 필요한 것, 전역에서 빠진 것
+skills-desktop pack          # 바뀐 스킬만 ~/Library/Caches/my-dev-settings/desktop-skills/에 zip으로
+skills-desktop pack --all    # 전부 다시
+skills-desktop mark 이름…     # 올린 스킬을 현재 내용 해시로 기록(~/.config/my-dev-settings/desktop-skills.json)
+skills-desktop forget 이름…   # claude.ai에서 지운 스킬의 기록 삭제
+```
+
+- 업로드 규칙: 이름은 소문자·숫자·하이픈 64자 이내, `claude`·`anthropic` 금지, description 1,024자 이내. `pack`이 어긋난 스킬을 `!`로 알리고 건너뜁니다.
+- claude.ai는 description 안의 `<…>`를 XML 태그로 보고 거부하므로(예: `/note <주제>`), zip 안의 `SKILL.md`만 `[…]`로 바꿔 넣습니다. 레포 원본은 그대로입니다.
+- 브라우저 업로드: Chrome에서 `claude.ai/customize/skills`를 열고 'Skill 추가 > Skill 업로드'로 zip을 하나씩 올려도 되고, 많을 때는 페이지에 `<input type=file multiple>`을 붙여 zip을 넣은 뒤 각 파일을 `POST /api/organizations/<조직 ID>/skills/upload-skill?overwrite=true&upload_source=customize_upload`(multipart 필드 `file`)로 보냅니다. `overwrite=true`면 같은 이름 스킬을 새 버전으로 덮습니다. HTTP 200이어도 `skill`이 `null`이고 `validation_errors`가 있으면 실패이니 응답 본문을 확인하고, 성공한 것만 `mark`합니다.
+- 로그인 때 도는 `dev-settings-sync`는 브라우저를 쓰지 못하므로 업로드가 필요한 스킬 수만 알림에 덧붙입니다.
+
 ## 전역 CLAUDE.md
 
-모든 프로젝트에 적용할 공통 지시(riverlog 확인, em dash 금지, Mermaid 다이어그램, TDD & Tidy First)는 `global-claude.md`에 있습니다. `~/.claude/CLAUDE.md`에는 oh-my-claudecode가 관리하는 블록과 이 import 블록만 두고, 직접 쓰는 지시는 이 파일에 적습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 수정은 `git pull`만으로 반영됩니다.
+모든 프로젝트에 적용할 공통 지시(riverlog 확인, em dash 금지, Mermaid 다이어그램, 전역 스킬의 Claude 데스크톱 업로드, TDD & Tidy First)는 `global-claude.md`에 있습니다. `~/.claude/CLAUDE.md`에는 oh-my-claudecode가 관리하는 블록과 이 import 블록만 두고, 직접 쓰는 지시는 이 파일에 적습니다. `install.sh`가 `~/.claude/CLAUDE.md` 끝에 이 파일을 불러오는 `@…/global-claude.md` 한 줄(마커로 감싼 블록)을 한 번만 추가하므로, 이후 수정은 `git pull`만으로 반영됩니다.
 
 ## 이름 변경 후 옮기기
 
