@@ -7,6 +7,9 @@
 ## 다이어그램: Mermaid로
 문서·노트·README·PR 본문에서 흐름, 순서, 구성 요소 연결, 상태 전이, 개념 계층처럼 그래프인 그림은 항상 ` ```mermaid ` 블록으로 그린다(`flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `timeline`, `quadrantChart`, `gitGraph`). 선 문자(├ └ │ ─ ▶)나 화살표로 그린 ASCII 그림은 쓰지 않는다. 라벨은 큰따옴표로 감싸고 색·`classDef`는 넣지 않는다. 파일·폴더 트리, 수식, 터미널 출력처럼 그래프가 아닌 것은 텍스트 블록으로 둔다.
 
+## 전역 스킬 → Claude 데스크톱 업로드
+my-dev-settings와 전역 스킬(`~/.claude/skills`)을 맞출 때마다(스킬 추가·수정·삭제, `vendor.sh`, `install.sh`) 같은 작업 안에서 Claude 데스크톱(claude.ai) 개인 스킬도 갱신한다. `skills-desktop pack`으로 바뀐 스킬만 zip을 만들고, my-dev-settings README의 'Claude 데스크톱 업로드' 절차대로 claude.ai에 올린 뒤 성공한 것만 `skills-desktop mark 이름…`으로 기록한다. `skills-desktop status`가 "전역에서 빠짐"으로 보여 주는 스킬은 claude.ai에서 지울지 사용자에게 먼저 묻는다.
+
 ## TDD & Tidy First (Kent Beck)
 
 Applies whenever writing or changing code. Works alongside OMC's `tdd` skill/keyword (that skill governs seams and test doubles; this section governs the cycle and commits).

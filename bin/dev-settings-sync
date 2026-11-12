@@ -50,5 +50,9 @@ if command -v brew >/dev/null; then
   [ -n "$extra" ] && summary+=("Brewfile에 없는 설치 앱: $extra")
 fi
 
+# Skills changed since the last Claude desktop upload (uploading needs the browser, so only report the count).
+pending="$("$repo/bin/skills-desktop" status 2>/dev/null | sed -n 's/.*업로드 필요 \([0-9]*\)개.*/\1/p')"
+[ -n "$pending" ] && [ "$pending" != 0 ] && summary+=("Claude 데스크톱에 올릴 스킬 ${pending}개(skills-desktop status)")
+
 printf '%s\n' "${summary[@]}"
 notify "$(IFS='; '; echo "${summary[*]}")"
