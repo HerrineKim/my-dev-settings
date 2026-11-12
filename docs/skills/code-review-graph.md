@@ -25,7 +25,7 @@ Tree-sitter로 코드 구조를 그래프(SQLite)로 만들어 두고, 리뷰·�
 
 ### `/build-graph`
 
-Build or update the code review knowledge graph. Run this first to initialize, or let hooks keep it updated automatically.
+Build or update the code review knowledge graph. Run this first to initialise, or let hooks keep it updated automatically.
 
 - 호출: `/build-graph [full]` 또는 설명에 맞는 요청을 하면 자동으로 쓰임
 - 원조 GitHub: [tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph/tree/HEAD/skills/build-graph)
