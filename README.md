@@ -63,7 +63,7 @@ rmbg photo.jpg --type mask --model small  # 마스크만, 작은 모델로 빠�
 `install.sh`가 LaunchAgent(`com.herrinekim.my-dev-settings.sync`)를 등록해, 로그인할 때마다 `dev-settings-sync --boot`가 한 번 돕니다.
 
 1. 네트워크가 잡힐 때까지 기다린 뒤 `brew update && brew upgrade`
-2. 레포가 변경 없는 `main`이면 `git pull --ff-only` 후 `vendor.sh`. 바뀐 게 있으면 로컬 `chore/vendor-update-<날짜>` 브랜치에 커밋하고 `main`으로 돌아옴. push는 하지 않으니 브랜치를 확인하고 직접 PR을 올림
+2. 레포가 변경 없는 `main`이면 `git pull --ff-only` 후 `vendor.sh`. 바뀐 게 있으면 `chore/vendor-update-<날짜>` 브랜치에 커밋하고 `main`으로 돌아온 뒤, 브랜치를 push하고 `gh`로 PR을 엶. push나 PR이 실패하면 커밋은 로컬 브랜치에 남으니 직접 올림
 3. Brewfile에 없는 설치 앱이 있으면 알려 줌
 
 레포가 다른 브랜치에 있거나 커밋하지 않은 변경이 있으면 2번은 건너뜁니다. 결과는 macOS 알림과 `~/Library/Logs/my-dev-settings/`에 남습니다.
