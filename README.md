@@ -2,8 +2,28 @@
 
 맥마다 맞춰 두는 개발 환경 설정: Claude Code 스킬·MCP·마켓플레이스 플러그인, 전역 CLAUDE.md, 설치 앱 목록(`apps/Brewfile`), 전역 npm 패키지(`apps/npm-globals`).
 
+새 맥에서는 `install.sh` 한 번과 `apps-sync` 한 번이면 같은 환경이 됩니다. 이후에는 `git pull`과 로그인 때 도는 `dev-settings-sync`가 맥끼리 맞춰 줍니다.
+
+## 한눈에 보기
+
+```mermaid
+flowchart LR
+  repo["이 레포"] -->|"install.sh"| skills["~/.claude/skills 링크"]
+  repo -->|"install.sh"| mcp["MCP 서버·마켓플레이스 플러그인 (user 스코프)"]
+  repo -->|"install.sh"| claudemd["~/.claude/CLAUDE.md import"]
+  repo -->|"install.sh"| bin["~/.local/bin 명령"]
+  repo -->|"apps-sync"| apps["Brewfile 앱·전역 npm"]
+  login["로그인"] -->|"LaunchAgent"| sync["dev-settings-sync"]
+  sync -->|"brew upgrade"| apps
+  sync -->|"vendor.sh"| upstream["외부 스킬 원본 레포"]
+  upstream -->|"변경 PR"| repo
+  skills -->|"skills-desktop pack"| desktop["claude.ai 개인 스킬"]
+```
+
 ## 목차
 
+- [한눈에 보기](#한눈에-보기)
+- [레포 구조](#레포-구조)
 - [설치와 업데이트](#설치와-업데이트)
 - [명령어](#명령어)
 - [자동 동기화](#자동-동기화)
@@ -19,8 +39,33 @@
 - [Claude 데스크톱 업로드](#claude-데스크톱-업로드)
 - [전역 CLAUDE.md](#전역-claudemd)
 - [이름 변경 후 옮기기](#이름-변경-후-옮기기)
+- [문제 해결](#문제-해결)
+- [되돌리기](#되돌리기)
+- [스크립트 고치기와 테스트](#스크립트-고치기와-테스트)
+
+## 레포 구조
+
+```text
+install.sh              맥 설정 전체(스킬 링크, MCP, 플러그인, CLAUDE.md, 훅, LaunchAgent). 단계별 함수, 맨 아래 main
+vendor.sh               외부 스킬을 원본 레포에서 다시 받아 plugins/·docs/upstream/·mcp/를 갱신
+skills-exclude          전역 링크에서 뺄 플러그인과 예외(!플러그인/스킬)
+global-claude.md        모든 프로젝트에 적용할 공통 지시(~/.claude/CLAUDE.md가 import)
+bin/                    ~/.local/bin에 링크되는 명령(apps-sync, dev-settings-sync, skills-ls, skills-desktop, rmbg)
+plugins/<플러그인>/      스킬 묶음. 직접 만든 것과 외부에서 벤더링한 것이 섞여 있음(아래 '플러그인 목록'의 출처 열)
+mcp/financial-datasets/ 벤더링한 MCP 서버
+apps/                   Brewfile, npm-globals, manual.md(설치 도구로 못 까는 앱)
+docs/skills/            플러그인별 사용 문서(scripts/gen-skill-docs.py가 GENERATED 아래를 다시 만듦)
+docs/upstream/          외부 레포의 사용 문서 원문(vendor.sh가 복사)
+scripts/                문서 생성 스크립트
+tests/                  install.sh 테스트(가짜 HOME과 가짜 claude·gh·launchctl로 실행)
+.claude-plugin/         플러그인 방식 설치용 마켓플레이스 정의
+```
+
+외부에서 벤더링한 파일(`plugins/`의 외부 플러그인, `mcp/`, `docs/upstream/`)은 손으로 고치지 않습니다. `vendor.sh`가 다음 동기화 때 원본으로 덮어씁니다. 바꿀 것이 있으면 `vendor.sh` 안의 후처리(이름 접두어, preamble 끼워 넣기 등)로 합니다.
 
 ## 설치와 업데이트
+
+필요한 것: macOS, Homebrew, GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(oh-my-claudecode·career-ops 플러그인용), Claude Code CLI. android-reverse-engineering에는 Java·jadx 등이 더 필요합니다. Homebrew 말고는 모두 Brewfile에 있어 `apps-sync`로 설치됩니다(Java는 jadx 의존성으로 함께 들어옴). Claude CLI가 없을 때 `install.sh`는 MCP·플러그인 단계만 건너뛰고 나머지를 마치므로, `apps-sync` 뒤에 `install.sh`를 한 번 더 돌리면 됩니다.
 
 ```bash
 git clone https://github.com/HerrineKim/my-dev-settings.git ~/Projects/my-dev-settings
@@ -38,8 +83,9 @@ apps-sync                               # 앱 설치(아래 '앱 맞추기')
 - MCP 서버 `code-review-graph`, `korean-law`, `front-end-checklist`를 user 스코프로 등록. `/pdf-to-wiki`용 `nlm` CLI를 `uv tool install notebooklm-mcp-cli`로 받고 `gemini-notebook-mcp`를 등록(로그인 `nlm login`은 직접). `financial-datasets`, `figma-bridge`도 등록(아래 'MCP 서버'). `korean-law`는 `skills-exclude`에 있을 때, `front-end-checklist`는 `frontend-checklist-global`을 전역 링크하지 않을 때 등록하지 않고, 이미 등록돼 있으면 지움
 - 외부 마켓플레이스 플러그인 `oh-my-claudecode`, `vercel`, `figma`, `frontend-design`, `career-ops`를 user 스코프로 설치(아래 '마켓플레이스 플러그인')
 - `/daily-log`용 훅 등록과 iCloud Drive 공유 폴더 생성(아래 'daily-log')
+- 예전 이름(`my-claude-skills`)으로 받아 둔 레포의 git remote를 새 주소로 바꿈(아래 '이름 변경 후 옮기기')
 
-필요한 것: GitHub CLI(`brew install gh && gh auth login`), Python 3(macOS 기본, 외부 패키지 없음), uv(code-review-graph MCP·nlm용), Node.js(oh-my-claudecode·career-ops 플러그인용). android-reverse-engineering에는 Java·jadx 등이 더 필요합니다. 모두 Brewfile에 있어 `apps-sync`로 설치됩니다(Java는 jadx 의존성으로 함께 들어옴).
+`!`로 시작하는 줄은 직접 할 일입니다(아래 '문제 해결').
 
 ## 명령어
 
@@ -102,7 +148,7 @@ launchctl bootout gui/$(id -u)/com.herrinekim.my-dev-settings.sync    # 자동 �
 
 | 플러그인 | 내용 | 출처 |
 |---|---|---|
-| `daily-log` | 오늘 Claude Code 작업과 GitHub 반영 내역을 노션 업무 회고에 기록 | 직접 만듦 |
+| `daily-log` (2) | `/daily-log`: 오늘 Claude Code 작업과 GitHub 반영 내역을 노션 업무 회고에 기록. `/erp-clock-out`: ERP MCP로 퇴근을 찍으며 업무별 일지와 PR·커밋·티켓 링크를 남김(ERP MCP 서버 `erp`가 등록돼 있어야 함) | 직접 만듦 |
 | `tdd-tidy-first` | Kent Beck식 TDD + Tidy First(plan.md "go" 워크플로) | 직접 만듦 |
 | `riverlog-knowledge` | 새 작업(개발·디자인·리뷰·문서·글쓰기·조사) 전에 [riverlog](https://github.com/HerrineKim/riverlog) 지식 창고 노트 참고. 로컬 사본이 없으면 `~/.cache/riverlog`로 받음 | 직접 만듦 |
 | `figma-artifact-import` | HTML 프로토타입 화면 수십~수백 개를 Figma MCP로 편집 가능한 레이어로 옮김 | 직접 만듦 |
@@ -134,7 +180,11 @@ launchctl bootout gui/$(id -u)/com.herrinekim.my-dev-settings.sync    # 자동 �
 
 - 최신으로 다시 받기: `./vendor.sh` 실행 → `git diff` 확인 → 커밋. 스킬과 함께 `docs/upstream/`을 다시 복사하고 `docs/skills/`도 다시 만듭니다.
 - 로그인할 때마다 자동으로도 돕니다(아래 '자동 동기화').
-- 새 외부 스킬을 들일 때: `vendor.sh`에 받는 줄을, `scripts/gen-skill-docs.py`의 `SOURCES`에 레포와 경로를 추가합니다(원조 링크용).
+- 새 외부 스킬을 들일 때: `vendor.sh`에 받는 줄을, `scripts/gen-skill-docs.py`의 `SOURCES`에 레포와 경로를 추가합니다(원조 링크용). `vendor.sh`의 받는 방법은 세 가지입니다.
+  - `fetch <플러그인> <패키지> <스킬>`: `npx skills add`로 받을 수 있는 레포
+  - `fetch_built <플러그인> <레포>`: 레포 안에 `plugins/<플러그인>/skills`로 미리 빌드된 Claude 플러그인이 있을 때
+  - `vendor_tree <플러그인> <레포> <폴더>... -- <파일>...`: 폴더를 통째로 복사하고 라이선스 같은 파일을 플러그인 루트에 둘 때
+  - 사용 문서 원문은 `upstream_docs <플러그인> <레포> <경로>...`로 `docs/upstream/`에 복사합니다.
 - 스킬을 직접 추가·수정했을 때: `python3 scripts/gen-skill-docs.py`만 실행. 각 문서의 GENERATED 표시 위쪽은 손으로 쓴 부분이라 그대로 둡니다.
 
 ### 플러그인으로 설치하는 방법(대안)
@@ -174,6 +224,8 @@ done
 업데이트는 `claude plugin marketplace update <마켓플레이스>` 뒤 `claude plugin update <플러그인@마켓플레이스>`(예: `career-ops`, `career-ops@career-ops`), 또는 데스크톱 앱에서 마켓플레이스의 **Sync automatically**를 켭니다.
 
 ## daily-log
+
+같은 플러그인의 `/erp-clock-out`은 회사 ERP(MCP 서버 `erp`)에 퇴근을 찍고 업무일지를 남깁니다. 노션 회고와는 별개라 둘 다 쓰려면 각각 부릅니다.
 
 `/daily-log`는 오늘(00:00~실행 시각) Claude Code 작업과 GitHub 반영 내역(push·PR·리뷰·이슈)을 노션 "2026 데일리 업무 회고"의 날짜별 페이지에 기록합니다. 같은 날 다시 실행하면 같은 기기의 마지막 기록 이후만 이어 씁니다.
 
@@ -225,3 +277,46 @@ mv ~/Projects/my-claude-skills ~/Projects/my-dev-settings
 ```
 
 `install.sh`가 git remote를 새 주소로 바꾸고, 스킬 링크를 새 폴더로 다시 걸고, `~/.claude/CLAUDE.md`의 옛 import 블록을 새 블록으로 바꿉니다. 플러그인 방식으로 설치했다면 `claude plugin marketplace add HerrineKim/my-dev-settings`로 다시 추가합니다.
+
+## 문제 해결
+
+선택 단계(MCP·플러그인 설치, 로그인 확인, 기록 동기화, LaunchAgent 등록)는 실패해도 멈추지 않고 `!` 줄이나 오류만 남긴 채 다음 단계로 갑니다. 스킬·명령 링크나 `~/.claude/settings.json` 읽기가 실패하면 그 자리에서 멈추니, 오류를 고치고 다시 실행합니다. 자주 보는 메시지와 할 일입니다.
+
+| 메시지 | 할 일 |
+|---|---|
+| `skip <이름>: … exists and is not a symlink` | `~/.claude/skills/<이름>`에 직접 만든 폴더가 있어 덮지 않았습니다. 그 폴더를 옮기거나 지우고 `install.sh`를 다시 실행 |
+| `! PATH에 ~/.local/bin 추가 필요` | 안내된 `export PATH=…` 줄을 `~/.zshrc`에 넣고 새 터미널 |
+| `! claude CLI 없음` | `apps-sync`로 Claude Code를 설치한 뒤 `install.sh` 다시 실행 |
+| `! NotebookLM 로그인 필요` | `nlm login`(2~4주마다 만료) |
+| `! financial-datasets API 키 필요` | `~/.config/financial-datasets/.env`에 키 입력 |
+| `! iCloud Drive 폴더가 없어 …` | iCloud Drive를 켜거나 `plugins/daily-log/skills/daily-log/config.json`의 `shared_dir`를 바꾸고 다시 실행 |
+| `! gh 로그인 필요` | `gh auth login`. `dev-settings-sync`의 PR 열기에도 필요 |
+| 알림에 `레포가 main이 아니거나 변경이 있어 …` | 작업 중인 브랜치·변경을 정리하고 `main`으로 돌아오면 다음 로그인부터 다시 돔. 바로 돌리려면 `dev-settings-sync` |
+| 알림에 `push·PR 실패` | 로컬 `chore/vendor-update-<날짜>` 브랜치를 직접 push하고 PR 열기 |
+
+로그: `~/Library/Logs/my-dev-settings/sync-<날짜>.log`(동기화), `~/Library/Logs/my-dev-settings/launchd.log`(LaunchAgent).
+
+## 되돌리기
+
+`install.sh`가 만든 것만 지웁니다. 레포와 앱은 그대로 둡니다.
+
+```bash
+find ~/.claude/skills -maxdepth 1 -type l -lname "$HOME/Projects/my-dev-settings/*" -delete   # 스킬 링크
+find ~/.local/bin -maxdepth 1 -type l -lname "$HOME/Projects/my-dev-settings/*" -delete       # 명령 링크
+launchctl bootout gui/$(id -u)/com.herrinekim.my-dev-settings.sync                            # 자동 동기화 끄기
+rm ~/Library/LaunchAgents/com.herrinekim.my-dev-settings.sync.plist
+```
+
+`~/.claude/CLAUDE.md`의 `<!-- MY-DEV-SETTINGS:START -->`~`END` 블록과 `~/.claude/settings.json`의 `sync_transcripts.py` 훅은 손으로 지웁니다. MCP는 `claude mcp remove -s user <이름>`, 마켓플레이스 플러그인은 `claude plugin uninstall <플러그인@마켓플레이스>`로 뺍니다.
+
+## 스크립트 고치기와 테스트
+
+- `install.sh`는 단계마다 함수(`link_skills`, `register_mcps`, `install_marketplace_plugins`, `link_commands`, `import_global_claude_md`, `setup_daily_log`, `register_sync_agent` 등)이고 맨 아래 `main`이 순서대로 부릅니다. 새 MCP는 `register_mcps`에 `ensure_mcp <이름> --url <주소>` 또는 `ensure_mcp <이름> -- <명령>…` 한 줄로 더하고, 스킬과 짝인 MCP는 `is_excluded <플러그인> [스킬]`로 감싸 `drop_mcp`와 나눕니다.
+- `install.sh`를 고친 뒤에는 테스트를 돌립니다. 임시 HOME에서 가짜 `claude`·`gh`·`launchctl`·`nlm`·`uv`로 두 번 실행해 링크·MCP 등록·CLAUDE.md·훅·LaunchAgent를 확인하고, 실제 `~/.claude`나 네트워크는 건드리지 않습니다.
+
+```bash
+tests/install.test.sh                          # 결과만
+TEST_SANDBOX=/tmp/install-test tests/install.test.sh   # 샌드박스(출력·호출 기록)를 남겨서 보기
+```
+
+- `vendor.sh`는 네트워크로 원본을 받으므로 테스트가 없습니다. 고친 뒤에는 한 번 돌려 `git diff --stat`으로 의도한 곳만 바뀌었는지 보고, 확인했으면 커밋하거나 `git checkout -- plugins docs mcp && git clean -fd -- plugins docs mcp`로 되돌립니다. 이 되돌리기는 세 폴더의 커밋하지 않은 변경을 모두 버리므로, 직접 고치던 것이 있으면 먼저 커밋하거나 `git stash`합니다.

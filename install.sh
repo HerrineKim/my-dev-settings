@@ -1,94 +1,120 @@
 #!/usr/bin/env bash
-# Link every skill in this repo into ~/.claude/skills so it runs as /<skill-name>.
-# Safe to re-run; `git pull` afterwards updates all machines' skills in place.
+# Set up this Mac from the repo: link skills and commands, register MCP servers, marketplace plugins, the global
+# CLAUDE.md import, daily-log hooks and the login-time sync. Safe to re-run; `git pull` updates linked skills in place.
+# Each step is a function below; `main` at the bottom runs them in order. Test: tests/install.test.sh
+# Optional steps end with `return 0`: under `set -e`, a function whose last `a && b` fails would stop the whole script.
 set -euo pipefail
 repo="$(cd "$(dirname "$0")" && pwd)"
 claude_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
-dest="$claude_dir/skills"
-mkdir -p "$dest"
+
+# --- skills-exclude ----------------------------------------------------------------------------------------
 # Plugins listed in skills-exclude stay in the repo but are not linked globally (their skill list costs context every session).
 # A `!plugin/skill` line links just that skill of an excluded plugin anyway.
 excluded=" $(sed 's/#.*//' "$repo/skills-exclude" 2>/dev/null | grep -v '^ *!' | xargs) "
 kept=" $(sed 's/#.*//' "$repo/skills-exclude" 2>/dev/null | sed -n 's/^ *!//p' | xargs) "
-for skill in "$repo"/plugins/*/skills/*/; do
-  name="$(basename "$skill")"
-  target="$dest/$name"
-  plugin="${skill#"$repo"/plugins/}"; plugin="${plugin%%/*}"
-  case "$excluded" in *" $plugin "*)
-    case "$kept" in *" $plugin/$name "*) ;; *)
-      if [ -L "$target" ] && [ "$(readlink "$target")" = "${skill%/}" ]; then rm "$target"; echo "unlinked excluded /$name"; fi
-      continue;;
-    esac;;
-  esac
-  if [ -e "$target" ] && [ ! -L "$target" ]; then
-    echo "skip $name: $target exists and is not a symlink" >&2; continue
-  fi
-  ln -sfn "${skill%/}" "$target"
-  echo "linked /$name -> ${skill%/}"
-done
-# Drop links to skills that were removed from this repo (only links pointing into it, so others are left alone).
-for link in "$dest"/*; do
-  [ -L "$link" ] && [ ! -e "$link" ] || continue
-  case "$(readlink "$link")" in "$repo"/plugins/*) rm "$link"; echo "removed stale /$(basename "$link")";; esac
-done
 
-# MCP servers some vendored skills call (code-review-graph, korean-law, front-end-checklist), registered once at user scope.
-if command -v claude >/dev/null; then
-  claude mcp get code-review-graph >/dev/null 2>&1 || {
+is_excluded() { # <plugin> [skill]: the plugin is excluded and the skill (if given) has no `!plugin/skill` line
+  case "$excluded" in *" $1 "*) ;; *) return 1;; esac
+  if [ -n "${2:-}" ]; then case "$kept" in *" $1/$2 "*) return 1;; esac; fi
+  return 0
+}
+
+# --- MCP helpers (user scope) ------------------------------------------------------------------------------
+has_mcp() { claude mcp get "$1" >/dev/null 2>&1; }
+
+ensure_mcp() { # <name> (--url <url> | -- <command>...): register unless already there
+  local name="$1"; shift
+  has_mcp "$name" && return 0
+  if [ "$1" = --url ]; then
+    claude mcp add -s user --transport http "$name" "$2" >/dev/null && echo "added MCP $name (user)"
+  else
+    claude mcp add -s user "$name" "$@" >/dev/null && echo "added MCP $name (user)"
+  fi
+  return 0
+}
+
+drop_mcp() { # <name>: unregister if present (its skill is excluded)
+  if has_mcp "$1"; then claude mcp remove -s user "$1" >/dev/null && echo "removed MCP $1 (excluded)"; fi
+  return 0
+}
+
+# --- steps -------------------------------------------------------------------------------------------------
+link_skills() { # plugins/*/skills/* -> ~/.claude/skills/<name>, so each runs as /<name>
+  local dest="$claude_dir/skills" skill name target plugin link
+  mkdir -p "$dest"
+  for skill in "$repo"/plugins/*/skills/*/; do
+    name="$(basename "$skill")"
+    target="$dest/$name"
+    plugin="${skill#"$repo"/plugins/}"; plugin="${plugin%%/*}"
+    if is_excluded "$plugin" "$name"; then
+      if [ -L "$target" ] && [ "$(readlink "$target")" = "${skill%/}" ]; then rm "$target"; echo "unlinked excluded /$name"; fi
+      continue
+    fi
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+      echo "skip $name: $target exists and is not a symlink" >&2; continue
+    fi
+    ln -sfn "${skill%/}" "$target"
+    echo "linked /$name -> ${skill%/}"
+  done
+  # Drop links to skills that were removed from this repo (only links pointing into it, so others are left alone).
+  for link in "$dest"/*; do
+    [ -L "$link" ] && [ ! -e "$link" ] || continue
+    case "$(readlink "$link")" in "$repo"/plugins/*) rm "$link"; echo "removed stale /$(basename "$link")";; esac
+  done
+}
+
+register_mcps() { # MCP servers some vendored skills call, plus MCP-only servers (README 'MCP 서버')
+  has_mcp code-review-graph || {
     command -v uvx >/dev/null || echo "! code-review-graph MCP는 uv가 필요: brew install uv"
     claude mcp add -s user code-review-graph -- uvx code-review-graph serve >/dev/null && echo "added MCP code-review-graph (user)"; }
+
   # 법제처 키 없이 공용 한도로 연결. 본인 키는 docs/skills/korean-law.md 참고. skills-exclude에 있으면 등록하지 않고 지움.
-  case "$excluded" in
-    *" korean-law "*) claude mcp get korean-law >/dev/null 2>&1 && \
-      claude mcp remove -s user korean-law >/dev/null && echo "removed MCP korean-law (excluded)";;
-    *) claude mcp get korean-law >/dev/null 2>&1 || {
-      claude mcp add -s user --transport http korean-law https://mcp.gomdori.app/law >/dev/null && echo "added MCP korean-law (user)"; };;
-  esac
+  if is_excluded korean-law; then drop_mcp korean-law; else ensure_mcp korean-law --url https://mcp.gomdori.app/law; fi
+
   # /frontend-checklist-global이 규칙을 이 원격 MCP로 찾는다. 그 스킬을 전역 링크할 때만 등록하고, 아니면 지움.
-  want_fec=yes
-  case "$excluded" in *" front-end-checklist "*)
-    case "$kept" in *" front-end-checklist/frontend-checklist-global "*) ;; *) want_fec=no;; esac;;
-  esac
-  if [ "$want_fec" = yes ]; then
-    claude mcp get front-end-checklist >/dev/null 2>&1 || {
-      claude mcp add -s user --transport http front-end-checklist https://mcp.frontendchecklist.io >/dev/null && echo "added MCP front-end-checklist (user)"; }
-  else
-    claude mcp get front-end-checklist >/dev/null 2>&1 && \
-      claude mcp remove -s user front-end-checklist >/dev/null && echo "removed MCP front-end-checklist (excluded)"
-  fi
+  if is_excluded front-end-checklist frontend-checklist-global; then drop_mcp front-end-checklist
+  else ensure_mcp front-end-checklist --url https://mcp.frontendchecklist.io; fi
+
   # /pdf-to-wiki가 쓰는 NotebookLM MCP(gemini-notebook-mcp). nlm CLI를 uv tool로 받고 user 스코프로 등록. 로그인(nlm login)은 브라우저라 직접.
   command -v nlm >/dev/null || { command -v uv >/dev/null && uv tool install notebooklm-mcp-cli >/dev/null && echo "installed nlm (uv tool)"; }
   if command -v nlm >/dev/null; then
-    claude mcp get gemini-notebook-mcp >/dev/null 2>&1 || { nlm setup add claude-code >/dev/null && echo "added MCP gemini-notebook-mcp (user)"; }
+    has_mcp gemini-notebook-mcp || { nlm setup add claude-code >/dev/null && echo "added MCP gemini-notebook-mcp (user)"; }
     nlm login --check >/dev/null 2>&1 || echo "! NotebookLM 로그인 필요(2~4주마다): nlm login"
   else
     echo "! nlm 없음: brew install uv 후 install.sh 다시 실행 (/pdf-to-wiki용)"
   fi
+
   # financial-datasets: 미국 주식 재무제표·주가·뉴스·크립토 MCP(mcp/financial-datasets, 원본 financial-datasets/mcp-server).
   # API 키는 레포 밖 ~/.config/financial-datasets/.env 에 직접 넣는다(없으면 빈 파일을 만들어 둠).
-  fd_env="$HOME/.config/financial-datasets/.env"
+  local fd_env="$HOME/.config/financial-datasets/.env"
   [ -f "$fd_env" ] || { mkdir -p "$(dirname "$fd_env")"; printf '# https://financialdatasets.ai 에서 받은 키\nFINANCIAL_DATASETS_API_KEY=\n' > "$fd_env"; chmod 600 "$fd_env"; }
-  claude mcp get financial-datasets >/dev/null 2>&1 || {
-    claude mcp add -s user financial-datasets -- uv --directory "$repo/mcp/financial-datasets" run --env-file "$fd_env" server.py >/dev/null \
-      && echo "added MCP financial-datasets (user)"; }
+  ensure_mcp financial-datasets -- uv --directory "$repo/mcp/financial-datasets" run --env-file "$fd_env" server.py
   grep -q '^FINANCIAL_DATASETS_API_KEY=..' "$fd_env" || echo "! financial-datasets API 키 필요: $fd_env 에 FINANCIAL_DATASETS_API_KEY=… 입력"
+
   # figma-bridge: Figma 데스크톱 플러그인이 보내는 문서 데이터를 받는 MCP(REST API 한도 없음). 버전 고정, 플러그인은 Figma에서 직접 import.
-  fmb_ver=0.0.25
-  fmb_dir="$HOME/.local/share/figma-mcp-bridge/v$fmb_ver"
-  claude mcp get figma-bridge >/dev/null 2>&1 || {
-    claude mcp add -s user figma-bridge -- npx -y "@gethopp/figma-mcp-bridge@$fmb_ver" >/dev/null && echo "added MCP figma-bridge (user)"; }
+  local fmb_ver=0.0.25
+  local fmb_dir="$HOME/.local/share/figma-mcp-bridge/v$fmb_ver"
+  ensure_mcp figma-bridge -- npx -y "@gethopp/figma-mcp-bridge@$fmb_ver"
   if [ ! -f "$fmb_dir/plugin/manifest.json" ] && command -v gh >/dev/null; then
     mkdir -p "$fmb_dir" && gh release download "v$fmb_ver" -R gethopp/figma-mcp-bridge -p '*.zip' -O "$fmb_dir/plugin.zip" --clobber \
       && unzip -oq "$fmb_dir/plugin.zip" -d "$fmb_dir" && rm "$fmb_dir/plugin.zip" \
       && echo "! Figma 데스크톱 > Plugins > Development > Import plugin from manifest: $fmb_dir/plugin/manifest.json"
   fi
+  return 0
+}
+
+install_marketplace_plugins() {
   # 벤더링하지 않고 원래 마켓플레이스에서 user 스코프로 설치하는 플러그인(자체 훅·Node 패키지·CLAUDE_PLUGIN_ROOT가 필요한 것).
   # 한 줄에 "마켓플레이스 GitHub 레포  플러그인@마켓플레이스". 업데이트는 claude plugin marketplace update 또는 앱의 Sync automatically.
+  # Read each list once: `claude … | grep -q` under pipefail fails when grep stops early (SIGPIPE) and reinstalls.
+  local marketplaces plugins mp_repo plugin_id
+  marketplaces="$(claude plugin marketplace list 2>/dev/null || true)"
+  plugins="$(claude plugin list 2>/dev/null || true)"
   while read -r mp_repo plugin_id; do
     [ -n "$mp_repo" ] || continue
-    claude plugin marketplace list 2>/dev/null | grep -q "$mp_repo" || {
-      claude plugin marketplace add "$mp_repo" >/dev/null && echo "added marketplace $mp_repo"; }
-    claude plugin list 2>/dev/null | grep -q "❯ $plugin_id\$" || {
+    grep -qF "$mp_repo" <<<"$marketplaces" || {
+      claude plugin marketplace add "$mp_repo" >/dev/null && echo "added marketplace $mp_repo" && marketplaces+=$'\n'"$mp_repo"; }
+    grep -q "❯ $plugin_id\$" <<<"$plugins" || {
       claude plugin install "$plugin_id" >/dev/null && echo "installed plugin $plugin_id (user)"; }
   done <<'EOF'
 career-ops-hq/career-ops career-ops@career-ops
@@ -97,42 +123,46 @@ anthropics/claude-plugins-official vercel@claude-plugins-official
 anthropics/claude-plugins-official figma@claude-plugins-official
 anthropics/claude-plugins-official frontend-design@claude-plugins-official
 EOF
-else
-  echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp·financial-datasets·figma-bridge MCP 등록과 마켓플레이스 플러그인 설치를 건너뜁니다."
-fi
+  return 0 # a failed install is reported by claude; keep going like the other optional steps
+}
 
-# Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.
-bindir="$HOME/.local/bin"
-mkdir -p "$bindir"
-for cmd in "$repo"/bin/*; do
-  ln -sfn "$cmd" "$bindir/$(basename "$cmd")"
-  echo "linked $(basename "$cmd") -> $bindir"
-done
-case ":$PATH:" in *":$bindir:"*) ;; *) echo "! PATH에 $bindir 추가 필요: echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.zshrc";; esac
+link_commands() { # Put this repo's commands (e.g. skills-ls) on PATH via ~/.local/bin.
+  local bindir="$HOME/.local/bin" cmd
+  mkdir -p "$bindir"
+  for cmd in "$repo"/bin/*; do
+    ln -sfn "$cmd" "$bindir/$(basename "$cmd")"
+    echo "linked $(basename "$cmd") -> $bindir"
+  done
+  case ":$PATH:" in *":$bindir:"*) ;; *) echo "! PATH에 $bindir 추가 필요: echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.zshrc";; esac
+}
 
-# Import this repo's shared global instructions into ~/.claude/CLAUDE.md (idempotent).
-claude_md="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/CLAUDE.md"
-touch "$claude_md"
-# Drop the block written before the repo was renamed (my-claude-skills -> my-dev-settings), then add the current one.
-if grep -q "<!-- MY-CLAUDE-SKILLS:START -->" "$claude_md"; then
-  sed -i '' '/<!-- MY-CLAUDE-SKILLS:START -->/,/<!-- MY-CLAUDE-SKILLS:END -->/d' "$claude_md"
-  echo "removed old my-claude-skills import from $claude_md"
-fi
-if ! grep -q "<!-- MY-DEV-SETTINGS:START -->" "$claude_md"; then
-  printf '\n<!-- MY-DEV-SETTINGS:START -->\n@%s/global-claude.md\n<!-- MY-DEV-SETTINGS:END -->\n' "$repo" >> "$claude_md"
-  echo "added global-claude.md import to $claude_md"
-fi
+import_global_claude_md() { # Import this repo's shared global instructions into ~/.claude/CLAUDE.md (idempotent).
+  local claude_md="$claude_dir/CLAUDE.md"
+  touch "$claude_md"
+  # Drop the block written before the repo was renamed (my-claude-skills -> my-dev-settings), then add the current one.
+  if grep -q "<!-- MY-CLAUDE-SKILLS:START -->" "$claude_md"; then
+    sed -i '' '/<!-- MY-CLAUDE-SKILLS:START -->/,/<!-- MY-CLAUDE-SKILLS:END -->/d' "$claude_md"
+    echo "removed old my-claude-skills import from $claude_md"
+  fi
+  if ! grep -q "<!-- MY-DEV-SETTINGS:START -->" "$claude_md"; then
+    printf '\n<!-- MY-DEV-SETTINGS:START -->\n@%s/global-claude.md\n<!-- MY-DEV-SETTINGS:END -->\n' "$repo" >> "$claude_md"
+    echo "added global-claude.md import to $claude_md"
+  fi
+}
 
-# Repo renamed from my-claude-skills: point an old clone's remote at the new name.
-if git -C "$repo" remote get-url origin 2>/dev/null | grep -q "my-claude-skills"; then
-  git -C "$repo" remote set-url origin https://github.com/HerrineKim/my-dev-settings.git
-  echo "updated git remote to HerrineKim/my-dev-settings"
-fi
+migrate_old_remote() { # Repo renamed from my-claude-skills: point an old clone's remote at the new name.
+  if git -C "$repo" remote get-url origin 2>/dev/null | grep -q "my-claude-skills"; then
+    git -C "$repo" remote set-url origin https://github.com/HerrineKim/my-dev-settings.git
+    echo "updated git remote to HerrineKim/my-dev-settings"
+  fi
+}
 
-# daily-log: mirror this machine's transcripts to the shared folder so /daily-log on any Mac sees them.
-# The folder lives in iCloud Drive by default (config.json "shared_dir"); each Mac writes under its own name.
-sync_cmd="python3 \"\${CLAUDE_CONFIG_DIR:-\$HOME/.claude}/skills/daily-log/scripts/sync_transcripts.py\""
-python3 - "$claude_dir/settings.json" "$sync_cmd" <<'PY'
+setup_daily_log() {
+  # daily-log: mirror this machine's transcripts to the shared folder so /daily-log on any Mac sees them.
+  # The folder lives in iCloud Drive by default (config.json "shared_dir"); each Mac writes under its own name.
+  local dl="$repo/plugins/daily-log/skills/daily-log" shared
+  local sync_cmd="python3 \"\${CLAUDE_CONFIG_DIR:-\$HOME/.claude}/skills/daily-log/scripts/sync_transcripts.py\""
+  python3 - "$claude_dir/settings.json" "$sync_cmd" <<'PY'
 import json, sys
 from pathlib import Path
 path, cmd = Path(sys.argv[1]), sys.argv[2]
@@ -157,22 +187,25 @@ if added:
 else:
     print("daily-log sync hooks already present in", path)
 PY
-shared="$(python3 -c "
-import json,os,sys; sys.path.insert(0, '$repo/plugins/daily-log/skills/daily-log/scripts')
+  shared="$(python3 -c "
+import json,os,sys; sys.path.insert(0, '$dl/scripts')
 from daily_log_common import load_config, shared_dir
-print(shared_dir(load_config('$repo/plugins/daily-log/skills/daily-log/config.json')))")"
-if [ -d "$(dirname "$(dirname "$shared")")" ]; then
-  mkdir -p "$shared" && echo "shared transcript folder: $shared"
-  echo '{}' | python3 "$repo/plugins/daily-log/skills/daily-log/scripts/sync_transcripts.py" && echo "initial transcript sync done"
-else
-  echo "! iCloud Drive 폴더가 없어 기기 간 기록 공유를 건너뜁니다. config.json의 shared_dir를 다른 공유 폴더로 바꾸고 다시 실행하세요."
-fi
+print(shared_dir(load_config('$dl/config.json')))")"
+  if [ -d "$(dirname "$(dirname "$shared")")" ]; then
+    mkdir -p "$shared" && echo "shared transcript folder: $shared"
+    echo '{}' | python3 "$dl/scripts/sync_transcripts.py" && echo "initial transcript sync done"
+  else
+    echo "! iCloud Drive 폴더가 없어 기기 간 기록 공유를 건너뜁니다. config.json의 shared_dir를 다른 공유 폴더로 바꾸고 다시 실행하세요."
+  fi
+  return 0 # a failed initial sync is retried by the hooks
+}
 
-# dev-settings-sync: run brew upgrade + vendor.sh once at each login (LaunchAgent, RunAtLoad). Log: ~/Library/Logs/my-dev-settings.
-agent_id="com.herrinekim.my-dev-settings.sync"
-agent="$HOME/Library/LaunchAgents/$agent_id.plist"
-mkdir -p "$(dirname "$agent")"
-cat > "$agent.tmp" <<PLIST
+register_sync_agent() {
+  # dev-settings-sync: run brew upgrade + vendor.sh once at each login (LaunchAgent, RunAtLoad). Log: ~/Library/Logs/my-dev-settings.
+  local agent_id="com.herrinekim.my-dev-settings.sync"
+  local agent="$HOME/Library/LaunchAgents/$agent_id.plist"
+  mkdir -p "$(dirname "$agent")"
+  cat > "$agent.tmp" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -186,17 +219,39 @@ cat > "$agent.tmp" <<PLIST
 </dict>
 </plist>
 PLIST
-mkdir -p "$HOME/Library/Logs/my-dev-settings"
-if ! cmp -s "$agent.tmp" "$agent"; then
-  mv "$agent.tmp" "$agent"
-  launchctl bootout "gui/$(id -u)/$agent_id" 2>/dev/null || true
-  # bootstrap runs it right away (RunAtLoad), so registering it here also does a first sync.
-  launchctl bootstrap "gui/$(id -u)" "$agent" && echo "registered LaunchAgent $agent_id (runs dev-settings-sync at login)"
-else
-  rm "$agent.tmp"
-fi
+  mkdir -p "$HOME/Library/Logs/my-dev-settings"
+  if ! cmp -s "$agent.tmp" "$agent"; then
+    mv "$agent.tmp" "$agent"
+    launchctl bootout "gui/$(id -u)/$agent_id" 2>/dev/null || true
+    # bootstrap runs it right away (RunAtLoad), so registering it here also does a first sync.
+    launchctl bootstrap "gui/$(id -u)" "$agent" && echo "registered LaunchAgent $agent_id (runs dev-settings-sync at login)"
+  else
+    rm "$agent.tmp"
+  fi
+  return 0 # a failed bootstrap (e.g. no GUI session over SSH) must not skip the reminders
+}
 
-command -v gh >/dev/null || echo "! GitHub CLI 없음: brew install gh && gh auth login"
-gh auth status >/dev/null 2>&1 || echo "! gh 로그인 필요: gh auth login"
-echo "노션은 claude.ai 계정의 Notion 커넥터를 쓰므로 같은 계정으로 로그인하면 추가 설정이 없습니다."
-echo "앱을 다른 맥과 맞추려면 apps-sync 를 실행하세요(apps/Brewfile 기준)."
+print_reminders() {
+  command -v gh >/dev/null || echo "! GitHub CLI 없음: brew install gh && gh auth login"
+  gh auth status >/dev/null 2>&1 || echo "! gh 로그인 필요: gh auth login"
+  echo "노션은 claude.ai 계정의 Notion 커넥터를 쓰므로 같은 계정으로 로그인하면 추가 설정이 없습니다."
+  echo "앱을 다른 맥과 맞추려면 apps-sync 를 실행하세요(apps/Brewfile 기준)."
+}
+
+main() {
+  link_skills
+  if command -v claude >/dev/null; then
+    register_mcps
+    install_marketplace_plugins
+  else
+    echo "! claude CLI 없음: code-review-graph·korean-law·front-end-checklist·gemini-notebook-mcp·financial-datasets·figma-bridge MCP 등록과 마켓플레이스 플러그인 설치를 건너뜁니다."
+  fi
+  link_commands
+  import_global_claude_md
+  migrate_old_remote
+  setup_daily_log
+  register_sync_agent
+  print_reminders
+}
+
+main "$@"

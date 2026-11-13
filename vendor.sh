@@ -4,6 +4,18 @@
 set -euo pipefail
 repo="$(cd "$(dirname "$0")" && pwd)"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+clone() { # <github-repo>: shallow clone into $tmp/src (replacing the previous one)
+  rm -rf "$tmp/src"
+  git clone -q --depth 1 "https://github.com/$1.git" "$tmp/src"
+}
+vendor_tree() { # <plugin> <github-repo> <dir>... [-- <file>...]: replace plugins/<plugin>/<basename of dir> and copy files to its root
+  local plugin="$1" dest="$repo/plugins/$1"; clone "$2"; shift 2
+  mkdir -p "$dest"
+  while [ $# -gt 0 ] && [ "$1" != -- ]; do rm -rf "$dest/$(basename "$1")"; cp -R "$tmp/src/$1" "$dest/"; shift; done
+  [ $# -gt 0 ] && shift
+  for f in "$@"; do cp "$tmp/src/$f" "$dest/"; done
+  echo "updated plugins/$plugin"
+}
 fetch() { # <plugin> <package> <skill-list>
   ( cd "$tmp" && npx -y skills add "$2" -a claude-code -s "$3" -y --copy >/dev/null )
   for s in "$tmp"/.claude/skills/*/; do
@@ -14,8 +26,8 @@ fetch() { # <plugin> <package> <skill-list>
   done
   rm -rf "$tmp/.claude" "$tmp/skills-lock.json"
 }
-fetch_built() { # <plugin> <github-repo> — copy skills from the repo's prebuilt Claude plugin, minus Codex-only agents/
-  git clone -q --depth 1 "https://github.com/$2.git" "$tmp/src"
+fetch_built() { # <plugin> <github-repo>: copy skills from the repo's prebuilt Claude plugin, minus Codex-only agents/
+  clone "$2"
   for s in "$tmp/src/plugins/$1/skills"/*/; do
     name="$(basename "$s")"
     rm -rf "$repo/plugins/$1/skills/$name"
@@ -24,7 +36,7 @@ fetch_built() { # <plugin> <github-repo> — copy skills from the repo's prebuil
     echo "updated plugins/$1/skills/$name"
   done
   cp "$tmp/src/LICENSE" "$tmp/src/NOTICE" "$repo/plugins/$1/"
-  rm -rf "$tmp/src"
+  rm -rf "$tmp/src" # fetch's npx runs in $tmp; keep it empty
 }
 fetch ui-ux-pro-max        nextlevelbuilder/ui-ux-pro-max-skill '*'
 fetch web-design-guidelines vercel-labs/agent-skills web-design-guidelines
@@ -42,52 +54,25 @@ fetch korean-law            chrisryugj/korean-law-mcp korean-law
 fetch magnus-agent-skills   magnus919/agent-skills '*'
 fetch jscpd                 kucherenko/jscpd '*'
 # android-reverse-engineering ships a prebuilt Claude plugin (skill + /decompile command) with no NOTICE file.
-git clone -q --depth 1 https://github.com/SimoneAvogadro/android-reverse-engineering-skill.git "$tmp/src"
-rm -rf "$repo/plugins/android-reverse-engineering/skills" "$repo/plugins/android-reverse-engineering/commands"
-mkdir -p "$repo/plugins/android-reverse-engineering"
-cp -R "$tmp/src/plugins/android-reverse-engineering/skills" "$tmp/src/plugins/android-reverse-engineering/commands" "$repo/plugins/android-reverse-engineering/"
-cp "$tmp/src/LICENSE" "$tmp/src/THIRD_PARTY_NOTICES.md" "$repo/plugins/android-reverse-engineering/"
-rm -rf "$tmp/src"
-echo "updated plugins/android-reverse-engineering"
-find "$repo/plugins" -name .DS_Store -delete
+vendor_tree android-reverse-engineering SimoneAvogadro/android-reverse-engineering-skill \
+  plugins/android-reverse-engineering/skills plugins/android-reverse-engineering/commands -- LICENSE THIRD_PARTY_NOTICES.md
 
 # cybersecurity ships a single prebuilt Claude plugin with 22 skills + a shared cyberskill/ package that two
 # scripts import via Path(__file__).resolve().parents[3], so it must sit at the plugin root. We vendor skills
 # and that package only; its tooling repo (tests/, Makefile, CI) and any scripts are copied verbatim, never run.
-git clone -q --depth 1 https://github.com/Masriyan/Claude-Code-CyberSecurity-Skill.git "$tmp/src"
-rm -rf "$repo/plugins/cybersecurity/skills" "$repo/plugins/cybersecurity/cyberskill"
-mkdir -p "$repo/plugins/cybersecurity"
-cp -R "$tmp/src/skills" "$tmp/src/cyberskill" "$repo/plugins/cybersecurity/"
-cp "$tmp/src/LICENSE" "$tmp/src/NOTICE" "$repo/plugins/cybersecurity/"
+vendor_tree cybersecurity Masriyan/Claude-Code-CyberSecurity-Skill skills cyberskill -- LICENSE NOTICE
 find "$repo/plugins/cybersecurity" -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true
-rm -rf "$tmp/src"
-echo "updated plugins/cybersecurity"
-find "$repo/plugins" -name .DS_Store -delete
 
 # ECC is a whole harness (agents, hooks, rules, commands); we vendor only its skills/ so it does not clash with oh-my-claudecode.
-git clone -q --depth 1 https://github.com/affaan-m/ECC.git "$tmp/src"
-rm -rf "$repo/plugins/ecc/skills"
-mkdir -p "$repo/plugins/ecc"
-cp -R "$tmp/src/skills" "$repo/plugins/ecc/"
-cp "$tmp/src/LICENSE" "$repo/plugins/ecc/"
-rm -rf "$tmp/src"
-echo "updated plugins/ecc"
-find "$repo/plugins" -name .DS_Store -delete
+vendor_tree ecc affaan-m/ECC skills -- LICENSE
 
 # Front-End-Checklist: 391 rule skills plus the global audit skill; the plugin's .mcp.json points at the hosted MCP.
-git clone -q --depth 1 https://github.com/thedaviddias/Front-End-Checklist.git "$tmp/src"
-rm -rf "$repo/plugins/front-end-checklist/skills"
-mkdir -p "$repo/plugins/front-end-checklist"
-cp -R "$tmp/src/skills" "$repo/plugins/front-end-checklist/"
-cp "$tmp/src/LICENSE" "$tmp/src/plugins/front-end-checklist/.mcp.json" "$repo/plugins/front-end-checklist/"
-rm -rf "$tmp/src"
-echo "updated plugins/front-end-checklist"
-find "$repo/plugins" -name .DS_Store -delete
+vendor_tree front-end-checklist thedaviddias/Front-End-Checklist skills -- LICENSE plugins/front-end-checklist/.mcp.json
 
 # /note lives in the riverlog repo; vendor it and inject the "find the riverlog repo" preamble so it works from any project.
-git clone -q --depth 1 https://github.com/HerrineKim/riverlog.git "$tmp/riverlog"
+clone HerrineKim/riverlog
 rm -rf "$repo/plugins/note/skills/note"
-cp -R "$tmp/riverlog/.claude/skills/note" "$repo/plugins/note/skills/note"
+cp -R "$tmp/src/.claude/skills/note" "$repo/plugins/note/skills/note"
 python3 - "$repo/plugins/note/skills/note/SKILL.md" "$repo/plugins/note/global-preamble.md" <<'PY'
 import re, sys
 skill, pre = (open(p, encoding="utf-8").read() for p in sys.argv[1:3])
@@ -97,11 +82,10 @@ skill = skill[: head.end()] + pre + skill[head.end():]
 open(sys.argv[1], "w", encoding="utf-8").write(skill)
 PY
 echo "updated plugins/note/skills/note"
-find "$repo/plugins" -name .DS_Store -delete
 
 # notebooklm-wiki-pipeline ships /pdf-to-wiki as a command plus a routing helper; turn it into a skill with frontmatter
 # and the "global paths" preamble. The NotebookLM MCP itself comes from `uv tool install notebooklm-mcp-cli` (install.sh).
-git clone -q --depth 1 https://github.com/capitalparser/notebooklm-wiki-pipeline.git "$tmp/src"
+clone capitalparser/notebooklm-wiki-pipeline
 nwp="$repo/plugins/notebooklm-wiki-pipeline"
 rm -rf "$nwp/skills/pdf-to-wiki"
 mkdir -p "$nwp/skills/pdf-to-wiki/scripts" "$nwp/skills/pdf-to-wiki/config"
@@ -123,18 +107,16 @@ argument-hint: "<drive_url_or_file_id> [wiki_title] [--topic topic_id]"
 head, sep, rest = cmd.partition("\n\n")  # keep the "# /pdf-to-wiki" title, then insert the preamble
 open(sys.argv[3], "w", encoding="utf-8").write(front + head + "\n" + pre + "\n" + rest)
 PY
-rm -rf "$tmp/src"
 echo "updated plugins/notebooklm-wiki-pipeline/skills/pdf-to-wiki"
 
 # financial-datasets MCP server (single-file FastMCP app). install.sh runs it with `uv --directory mcp/financial-datasets`.
-git clone -q --depth 1 https://github.com/financial-datasets/mcp-server.git "$tmp/src"
+clone financial-datasets/mcp-server
 for f in server.py pyproject.toml uv.lock .python-version LICENSE .env.example; do cp "$tmp/src/$f" "$repo/mcp/financial-datasets/"; done
-rm -rf "$tmp/src"
 echo "updated mcp/financial-datasets"
 
 # es-toolkit ships a Claude plugin whose skills are named guide/migrate/recommend; prefix them so the global
 # /guide etc. names stay free, and point their cross-references at the new names.
-git clone -q --depth 1 https://github.com/toss/es-toolkit.git "$tmp/src"
+clone toss/es-toolkit
 rm -rf "$repo/plugins/es-toolkit/skills"; mkdir -p "$repo/plugins/es-toolkit/skills"
 for s in "$tmp/src/es-toolkit-plugin/skills"/*/; do
   name="es-toolkit-$(basename "$s")"
@@ -143,11 +125,10 @@ for s in "$tmp/src/es-toolkit-plugin/skills"/*/; do
   echo "updated plugins/es-toolkit/skills/$name"
 done
 cp "$tmp/src/LICENSE" "$repo/plugins/es-toolkit/"
-rm -rf "$tmp/src"
 
 # es-hangul has no agent skill; plugins/es-hangul/skills/es-hangul/SKILL.md is ours, and its references/api.md is
 # rebuilt here from the upstream Korean API docs (frontmatter, imports and the Sandpack playground stripped).
-git clone -q --depth 1 https://github.com/toss/es-hangul.git "$tmp/src"
+clone toss/es-hangul
 python3 - "$tmp/src/docs/src/pages/docs/api" "$repo/plugins/es-hangul/skills/es-hangul/references/api.md" "$(git -C "$tmp/src" rev-parse --short HEAD)" <<'PY2'
 import re, sys
 from pathlib import Path
@@ -166,16 +147,15 @@ out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text("".join(parts), encoding="utf-8")
 PY2
 cp "$tmp/src/LICENSE" "$repo/plugins/es-hangul/"
-rm -rf "$tmp/src"
 echo "updated plugins/es-hangul/skills/es-hangul/references/api.md"
+find "$repo/plugins" -name .DS_Store -delete
 
 # Upstream usage docs, copied verbatim into docs/upstream/<plugin>/ (linked from docs/skills/<plugin>.md).
 upstream_docs() { # <plugin> <github-repo> <path>...
   local plugin="$1" src="$2"; shift 2
-  git clone -q --depth 1 "https://github.com/$src.git" "$tmp/docs-src"
+  clone "$src"
   rm -rf "$repo/docs/upstream/$plugin"; mkdir -p "$repo/docs/upstream/$plugin"
-  for f in "$@"; do cp "$tmp/docs-src/$f" "$repo/docs/upstream/$plugin/"; done
-  rm -rf "$tmp/docs-src"
+  for f in "$@"; do cp "$tmp/src/$f" "$repo/docs/upstream/$plugin/"; done
   echo "updated docs/upstream/$plugin"
 }
 upstream_docs k-skill NomaDamas/k-skill k-skills-list.md docs/setup.md docs/install.md docs/security-and-secrets.md
