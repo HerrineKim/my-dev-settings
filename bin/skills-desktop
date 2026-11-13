@@ -9,6 +9,7 @@ Usage: skills-desktop pack            # zip changed skills into the outbox, prin
        skills-desktop pack --all      # zip every global skill
        skills-desktop mark NAME...    # record NAME(s) as uploaded (current content hash)
        skills-desktop status          # pending / uploaded / gone counts and names
+       skills-desktop forget NAME...  # drop NAME(s) from the record (after deleting them on claude.ai)
 Outbox: ~/Library/Caches/my-dev-settings/desktop-skills/   State: ~/.config/my-dev-settings/desktop-skills.json
 """
 import hashlib, json, os, re, sys, zipfile
